@@ -5,7 +5,7 @@ import { SquareKanban } from 'lucide-vue-next';
 
 <template>
 	<RouterLink to="/">
-		<SidebarMenuButton size="lg">
+		<SidebarMenuButton size="lg" class="cursor-pointer">
 			<div
 				class="flex align-middle items-center gap-2 text-xs group-data-[state=expanded]:text-2xl transition-[font-size,line-height] duration-200 ease-in-out"
 			>

@@ -12,7 +12,6 @@ import {
 	SidebarMenu,
 	SidebarMenuItem,
 	SidebarMenuButton,
-	SidebarRail,
 } from '@/components/ui/sidebar';
 import NavUser from '@/components/nav-user/NavUser.vue';
 import Logo from '@/components/logo/Logo.vue';
@@ -66,6 +65,5 @@ const user = {
 		<SidebarFooter>
 			<NavUser :user="user" />
 		</SidebarFooter>
-		<SidebarRail />
 	</Sidebar>
 </template>
