@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import { useDragAndDrop } from '@formkit/drag-and-drop/vue';
+
+const todoItems = [
+	'Schedule perm',
+	'Rewind VHS tapes',
+	'Make change for the arcade',
+	'Get disposable camera developed',
+	'Learn C++',
+	'Return Nintendo Power Glove',
+];
+const doneItems = ['Pickup new mix-tape from Beth'];
+
+const [todoList, todos] = useDragAndDrop(todoItems, {
+	group: 'todoList',
+	sortable: false,
+});
+const [doneList, dones] = useDragAndDrop(doneItems, {
+	group: 'todoList',
+	sortable: false,
+});
+</script>
+
+<template>
+	<div class="flex gap-2">
+		<ul ref="todoList" class="w-48 kanban-column">
+			<li
+				v-for="todo in todos"
+				:key="todo"
+				class="cursor-pointer mb-2 bg-amber-100 border-2 kanban-item"
+			>
+				{{ todo }}
+			</li>
+		</ul>
+		<ul ref="doneList" class="w-48 kanban-column">
+			<li
+				v-for="done in dones"
+				:key="done"
+				class="cursor-pointer mb-2 bg-amber-100 border-2 kanban-item"
+			>
+				{{ done }}
+			</li>
+		</ul>
+	</div>
+</template>
