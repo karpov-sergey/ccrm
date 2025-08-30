@@ -9,8 +9,23 @@ import '@fontsource/inter/800.css';
 import '@fontsource/inter/900.css';
 
 import { createApp } from 'vue';
+import { createI18n } from 'vue-i18n';
+
 import './style.css';
 import App from './App.vue';
 import router from './router';
 
-createApp(App).use(router).mount('#app');
+import en from './locales/en.json';
+import pl from './locales/pl.json';
+
+const i18n = createI18n({
+	legacy: false,
+	locale: 'en',
+	fallbackLocale: 'pl',
+	messages: {
+		en,
+		pl,
+	},
+});
+
+createApp(App).use(router).use(i18n).mount('#app');

@@ -1,0 +1,10 @@
+{
+  "hello": "Witaj świecie",
+  "language": {
+    "en": "Angielski",
+    "pl": "Polski"
+  },
+  "switch_language": "Zmień język",
+  "home": "Strona główna",
+  "board": "Tablica"
+}
