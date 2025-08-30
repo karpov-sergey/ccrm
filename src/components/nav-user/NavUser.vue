@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
 import {
 	BadgeCheck,
 	Bell,
@@ -30,7 +32,12 @@ const props = defineProps<{
 		avatar: string;
 	};
 }>();
+const router = useRouter();
 const { isMobile } = useSidebar();
+
+const onLogoutClick = () => {
+	router.push('/login');
+};
 </script>
 <template>
 	<SidebarMenu>
@@ -39,7 +46,7 @@ const { isMobile } = useSidebar();
 				<DropdownMenuTrigger as-child>
 					<SidebarMenuButton
 						size="lg"
-						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
 					>
 						<Avatar class="h-8 w-8 rounded-lg">
 							<AvatarImage :src="user.avatar" :alt="user.name" />
@@ -93,7 +100,7 @@ const { isMobile } = useSidebar();
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>
+					<DropdownMenuItem @click="onLogoutClick">
 						<LogOut />
 						Log out
 					</DropdownMenuItem>

@@ -18,7 +18,7 @@ import NavUser from '@/components/nav-user/NavUser.vue';
 import Logo from '@/components/logo/Logo.vue';
 
 const route = useRoute();
-const { navItems } = useNavigation();
+const { userNavItems } = useNavigation();
 
 const user = {
 	name: 'Julia Khavanskaya',
@@ -37,7 +37,7 @@ const user = {
 				<SidebarGroupLabel>Application</SidebarGroupLabel>
 				<SidebarGroupContent>
 					<SidebarMenu>
-						<SidebarMenuItem v-for="item in navItems" :key="item.id">
+						<SidebarMenuItem v-for="item in userNavItems" :key="item.id">
 							<SidebarMenuButton asChild :is-active="route.path === item.to">
 								<RouterLink :to="item.to">
 									<component :is="item.icon" />

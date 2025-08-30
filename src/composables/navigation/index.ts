@@ -4,28 +4,27 @@ import { useI18n } from 'vue-i18n';
 import { Home, SquareKanban } from 'lucide-vue-next';
 
 import type { NavigationItem } from '@/types/Navigation.ts';
-import { NavItems } from '@/enums/navigation/NavItems.ts';
+import { UserNavItems } from '@/enums/navigation/NavItems.ts';
 
 export const useNavigation = () => {
 	const { t } = useI18n();
 
-	const navItems = computed<NavigationItem[]>(() => [
+	const userNavItems = computed<NavigationItem[]>(() => [
 		{
-			label: t(NavItems.HOME),
+			label: t(UserNavItems.HOME),
 			to: '/',
 			icon: Home,
-			id: NavItems.HOME,
+			id: UserNavItems.HOME,
 		},
 		{
-			label: t(NavItems.BOARD),
+			label: t(UserNavItems.BOARD),
 			to: '/board',
 			icon: SquareKanban,
-			id: NavItems.BOARD,
+			id: UserNavItems.BOARD,
 		},
 	]);
 
 	return {
-		navItems,
-		t,
+		userNavItems,
 	};
 };

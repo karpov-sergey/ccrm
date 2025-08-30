@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,8 +17,8 @@ import type { Languages as LanguagesTypes } from '@/types/Languages.ts';
 
 const { locale } = useI18n();
 
-function changeLanguage(language: LanguagesTypes) {
-	locale.value = language;
+function changeLanguage(language: string) {
+	locale.value = Object.keys(locales).find((k) => locales[k] === language)!;
 }
 </script>
 
@@ -34,6 +35,7 @@ function changeLanguage(language: LanguagesTypes) {
 			<DropdownMenuItem
 				v-for="(locale, index) in locales"
 				:key="`${locale}_${index}`"
+				:text-value="locale"
 				@select="changeLanguage(locale as LanguagesTypes)"
 				>{{ locale }}
 			</DropdownMenuItem>

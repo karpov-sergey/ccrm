@@ -11,15 +11,28 @@ import {
 import { Separator } from '@/components/ui/separator';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 
+import { useNavigation } from '@/composables/navigation';
+
+import { UserNavItems } from '@/enums/navigation/NavItems.ts';
+
+import type { NavigationItem } from '@/types/Navigation.ts';
+
 const route = useRoute();
+const { userNavItems } = useNavigation();
+
+const isUserPage = computed(() => {
+	return Object.values(UserNavItems).includes(route.name as UserNavItems);
+});
 
 const currentPageName = computed(() => {
-	return route.name;
+	return userNavItems.value.find((item: NavigationItem) => {
+		return route.name === item.id;
+	})?.label;
 });
 </script>
 
 <template>
-	<SidebarProvider>
+	<SidebarProvider v-if="isUserPage">
 		<AppSidebar />
 		<SidebarInset class="flex flex-1 flex-col min-w-0">
 			<header
@@ -37,4 +50,7 @@ const currentPageName = computed(() => {
 			</div>
 		</SidebarInset>
 	</SidebarProvider>
+	<div v-else class="flex justify-center items-center h-screen">
+		<RouterView />
+	</div>
 </template>
