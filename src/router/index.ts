@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/auth.ts';
 
 import { UserNavItems, ExternalNavItems } from '@/enums/navigation/NavItems.ts';
-
-const isLoggedIn = true;
 
 const routes: RouteRecordRaw[] = [
 	{
@@ -35,7 +35,9 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const beforeEnterHook = async () => {
-	if (!isLoggedIn) {
+	const { isAuthorized } = storeToRefs(useAuthStore());
+
+	if (!isAuthorized.value) {
 		await router.push({ path: '/login' });
 	}
 };

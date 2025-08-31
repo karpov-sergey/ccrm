@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
+import { Toaster } from '@/components/ui/sonner';
+import 'vue-sonner/style.css';
 
 import { useNavigation } from '@/composables/navigation';
 
@@ -32,6 +34,7 @@ const currentPageName = computed(() => {
 </script>
 
 <template>
+	<Toaster />
 	<SidebarProvider v-if="isUserPage">
 		<AppSidebar />
 		<SidebarInset class="flex flex-1 flex-col min-w-0">
