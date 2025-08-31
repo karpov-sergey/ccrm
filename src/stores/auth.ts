@@ -1,18 +1,18 @@
 import { defineStore } from 'pinia';
 
-import { signUp, getSession } from '@/api/auth';
+import { signUp, getSession, logout, login } from '@/api/auth';
 
 import { toast } from 'vue-sonner';
 import type { User } from '@supabase/supabase-js';
 
 interface AuthState {
-	token: string | undefined;
+	token: string | null;
 	user: User | null;
 }
 
 export const useAuthStore = defineStore('auth', {
 	state: (): AuthState => ({
-		token: '',
+		token: null,
 		user: null,
 	}),
 
@@ -23,25 +23,43 @@ export const useAuthStore = defineStore('auth', {
 	},
 
 	actions: {
-		async signUp(email: string, password: string): Promise<void> {
+		async signUp(email: string, password: string) {
 			try {
 				const data = await signUp(email, password);
 
-				this.user = data.user;
-				this.token = data.session?.refresh_token;
+				this.user = data.user ?? null;
+				this.token = data.session?.access_token ?? null;
 			} catch (error: any) {
 				toast.error(error.message);
-
-				return;
 			}
 		},
+
 		async getSession() {
 			try {
 				const data = await getSession();
+				const session = data.session ?? null;
 
-				this.user = data.session!.user;
-				this.token = data.session?.refresh_token;
+				this.user = session?.user ?? null;
+				this.token = session?.access_token ?? null;
 			} catch (error) {}
+		},
+
+		async logout() {
+			this.token = null;
+
+			await logout();
+		},
+
+		async login(email: string, password: string): Promise<void> {
+			try {
+				const data = await login(email, password);
+				const session = data.session ?? null;
+
+				this.user = session?.user ?? null;
+				this.token = session?.access_token ?? null;
+			} catch (error: any) {
+				toast.error(error.message);
+			}
 		},
 	},
 });

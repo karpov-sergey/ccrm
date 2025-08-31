@@ -26,19 +26,45 @@ const routes: RouteRecordRaw[] = [
 		path: '/login',
 		name: ExternalNavItems.LOGIN,
 		component: () => import('../views/Login.vue'),
+		beforeEnter: async () => {
+			await guestOnlyHook();
+		},
 	},
 	{
 		path: '/signup',
 		name: ExternalNavItems.SIGNUP,
 		component: () => import('../views/SignUp.vue'),
+		beforeEnter: async () => {
+			await guestOnlyHook();
+		},
 	},
 ];
 
+const ensureSessionLoaded = async () => {
+	const authStore = useAuthStore();
+	const { isAuthorized } = storeToRefs(authStore);
+
+	// If we don't know yet (no token, no user), try to fetch session once
+	if (!isAuthorized.value && !authStore.user) {
+		await authStore.getSession();
+	}
+};
+
 const beforeEnterHook = async () => {
+	await ensureSessionLoaded();
+
 	const { isAuthorized } = storeToRefs(useAuthStore());
 
 	if (!isAuthorized.value) {
 		await router.push({ path: '/login' });
+	}
+};
+
+const guestOnlyHook = async () => {
+	await ensureSessionLoaded();
+	const { isAuthorized } = storeToRefs(useAuthStore());
+	if (isAuthorized.value) {
+		await router.push({ path: '/' });
 	}
 };
 

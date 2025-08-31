@@ -1,13 +1,7 @@
-<script lang="ts">
-export const description =
-	"A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
-export const iframeHeight = '600px';
-export const containerClass =
-	'w-full h-screen flex items-center justify-center px-4';
-</script>
-
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.ts';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,13 +15,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
-const onLoginClick = () => {
-	router.push('/');
-};
+const email = ref('');
+const password = ref('');
+const isLoading = ref(false);
 
-const onRegisterClick = () => {
-	router.push('/signup');
+const onLoginClick = async () => {
+	isLoading.value = true;
+
+	try {
+		await authStore.login(email.value, password.value);
+
+		await router.push('/');
+	} catch (error) {}
 };
 </script>
 
@@ -40,10 +41,16 @@ const onRegisterClick = () => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<div class="grid gap-4">
+			<form class="grid gap-4" @submit.prevent="onLoginClick">
 				<div class="grid gap-2">
 					<Label for="email">Email</Label>
-					<Input id="email" type="email" placeholder="m@example.com" required />
+					<Input
+						v-model="email"
+						id="email"
+						type="email"
+						placeholder="m@example.com"
+						required
+					/>
 				</div>
 				<div class="grid gap-2">
 					<div class="flex items-center">
@@ -52,16 +59,16 @@ const onRegisterClick = () => {
 							Forgot your password?
 						</a>
 					</div>
-					<Input id="password" type="password" required />
+					<Input v-model="password" id="password" type="password" required />
 				</div>
 				<Button type="submit" class="w-full" @click="onLoginClick">
 					Login
 				</Button>
 				<Button variant="outline" class="w-full"> Login with Google </Button>
-			</div>
+			</form>
 			<div class="mt-4 text-center text-sm">
 				Don't have an account?
-				<a href="#" class="underline" @click="onRegisterClick"> Sign up </a>
+				<RouterLink class="underline" to="/signup"> Sign up </RouterLink>
 			</div>
 		</CardContent>
 	</Card>

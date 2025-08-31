@@ -10,21 +10,20 @@ export const signUp = async (email: string, password: string) => {
 	return handleResponse(response);
 };
 
-export const signIn = async (email: string, password: string) => {
-	const { data, error } = await supabase.auth.signInWithPassword({
+export const login = async (email: string, password: string) => {
+	const response = await supabase.auth.signInWithPassword({
 		email,
 		password,
 	});
-	if (error) console.error(error);
-	else console.log('Успешный вход:', data);
+
+	return handleResponse(response);
 };
 
-export const signOut = async () => {
+export const logout = async () => {
 	await supabase.auth.signOut();
 };
 
 export const getSession = async () => {
-	console.log('sess');
 	const { data } = await supabase.auth.getSession();
 
 	return data;
