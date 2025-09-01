@@ -25,7 +25,7 @@ function changeLanguage(language: string) {
 <template>
 	<DropdownMenu @select="changeLanguage">
 		<DropdownMenuTrigger>
-			<Button>
+			<Button size="icon">
 				<div class="flex align-center gap-2">
 					<Languages />
 				</div>

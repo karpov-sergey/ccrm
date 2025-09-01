@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.ts';
+import { useI18n } from 'vue-i18n';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,9 +14,11 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 const email = ref('');
 const password = ref('');
@@ -34,16 +37,19 @@ const onLoginSubmit = async () => {
 
 <template>
 	<Card class="w-[350px]">
-		<CardHeader>
-			<CardTitle class="text-2xl"> Login </CardTitle>
+		<CardHeader class="gap-4">
+			<CardTitle class="flex items-center justify-between text-2xl">
+				{{ t('login') }}
+				<LanguageSwitcher />
+			</CardTitle>
 			<CardDescription>
-				Enter your email below to login to your account
+				{{ t('enter_your_email_and_password') }}
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
 			<form class="grid gap-4" @submit.prevent="onLoginSubmit">
 				<div class="grid gap-2">
-					<Label for="email">Email</Label>
+					<Label for="email">{{ t('email') }}</Label>
 					<Input
 						v-model="email"
 						id="email"
@@ -54,7 +60,7 @@ const onLoginSubmit = async () => {
 				</div>
 				<div class="grid gap-2">
 					<div class="flex items-center">
-						<Label for="password">Password</Label>
+						<Label for="password">{{ t('password') }}</Label>
 						<!--						<a href="#" class="ml-auto inline-block text-sm underline">-->
 						<!--							Forgot your password?-->
 						<!--						</a>-->
@@ -62,13 +68,15 @@ const onLoginSubmit = async () => {
 					<Input v-model="password" id="password" type="password" required />
 				</div>
 				<Button type="submit" class="w-full" :loading="isLoading">
-					Login
+					{{ t('login') }}
 				</Button>
 				<!--				<Button variant="outline" class="w-full"> Login with Google </Button>-->
 			</form>
-			<div class="mt-4 text-center text-sm">
-				Don't have an account?
-				<RouterLink class="underline" to="/signup"> Sign up </RouterLink>
+			<div class="mt-4 text-end text-sm">
+				{{ t('dont_have_account') }}
+				<RouterLink class="underline" to="/signup">
+					{{ t('sign_up') }}
+				</RouterLink>
 			</div>
 		</CardContent>
 	</Card>

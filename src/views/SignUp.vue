@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,9 +14,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/auth.ts';
+import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const email = ref('');
 const password = ref('');
@@ -42,16 +45,21 @@ const onCreateAccountSubmit = async () => {
 
 <template>
 	<Card class="w-[350px]">
-		<CardHeader>
-			<CardTitle class="text-xl"> Sign Up </CardTitle>
+		<CardHeader class="gap-4">
+			<CardTitle class="flex items-center justify-between text-2xl">
+				{{ t('sign_up') }}
+				<LanguageSwitcher />
+			</CardTitle>
 			<CardDescription>
-				Enter your information to create an account
+				{{ t('enter_your_information_to_create_account') }}
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
 			<form class="grid gap-4" @submit.prevent="onCreateAccountSubmit">
 				<div class="grid gap-2">
-					<Label for="email">Email</Label>
+					<Label for="email">
+						{{ t('email') }}
+					</Label>
 					<Input
 						v-model="email"
 						id="email"
@@ -61,7 +69,9 @@ const onCreateAccountSubmit = async () => {
 					/>
 				</div>
 				<div class="grid gap-2">
-					<Label for="password">Password</Label>
+					<Label for="password">
+						{{ t('password') }}
+					</Label>
 					<Input v-model="password" id="password" type="password" />
 				</div>
 				<Button
@@ -70,13 +80,15 @@ const onCreateAccountSubmit = async () => {
 					:loading="isLoading"
 					:disabled="!isSignUpValid"
 				>
-					Create an account
+					{{ t('create_an_account') }}
 				</Button>
 				<!--				<Button variant="outline" class="w-full"> Sign up with GitHub </Button>-->
 			</form>
-			<div class="mt-4 text-center text-sm">
-				Already have an account?
-				<RouterLink class="underline" to="/login"> Sign in </RouterLink>
+			<div class="mt-4 text-end text-sm">
+				{{ t('already_have_an_account') }}
+				<RouterLink class="underline" to="/login">
+					{{ t('login') }}
+				</RouterLink>
 			</div>
 		</CardContent>
 	</Card>

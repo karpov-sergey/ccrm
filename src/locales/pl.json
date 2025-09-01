@@ -1,10 +1,18 @@
 {
-  "hello": "Witaj świecie",
-  "language": {
-    "en": "Angielski",
-    "pl": "Polski"
-  },
-  "switch_language": "Zmień język",
-  "home": "Strona główna",
-  "board": "Tablica"
+	"language": {
+		"en": "Angielski",
+		"pl": "Polski"
+	},
+	"home": "Strona główna",
+	"board": "Tablica",
+	"account": "Konto",
+	"login": "Zaloguj się",
+	"enter_your_email_and_password": "Wprowadź swój e-mail i hasło, aby zalogować się na swoje konto",
+	"email": "E-mail",
+	"password": "Hasło",
+	"dont_have_account": "Nie masz konta?",
+	"sign_up": "Zarejestruj się",
+	"enter_your_information_to_create_account": "Wprowadź swoje dane, aby utworzyć konto",
+	"create_an_account": "Utwórz konto",
+	"already_have_an_account": "Masz już konto?"
 }
