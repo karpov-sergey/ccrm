@@ -21,7 +21,7 @@ const email = ref('');
 const password = ref('');
 const isLoading = ref(false);
 
-const onLoginClick = async () => {
+const onLoginSubmit = async () => {
 	isLoading.value = true;
 
 	try {
@@ -41,7 +41,7 @@ const onLoginClick = async () => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form class="grid gap-4" @submit.prevent="onLoginClick">
+			<form class="grid gap-4" @submit.prevent="onLoginSubmit">
 				<div class="grid gap-2">
 					<Label for="email">Email</Label>
 					<Input
@@ -61,10 +61,10 @@ const onLoginClick = async () => {
 					</div>
 					<Input v-model="password" id="password" type="password" required />
 				</div>
-				<Button type="submit" class="w-full" @click="onLoginClick">
+				<Button type="submit" class="w-full" :loading="isLoading">
 					Login
 				</Button>
-				<Button variant="outline" class="w-full"> Login with Google </Button>
+				<!--				<Button variant="outline" class="w-full"> Login with Google </Button>-->
 			</form>
 			<div class="mt-4 text-center text-sm">
 				Don't have an account?

@@ -27,7 +27,7 @@ const isSignUpValid = computed(() => {
 	// return email.value.length > 3 && password.value.length >= 6;
 });
 
-const onCreateAccountClick = async () => {
+const onCreateAccountSubmit = async () => {
 	isLoading.value = true;
 
 	try {
@@ -49,7 +49,7 @@ const onCreateAccountClick = async () => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<div class="grid gap-4">
+			<form class="grid gap-4" @submit.prevent="onCreateAccountSubmit">
 				<div class="grid gap-2">
 					<Label for="email">Email</Label>
 					<Input
@@ -69,12 +69,11 @@ const onCreateAccountClick = async () => {
 					class="w-full"
 					:loading="isLoading"
 					:disabled="!isSignUpValid"
-					@click="onCreateAccountClick"
 				>
 					Create an account
 				</Button>
 				<!--				<Button variant="outline" class="w-full"> Sign up with GitHub </Button>-->
-			</div>
+			</form>
 			<div class="mt-4 text-center text-sm">
 				Already have an account?
 				<RouterLink class="underline" to="/login"> Sign in </RouterLink>

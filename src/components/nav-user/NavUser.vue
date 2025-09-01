@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth.ts';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 
-import {
-	BadgeCheck,
-	Bell,
-	ChevronsUpDown,
-	CreditCard,
-	LogOut,
-	Sparkles,
-} from 'lucide-vue-next';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuthStore } from '@/stores/auth.ts';
+import { useNavigation } from '@/composables/navigation';
+
+import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from 'lucide-vue-next';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -26,16 +23,15 @@ import {
 	useSidebar,
 } from '@/components/ui/sidebar';
 
-const props = defineProps<{
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
-}>();
-
 const authStore = useAuthStore();
+const { accountNavItems } = useNavigation();
 const { isMobile } = useSidebar();
+
+const { user } = storeToRefs(useAuthStore());
+
+const avatarFallbackText = computed(() => {
+	return `${user.value?.user_metadata.firstName.substring(0, 1)}${user.value?.user_metadata.lastName.substring(0, 1)}`;
+});
 
 const onLogoutClick = async () => {
 	await authStore.logout();
@@ -52,12 +48,22 @@ const onLogoutClick = async () => {
 						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
 					>
 						<Avatar class="h-8 w-8 rounded-lg">
-							<AvatarImage :src="props.user.avatar" :alt="props.user.name" />
-							<AvatarFallback class="rounded-lg"> JK </AvatarFallback>
+							<!--							<AvatarImage-->
+							<!--								:src="props.user.avatar"-->
+							<!--								:alt="`${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`"-->
+							<!--							/>-->
+							<AvatarFallback class="rounded-lg">
+								{{ avatarFallbackText }}
+							</AvatarFallback>
 						</Avatar>
 						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-semibold">{{ props.user.name }}</span>
-							<span class="truncate text-xs">{{ props.user.email }}</span>
+							<span class="truncate font-semibold">
+								{{ user?.user_metadata.firstName }}
+								{{ user?.user_metadata.lastName }}
+							</span>
+							<span class="truncate text-xs">
+								{{ user?.user_metadata.position }}
+							</span>
 						</div>
 						<ChevronsUpDown class="ml-auto size-4" />
 					</SidebarMenuButton>
@@ -71,14 +77,19 @@ const onLogoutClick = async () => {
 					<DropdownMenuLabel class="p-0 font-normal">
 						<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 							<Avatar class="h-8 w-8 rounded-lg">
-								<AvatarImage :src="props.user.avatar" :alt="props.user.name" />
-								<AvatarFallback class="rounded-lg"> JK </AvatarFallback>
+								<!--								<AvatarImage :src="props.user.avatar" :alt="props.user.name" />-->
+								<AvatarFallback class="rounded-lg">
+									{{ avatarFallbackText }}
+								</AvatarFallback>
 							</Avatar>
 							<div class="grid flex-1 text-left text-sm leading-tight">
-								<span class="truncate font-semibold">{{
-									props.user.name
-								}}</span>
-								<span class="truncate text-xs">{{ props.user.email }}</span>
+								<span class="truncate font-semibold">
+									{{ user?.user_metadata.firstName }}
+									{{ user?.user_metadata.lastName }}
+								</span>
+								<span class="truncate text-xs">
+									{{ user?.user_metadata.position }}
+								</span>
 							</div>
 						</div>
 					</DropdownMenuLabel>
@@ -91,18 +102,16 @@ const onLogoutClick = async () => {
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
-						<DropdownMenuItem>
-							<BadgeCheck />
-							Account
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<CreditCard />
-							Billing
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<Bell />
-							Notifications
-						</DropdownMenuItem>
+						<RouterLink
+							v-for="item in accountNavItems"
+							:to="item.to"
+							:key="item.id"
+						>
+							<DropdownMenuItem>
+								<BadgeCheck />
+								{{ item.label }}
+							</DropdownMenuItem>
+						</RouterLink>
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem @click="onLogoutClick">

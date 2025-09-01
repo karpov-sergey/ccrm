@@ -3,7 +3,7 @@ import Board from '@/components/board/Board.vue';
 </script>
 
 <template>
-	<section class="p-6 h-full min-h-0">
+	<section class="p-4 h-full min-h-0">
 		<Board />
 	</section>
 </template>

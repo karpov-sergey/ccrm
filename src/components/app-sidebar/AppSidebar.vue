@@ -19,12 +19,6 @@ import Logo from '@/components/logo/Logo.vue';
 
 const route = useRoute();
 const { userNavItems } = useNavigation();
-
-const user = {
-	name: 'Julia Khavanskaya',
-	email: 'CEO',
-	avatar: '/avatars/shadcn.jpg',
-};
 </script>
 
 <template>
@@ -50,7 +44,7 @@ const user = {
 			</SidebarGroup>
 		</SidebarContent>
 		<SidebarFooter>
-			<NavUser :user="user" />
+			<NavUser />
 		</SidebarFooter>
 	</Sidebar>
 </template>

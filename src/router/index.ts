@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
 		name: UserNavItems.HOME,
 		component: () => import('../views/Home.vue'),
 		beforeEnter: async () => {
-			await beforeEnterHook();
+			await loggedInHook();
 		},
 	},
 	{
@@ -19,9 +19,19 @@ const routes: RouteRecordRaw[] = [
 		name: UserNavItems.BOARD,
 		component: () => import('../views/Board.vue'),
 		beforeEnter: async () => {
-			await beforeEnterHook();
+			await loggedInHook();
 		},
 	},
+
+	{
+		path: '/account',
+		name: UserNavItems.ACCOUNT,
+		component: () => import('../views/Account.vue'),
+		beforeEnter: async () => {
+			await loggedInHook();
+		},
+	},
+
 	{
 		path: '/login',
 		name: ExternalNavItems.LOGIN,
@@ -50,7 +60,7 @@ const ensureSessionLoaded = async () => {
 	}
 };
 
-const beforeEnterHook = async () => {
+const loggedInHook = async () => {
 	await ensureSessionLoaded();
 
 	const { isAuthorized } = storeToRefs(useAuthStore());
@@ -62,7 +72,9 @@ const beforeEnterHook = async () => {
 
 const guestOnlyHook = async () => {
 	await ensureSessionLoaded();
+
 	const { isAuthorized } = storeToRefs(useAuthStore());
+
 	if (isAuthorized.value) {
 		await router.push({ path: '/' });
 	}

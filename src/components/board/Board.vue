@@ -126,12 +126,11 @@ const columns = ref([
 		<div
 			v-for="column in columns"
 			:key="column.title"
-			class="min-w-[320px] px-3 py-3 rounded mr-4 bg-gray-100"
+			class="w-[200px] px-3 py-3 rounded mr-4 bg-gray-100 lg:w-[300px]"
 		>
 			<p class="text-gray-700 font-semibold tracking-wide text-sm">
 				{{ column.title }}
 			</p>
-			<!-- Draggable component comes from vuedraggable. It provides drag & drop functionality -->
 			<draggable
 				:list="column.tasks"
 				item-key="id"

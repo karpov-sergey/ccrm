@@ -24,7 +24,17 @@ export const useNavigation = () => {
 		},
 	]);
 
+	const accountNavItems = computed<NavigationItem[]>(() => [
+		{
+			label: t(UserNavItems.ACCOUNT),
+			to: '/account',
+			icon: Home,
+			id: UserNavItems.ACCOUNT,
+		},
+	]);
+
 	return {
 		userNavItems,
+		accountNavItems,
 	};
 };

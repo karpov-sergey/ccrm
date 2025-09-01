@@ -1,9 +1,17 @@
 import { defineStore } from 'pinia';
-
-import { signUp, getSession, logout, login } from '@/api/auth';
-
 import { toast } from 'vue-sonner';
+
+import {
+	signUp,
+	getSession,
+	logout,
+	login,
+	updateUser,
+	getUser,
+} from '@/api/auth';
+
 import type { User } from '@supabase/supabase-js';
+import type { UserPayload } from '@/types/User.ts';
 
 interface AuthState {
 	token: string | null;
@@ -19,6 +27,9 @@ export const useAuthStore = defineStore('auth', {
 	getters: {
 		isAuthorized(): boolean {
 			return !!this.token;
+		},
+		currentUser(): User | null {
+			return this.user;
 		},
 	},
 
@@ -57,6 +68,26 @@ export const useAuthStore = defineStore('auth', {
 
 				this.user = session?.user ?? null;
 				this.token = session?.access_token ?? null;
+			} catch (error: any) {
+				toast.error(error.message);
+			}
+		},
+
+		async updateUser(userData: UserPayload) {
+			try {
+				const data = await updateUser(userData);
+
+				this.user = data.user;
+			} catch (error: any) {
+				toast.error(error.message);
+			}
+		},
+
+		async getCurrentUser() {
+			try {
+				const data = await getUser();
+
+				this.user = data.user ?? null;
 			} catch (error: any) {
 				toast.error(error.message);
 			}
