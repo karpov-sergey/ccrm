@@ -30,6 +30,13 @@ const { isMobile } = useSidebar();
 const { user } = storeToRefs(useAuthStore());
 
 const avatarFallbackText = computed(() => {
+	if (
+		!user.value?.user_metadata.firstName &&
+		!user.value?.user_metadata.lastName
+	) {
+		return 'U';
+	}
+
 	return `${user.value?.user_metadata.firstName.substring(0, 1)}${user.value?.user_metadata.lastName.substring(0, 1)}`;
 });
 
@@ -58,7 +65,7 @@ const onLogoutClick = async () => {
 						</Avatar>
 						<div class="grid flex-1 text-left text-sm leading-tight">
 							<span class="truncate font-semibold">
-								{{ user?.user_metadata.firstName }}
+								{{ user?.user_metadata.firstName || 'User' }}
 								{{ user?.user_metadata.lastName }}
 							</span>
 							<span class="truncate text-xs">
@@ -114,7 +121,7 @@ const onLogoutClick = async () => {
 						</RouterLink>
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem @click="onLogoutClick">
+					<DropdownMenuItem class="cursor-pointer" @click="onLogoutClick">
 						<LogOut />
 						Log out
 					</DropdownMenuItem>
