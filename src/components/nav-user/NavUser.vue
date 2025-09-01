@@ -116,7 +116,7 @@ const onLogoutClick = async () => {
 						>
 							<DropdownMenuItem>
 								<BadgeCheck />
-								{{ item.label }}
+								{{ item.label1 }}
 							</DropdownMenuItem>
 						</RouterLink>
 					</DropdownMenuGroup>
