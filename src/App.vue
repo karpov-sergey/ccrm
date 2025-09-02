@@ -67,7 +67,7 @@ const currentPageName = computed(() => {
 					</div>
 				</SidebarInset>
 			</SidebarProvider>
-			<div v-else class="flex justify-center items-center h-screen">
+			<div v-else class="flex justify-center items-center h-screen px-4">
 				<RouterView />
 			</div>
 		</template>
