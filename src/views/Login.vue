@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
+import { useForm, configure } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
@@ -36,7 +41,7 @@ const onLoginSubmit = async () => {
 </script>
 
 <template>
-	<Card class="w-[350px]">
+	<Card class="w-full md:w-[500px]">
 		<CardHeader class="gap-4">
 			<CardTitle class="flex items-center justify-between text-2xl">
 				{{ t('login') }}

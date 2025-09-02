@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
@@ -15,10 +20,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/auth.ts';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
+import {
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const { t } = useI18n();
+
+const formSchema = toTypedSchema(
+	z.object({
+		firstName: z.string().min(2).max(50),
+		lastName: z.string().min(2).max(50),
+		email: z.string().email(),
+		password: z.string().min(6).max(50),
+	})
+);
+
+const form = useForm({
+	validationSchema: formSchema,
+	initialValues: {
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: '',
+	},
+});
 
 const email = ref('');
 const password = ref('');
@@ -30,11 +61,12 @@ const isSignUpValid = computed(() => {
 	// return email.value.length > 3 && password.value.length >= 6;
 });
 
-const onCreateAccountSubmit = async () => {
+const onSubmit = async (values: any) => {
 	isLoading.value = true;
 
 	try {
-		await authStore.signUp(email.value, password.value);
+		await authStore.signUp(values);
+
 		await router.push('/');
 	} catch (error) {
 	} finally {
@@ -44,7 +76,7 @@ const onCreateAccountSubmit = async () => {
 </script>
 
 <template>
-	<Card class="w-[350px]">
+	<Card class="w-full md:w-[500px]">
 		<CardHeader class="gap-4">
 			<CardTitle class="flex items-center justify-between text-2xl">
 				{{ t('sign_up') }}
@@ -55,7 +87,37 @@ const onCreateAccountSubmit = async () => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form class="grid gap-4" @submit.prevent="onCreateAccountSubmit">
+			<form class="grid gap-4" @submit="onSubmit">
+				<div class="grid grid-cols-2 gap-4 items-start">
+					<!--					<div class="grid gap-2">-->
+					<!--						<Label for="first-name">First name</Label>-->
+					<!--						<Input id="first-name" placeholder="Max" required />-->
+					<!--					</div>-->
+					<!--					<div class="grid gap-2">-->
+					<!--						<Label for="last-name">Last name</Label>-->
+					<!--						<Input id="last-name" placeholder="Robinson" required />-->
+					<!--					</div>-->
+
+					<FormField v-slot="{ componentField }" name="firstName">
+						<FormItem>
+							<FormLabel>First Name</FormLabel>
+							<FormControl>
+								<Input type="text" v-bind="componentField" />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					</FormField>
+
+					<FormField v-slot="{ componentField }" name="lastName">
+						<FormItem>
+							<FormLabel>Last Name</FormLabel>
+							<FormControl>
+								<Input type="text" v-bind="componentField" />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					</FormField>
+				</div>
 				<div class="grid gap-2">
 					<Label for="email">
 						{{ t('email') }}

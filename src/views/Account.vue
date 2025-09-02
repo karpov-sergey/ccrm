@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useForm, configure } from 'vee-validate';
+import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
+
 import { useAuthStore } from '@/stores/auth.ts';
 
 import {
@@ -18,13 +19,6 @@ import { Input } from '@/components/ui/input';
 
 import type { UserPayload } from '@/types/User.ts';
 
-configure({
-	validateOnBlur: true,
-	validateOnChange: false,
-	validateOnInput: false,
-	validateOnModelUpdate: false,
-});
-
 const authStore = useAuthStore();
 const { user } = storeToRefs(useAuthStore());
 
@@ -32,7 +26,6 @@ const formSchema = toTypedSchema(
 	z.object({
 		firstName: z.string().min(2).max(50),
 		lastName: z.string().min(2).max(50),
-		position: z.string().min(2).max(50),
 	})
 );
 
@@ -41,7 +34,6 @@ const form = useForm({
 	initialValues: {
 		firstName: user.value?.user_metadata?.firstName ?? '',
 		lastName: user.value?.user_metadata?.lastName ?? '',
-		position: user.value?.user_metadata?.position ?? '',
 	},
 });
 
@@ -55,7 +47,6 @@ watch(
 			values: {
 				firstName: value.user_metadata?.firstName ?? '',
 				lastName: value.user_metadata?.lastName ?? '',
-				position: value.user_metadata?.position ?? '',
 			},
 		});
 	},
@@ -74,48 +65,52 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 </script>
 
 <template>
-	<section class="max-w-[800px] m-auto p-4">
-		<div class="mb-4 text-xl font-bold">
-			Account Settings {{ user?.user_metadata?.firstName ?? '' }}
+	<section class="m-auto p-4 lg:w-[800px] lg:pt-12">
+		<div class="text-lg font-bold">General</div>
+
+		<div class="mb-6 text-sidebar-foreground/70 text-sm font-medium">
+			Personal Settings
 		</div>
 
-		<form class="grid grid-cols-2 gap-6 items-start" @submit="onSubmit">
-			<FormField v-slot="{ componentField }" name="firstName">
-				<FormItem>
-					<FormLabel>First Name</FormLabel>
-					<FormControl>
-						<Input type="text" v-bind="componentField" />
-					</FormControl>
-					<FormMessage />
-				</FormItem>
-			</FormField>
+		<form @submit="onSubmit">
+			<div class="grid gap-6 items-start md:grid-cols-2 mb-12">
+				<FormField v-slot="{ componentField }" name="firstName">
+					<FormItem>
+						<FormLabel>First Name</FormLabel>
+						<FormControl>
+							<Input type="text" v-bind="componentField" />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 
-			<FormField v-slot="{ componentField }" name="lastName">
-				<FormItem>
-					<FormLabel>Last Name</FormLabel>
-					<FormControl>
-						<Input type="text" v-bind="componentField" />
-					</FormControl>
-					<FormMessage />
-				</FormItem>
-			</FormField>
+				<FormField v-slot="{ componentField }" name="lastName">
+					<FormItem>
+						<FormLabel>Last Name</FormLabel>
+						<FormControl>
+							<Input type="text" v-bind="componentField" />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 
-			<FormField v-slot="{ componentField }" name="position">
-				<FormItem>
-					<FormLabel>Position</FormLabel>
-					<FormControl>
-						<Input type="text" v-bind="componentField" />
-					</FormControl>
-					<FormMessage />
-				</FormItem>
-			</FormField>
+				<!--			<FormField v-slot="{ componentField }" name="position">-->
+				<!--				<FormItem>-->
+				<!--					<FormLabel>Position</FormLabel>-->
+				<!--					<FormControl>-->
+				<!--						<Input type="text" v-bind="componentField" />-->
+				<!--					</FormControl>-->
+				<!--					<FormMessage />-->
+				<!--				</FormItem>-->
+				<!--			</FormField>-->
+			</div>
 
 			<div class="col-span-2 flex justify-end">
 				<Button
-					class="w-[180px]"
+					class="w-full md:w-[200px]"
 					type="submit"
 					:loading="isSaving"
-					:disabled="!form.meta.value.dirty"
+					:disabled="!form.meta.value.dirty || !form.meta.value.valid"
 				>
 					Save
 				</Button>

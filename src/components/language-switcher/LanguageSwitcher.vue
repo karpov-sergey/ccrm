@@ -34,6 +34,7 @@ function changeLanguage(language: string) {
 		<DropdownMenuContent>
 			<DropdownMenuItem
 				v-for="(locale, index) in locales"
+				class="cursor-pointer"
 				:key="`${locale}_${index}`"
 				:text-value="locale"
 				@select="changeLanguage(locale as LanguagesTypes)"
