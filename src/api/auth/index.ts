@@ -1,13 +1,10 @@
 import { supabase } from '@/api/supabase';
 import { handleResponse } from '@/helpers/handleResponse.ts';
 
-import type { UserPayload } from '@/types/User.ts';
+import type { SignupPayload, UserPayload } from '@/types/User.ts';
 
-export const signUp = async (email: string, password: string) => {
-	const response = await supabase.auth.signUp({
-		email,
-		password,
-	});
+export const signUp = async (data: SignupPayload) => {
+	const response = await supabase.auth.signUp(data);
 
 	return handleResponse(response);
 };

@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { toast } from 'vue-sonner';
 
+// Use global i18n helper to translate outside of components
+import { t as $t } from '@/plugins/i18n-helper';
+
 import {
 	signUp,
 	getSession,
@@ -11,7 +14,7 @@ import {
 } from '@/api/auth';
 
 import type { User } from '@supabase/supabase-js';
-import type { UserPayload } from '@/types/User.ts';
+import type { SignupPayload, UserPayload } from '@/types/User.ts';
 
 interface AuthState {
 	token: string | null;
@@ -34,9 +37,9 @@ export const useAuthStore = defineStore('auth', {
 	},
 
 	actions: {
-		async signUp(email: string, password: string) {
+		async signUp(userData: SignupPayload): Promise<void> {
 			try {
-				const data = await signUp(email, password);
+				const data = await signUp(userData);
 
 				this.user = data.user ?? null;
 				this.token = data.session?.access_token ?? null;
@@ -69,7 +72,17 @@ export const useAuthStore = defineStore('auth', {
 				this.user = session?.user ?? null;
 				this.token = session?.access_token ?? null;
 			} catch (error: any) {
-				toast.error(error.message);
+				const code: string | undefined = error?.code;
+
+				// Try translate by code via auth namespace, then fallback to generic, then to message/key
+				const message =
+					(code && $t(`auth.${code}`)) ||
+					$t('auth.generic_error') ||
+					error?.message ||
+					String(code) ||
+					'';
+				toast.error(message);
+				throw error;
 			}
 		},
 

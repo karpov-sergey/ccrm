@@ -12,7 +12,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -59,17 +58,17 @@ const onLogoutClick = async () => {
 							<!--								:src="props.user.avatar"-->
 							<!--								:alt="`${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`"-->
 							<!--							/>-->
-							<AvatarFallback class="rounded-lg">
+							<AvatarFallback class="rounded-lg uppercase">
 								{{ avatarFallbackText }}
 							</AvatarFallback>
 						</Avatar>
 						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-semibold">
+							<span class="truncate font-semibold capitalize">
 								{{ user?.user_metadata.firstName || 'User' }}
 								{{ user?.user_metadata.lastName }}
 							</span>
 							<span class="truncate text-xs">
-								{{ user?.user_metadata.position }}
+								{{ user?.user_metadata.email }}
 							</span>
 						</div>
 						<ChevronsUpDown class="ml-auto size-4" />
@@ -81,26 +80,6 @@ const onLogoutClick = async () => {
 					align="end"
 					:side-offset="4"
 				>
-					<DropdownMenuLabel class="p-0 font-normal">
-						<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-							<Avatar class="h-8 w-8 rounded-lg">
-								<!--								<AvatarImage :src="props.user.avatar" :alt="props.user.name" />-->
-								<AvatarFallback class="rounded-lg">
-									{{ avatarFallbackText }}
-								</AvatarFallback>
-							</Avatar>
-							<div class="grid flex-1 text-left text-sm leading-tight">
-								<span class="truncate font-semibold">
-									{{ user?.user_metadata.firstName }}
-									{{ user?.user_metadata.lastName }}
-								</span>
-								<span class="truncate text-xs">
-									{{ user?.user_metadata.position }}
-								</span>
-							</div>
-						</div>
-					</DropdownMenuLabel>
-					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
 						<DropdownMenuItem>
 							<Sparkles />

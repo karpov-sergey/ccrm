@@ -7,13 +7,15 @@ import { useFormField } from "./useFormField"
 
 const props = defineProps<LabelProps & { class?: HTMLAttributes["class"] }>()
 
-const { error, formItemId } = useFormField()
+import { computed, toValue } from "vue"
+const { error, formItemId, isTouched } = useFormField()
+const shouldShow = computed(() => toValue(isTouched))
 </script>
 
 <template>
   <Label
     data-slot="form-label"
-    :data-error="!!error"
+    :data-error="!!error && shouldShow"
     :class="cn(
       'data-[error=true]:text-destructive-foreground',
       props.class,

@@ -11,8 +11,46 @@
 	"email": "Email",
 	"password": "Password",
 	"dont_have_account": "Don't have an account?",
-	"sign_up": "Sign up",
+	"signup": "Sign up",
 	"enter_your_information_to_create_account": "Enter your information to create an account",
 	"create_an_account": "Create an account",
-	"already_have_an_account": "Already have an account?"
+	"already_have_an_account": "Already have an account?",
+	"first_name": "First Name",
+ 	"last_name": "Last Name",
+	"hide_password": "Hide password",
+	"show_password": "Show password",
+  "auth": {
+    "invalid_credentials": "Invalid email or password.",
+    "user_not_found": "User not found.",
+    "wrong_password": "Incorrect password.",
+    "generic_error": "Login failed. Please try again later."
+  },
+  "validation": {
+    "string": {
+      "required": "This field is required.",
+      "min": "Must be at least {min} characters.",
+      "max": "Must be at most {max} characters.",
+      "email": "Must be a valid email address.",
+      "url": "Must be a valid URL.",
+      "uuid": "Must be a valid UUID.",
+      "regex": "Does not match the required format."
+    },
+    "number": {
+      "min": "Must be greater than or equal to {min}.",
+      "max": "Must be less than or equal to {max}.",
+      "multipleOf": "Must be a multiple of {multipleOf}."
+    },
+    "array": {
+      "min": "Select at least {min} items.",
+      "max": "Select at most {max} items."
+    },
+    "enum": {
+      "invalid": "Select a valid option."
+    },
+    "type": {
+      "invalid": "Invalid type. Expected: {expected}."
+    },
+    "custom": "Invalid value.",
+    "default": "Invalid input."
+  }
 }

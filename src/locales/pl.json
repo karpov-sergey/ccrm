@@ -11,8 +11,44 @@
 	"email": "E-mail",
 	"password": "Hasło",
 	"dont_have_account": "Nie masz konta?",
-	"sign_up": "Zarejestruj się",
+	"signup": "Zarejestruj się",
 	"enter_your_information_to_create_account": "Wprowadź swoje dane, aby utworzyć konto",
 	"create_an_account": "Utwórz konto",
-	"already_have_an_account": "Masz już konto?"
+	"already_have_an_account": "Masz już konto?",
+	"first_name": "Imię",
+	"last_name": "Nazwisko",
+  "auth": {
+    "invalid_credentials": "Nieprawidłowy e-mail lub hasło.",
+    "user_not_found": "Użytkownik nie został znaleziony.",
+    "wrong_password": "Nieprawidłowe hasło.",
+    "generic_error": "Nie udało się zalogować. Spróbuj ponownie później."
+  },
+  "validation": {
+    "string": {
+      "required": "To pole jest wymagane.",
+      "min": "Wymagane co najmniej {min} znaki.",
+      "max": "Maksymalnie {max} znaków.",
+      "email": "Podaj poprawny adres e-mail.",
+      "url": "Podaj poprawny adres URL.",
+      "uuid": "Podaj poprawny identyfikator UUID.",
+      "regex": "Nie spełnia wymaganego formatu."
+    },
+    "number": {
+      "min": "Wartość musi być większa lub równa {min}.",
+      "max": "Wartość musi być mniejsza lub równa {max}.",
+      "multipleOf": "Wartość musi być wielokrotnością {multipleOf}."
+    },
+    "array": {
+      "min": "Wybierz co najmniej {min} elementy.",
+      "max": "Wybierz co najwyżej {max} elementy."
+    },
+    "enum": {
+      "invalid": "Wybierz poprawną opcję."
+    },
+    "type": {
+      "invalid": "Nieprawidłowy typ. Oczekiwano: {expected}."
+    },
+    "custom": "Nieprawidłowa wartość.",
+    "default": "Nieprawidłowe dane."
+  }
 }

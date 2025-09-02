@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { useForm, configure } from 'vee-validate';
+import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 
@@ -18,26 +18,74 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
+import {
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+
+import { Eye, EyeClosed } from 'lucide-vue-next';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const { t } = useI18n();
 
-const email = ref('');
-const password = ref('');
 const isLoading = ref(false);
+const isPasswordVisible = ref(false);
 
-const onLoginSubmit = async () => {
+const formSchema = toTypedSchema(
+	z.object({
+		email: z.string().email(),
+		password: z.string(z.any()),
+	})
+);
+
+const form = useForm({
+	validationSchema: formSchema,
+	initialValues: {
+		email: '',
+		password: '',
+	},
+});
+
+const onSetPasswordVisibilityClick = () => {
+	isPasswordVisible.value = !isPasswordVisible.value;
+};
+
+const onSubmit = form.handleSubmit(async (values) => {
 	isLoading.value = true;
 
 	try {
-		await authStore.login(email.value, password.value);
+		await authStore.login(values.email, values.password);
 
 		await router.push('/');
-	} catch (error) {}
-};
+	} catch (error: any) {
+		const code: string | undefined = error?.code;
+
+		// Mark fields as touched so FormMessage becomes visible immediately
+		form.setFieldTouched('password', true);
+
+		if (
+			code === 'invalid_credentials' ||
+			code === 'invalid_login_credentials'
+		) {
+			form.setFieldError('password', t('auth.invalid_credentials'));
+		} else if (code === 'user_not_found') {
+			form.setFieldError('email', t('auth.user_not_found'));
+		} else if (code === 'wrong_password') {
+			form.setFieldError('password', t('auth.wrong_password'));
+		} else {
+			const message = error?.message ?? t('auth.generic_error');
+
+			form.setFieldError('password', message);
+		}
+	} finally {
+		isLoading.value = false;
+	}
+});
 </script>
 
 <template>
@@ -52,35 +100,59 @@ const onLoginSubmit = async () => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form class="grid gap-4" @submit.prevent="onLoginSubmit">
-				<div class="grid gap-2">
-					<Label for="email">{{ t('email') }}</Label>
-					<Input
-						v-model="email"
-						id="email"
-						type="email"
-						placeholder="m@example.com"
-						required
-					/>
-				</div>
-				<div class="grid gap-2">
-					<div class="flex items-center">
-						<Label for="password">{{ t('password') }}</Label>
-						<!--						<a href="#" class="ml-auto inline-block text-sm underline">-->
-						<!--							Forgot your password?-->
-						<!--						</a>-->
-					</div>
-					<Input v-model="password" id="password" type="password" required />
-				</div>
-				<Button type="submit" class="w-full" :loading="isLoading">
+			<form class="grid gap-4 mb-6" @submit="onSubmit">
+				<FormField v-slot="{ componentField }" name="email">
+					<FormItem>
+						<FormLabel>{{ t('email') }}</FormLabel>
+						<FormControl>
+							<Input
+								type="text"
+								v-bind="componentField"
+								placeholder="m@example.com"
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+				<FormField v-slot="{ componentField }" name="password">
+					<FormItem class="relative mb-6">
+						<FormLabel>{{ t('password') }}</FormLabel>
+						<FormControl>
+							<Input
+								class="pr-10"
+								:type="isPasswordVisible ? 'text' : 'password'"
+								v-bind="componentField"
+							/>
+							<Button
+								class="absolute end-0 inset-y-5.5 hover:bg-transparent"
+								size="icon"
+								variant="ghost"
+								type="button"
+								:aria-label="
+									isPasswordVisible ? t('hide_password') : t('show_password')
+								"
+								@click="onSetPasswordVisibilityClick"
+							>
+								<Eye class="z-50" v-if="!isPasswordVisible" />
+								<EyeClosed class="z-50" v-if="isPasswordVisible" />
+							</Button>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+				<Button
+					type="submit"
+					class="w-full"
+					:loading="isLoading"
+					:disabled="isLoading || !form.meta.value.valid"
+				>
 					{{ t('login') }}
 				</Button>
-				<!--				<Button variant="outline" class="w-full"> Login with Google </Button>-->
 			</form>
 			<div class="mt-4 text-end text-sm">
 				{{ t('dont_have_account') }}
 				<RouterLink class="underline" to="/signup">
-					{{ t('sign_up') }}
+					{{ t('signup') }}
 				</RouterLink>
 			</div>
 		</CardContent>

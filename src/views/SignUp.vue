@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -17,7 +17,6 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/auth.ts';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 import {
@@ -28,9 +27,14 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 
+import { Eye, EyeClosed } from 'lucide-vue-next';
+
 const authStore = useAuthStore();
 const router = useRouter();
 const { t } = useI18n();
+
+const isLoading = ref(false);
+const isPasswordVisible = ref(false);
 
 const formSchema = toTypedSchema(
 	z.object({
@@ -51,35 +55,38 @@ const form = useForm({
 	},
 });
 
-const email = ref('');
-const password = ref('');
+const onSetPasswordVisibilityClick = () => {
+	isPasswordVisible.value = !isPasswordVisible.value;
+};
 
-const isLoading = ref(false);
-
-const isSignUpValid = computed(() => {
-	return true;
-	// return email.value.length > 3 && password.value.length >= 6;
-});
-
-const onSubmit = async (values: any) => {
+const onSubmit = form.handleSubmit(async (values) => {
 	isLoading.value = true;
 
 	try {
-		await authStore.signUp(values);
+		await authStore.signUp({
+			email: values.email,
+			password: values.password,
+			options: {
+				data: {
+					firstName: values.firstName,
+					lastName: values.lastName,
+				},
+			},
+		});
 
 		await router.push('/');
 	} catch (error) {
 	} finally {
 		isLoading.value = false;
 	}
-};
+});
 </script>
 
 <template>
 	<Card class="w-full md:w-[500px]">
 		<CardHeader class="gap-4">
 			<CardTitle class="flex items-center justify-between text-2xl">
-				{{ t('sign_up') }}
+				{{ t('signup') }}
 				<LanguageSwitcher />
 			</CardTitle>
 			<CardDescription>
@@ -88,19 +95,10 @@ const onSubmit = async (values: any) => {
 		</CardHeader>
 		<CardContent>
 			<form class="grid gap-4" @submit="onSubmit">
-				<div class="grid grid-cols-2 gap-4 items-start">
-					<!--					<div class="grid gap-2">-->
-					<!--						<Label for="first-name">First name</Label>-->
-					<!--						<Input id="first-name" placeholder="Max" required />-->
-					<!--					</div>-->
-					<!--					<div class="grid gap-2">-->
-					<!--						<Label for="last-name">Last name</Label>-->
-					<!--						<Input id="last-name" placeholder="Robinson" required />-->
-					<!--					</div>-->
-
+				<div class="grid gap-4 items-start lg:grid-cols-2">
 					<FormField v-slot="{ componentField }" name="firstName">
 						<FormItem>
-							<FormLabel>First Name</FormLabel>
+							<FormLabel>{{ t('first_name') }}</FormLabel>
 							<FormControl>
 								<Input type="text" v-bind="componentField" />
 							</FormControl>
@@ -110,7 +108,7 @@ const onSubmit = async (values: any) => {
 
 					<FormField v-slot="{ componentField }" name="lastName">
 						<FormItem>
-							<FormLabel>Last Name</FormLabel>
+							<FormLabel>{{ t('last_name') }}</FormLabel>
 							<FormControl>
 								<Input type="text" v-bind="componentField" />
 							</FormControl>
@@ -118,29 +116,51 @@ const onSubmit = async (values: any) => {
 						</FormItem>
 					</FormField>
 				</div>
-				<div class="grid gap-2">
-					<Label for="email">
-						{{ t('email') }}
-					</Label>
-					<Input
-						v-model="email"
-						id="email"
-						type="email"
-						placeholder="m@example.com"
-						required
-					/>
-				</div>
-				<div class="grid gap-2">
-					<Label for="password">
-						{{ t('password') }}
-					</Label>
-					<Input v-model="password" id="password" type="password" />
-				</div>
+
+				<FormField v-slot="{ componentField }" name="email">
+					<FormItem>
+						<FormLabel>{{ t('email') }}</FormLabel>
+						<FormControl>
+							<Input
+								type="text"
+								v-bind="componentField"
+								placeholder="m@example.com"
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+				<FormField v-slot="{ componentField }" name="password">
+					<FormItem class="relative mb-6">
+						<FormLabel>{{ t('password') }}</FormLabel>
+						<FormControl>
+							<Input
+								class="pr-10"
+								:type="isPasswordVisible ? 'text' : 'password'"
+								v-bind="componentField"
+							/>
+							<Button
+								class="absolute end-0 inset-y-5.5 hover:bg-transparent"
+								size="icon"
+								variant="ghost"
+								type="button"
+								:aria-label="
+									isPasswordVisible ? t('hide_password') : t('show_password')
+								"
+								@click="onSetPasswordVisibilityClick"
+							>
+								<Eye class="z-50" v-if="!isPasswordVisible" />
+								<EyeClosed class="z-50" v-if="isPasswordVisible" />
+							</Button>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 				<Button
 					type="submit"
 					class="w-full"
 					:loading="isLoading"
-					:disabled="!isSignUpValid"
+					:disabled="isLoading || !form.meta.value.valid"
 				>
 					{{ t('create_an_account') }}
 				</Button>
