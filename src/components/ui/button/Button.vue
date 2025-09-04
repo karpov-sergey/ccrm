@@ -8,15 +8,15 @@ import { buttonVariants } from '.';
 import { Loader2 } from 'lucide-vue-next';
 
 interface Props extends PrimitiveProps {
-	variant?: ButtonVariants['variant'];
-	size?: ButtonVariants['size'];
-	class?: HTMLAttributes['class'];
-	loading?: boolean;
+    variant?: ButtonVariants['variant'];
+    size?: ButtonVariants['size'];
+    class?: HTMLAttributes['class'];
+    loading?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	as: 'button',
-	loading: false,
+    as: 'button',
+    loading: false,
 });
 </script>
 

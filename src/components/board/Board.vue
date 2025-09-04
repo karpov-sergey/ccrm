@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import draggable from 'vuedraggable';
 import TaskCard from '@/components/board/TaskCard.vue';
-import { ref } from 'vue';
+import Task from '@/components/modals/Task.vue';
 
 const columns = ref([
 	{
@@ -135,11 +137,13 @@ function handleEnd() {
 function handleMove(evt: any) {
 	// Determine hovered column by DOM. The container (evt.to) sits inside our wrapper
 	const toEl: HTMLElement | null = evt?.to || null;
+
 	if (!toEl) {
 		hoverColumnIndex.value = null;
 		return true;
 	}
 	const wrapper = toEl.closest('[data-col-index]') as HTMLElement | null;
+
 	if (
 		wrapper &&
 		wrapper.dataset &&
@@ -150,12 +154,14 @@ function handleMove(evt: any) {
 	} else {
 		hoverColumnIndex.value = null;
 	}
+
 	return true; // allow move
 }
 </script>
 
 <template>
 	<div class="flex h-full w-full overflow-x-auto overflow-y-hidden">
+		<Task />
 		<div
 			v-for="(column, colIndex) in columns"
 			:key="column.title"
