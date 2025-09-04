@@ -78,16 +78,20 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 <template>
 	<div class="flex flex-col gap-2">
-		<div class="text-lg font-bold">Change password</div>
+		<div class="text-lg font-bold">
+			{{ t('change_password') }}
+		</div>
 		<div class="text-sidebar-foreground/70 text-sm font-medium">
-			Update your password associated with your account.
+			{{ t('update_your_password_associated_with_your_account') }}
 		</div>
 	</div>
 	<form class="col-span-2 lg:max-w-[600px]" @submit="onSubmit">
 		<div class="grid grid-cols-1 items-start gap-6 content-start">
 			<FormField v-slot="{ componentField }" name="newPassword">
 				<FormItem>
-					<FormLabel>Current password</FormLabel>
+					<FormLabel>
+						{{ t('new_password') }}
+					</FormLabel>
 					<FormControl>
 						<Input type="password" v-bind="componentField" />
 					</FormControl>
@@ -97,7 +101,9 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 			<FormField v-slot="{ componentField }" name="newPasswordVerification">
 				<FormItem>
-					<FormLabel>New password</FormLabel>
+					<FormLabel>
+						{{ t('verify_new_password') }}
+					</FormLabel>
 					<FormControl>
 						<Input type="password" v-bind="componentField" />
 					</FormControl>
@@ -111,7 +117,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 				:loading="isSaving"
 				:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
 			>
-				Save
+				{{ t('save') }}
 			</Button>
 		</div>
 	</form>

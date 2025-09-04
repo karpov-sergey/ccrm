@@ -70,9 +70,11 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 
 <template>
 	<div class="flex flex-col gap-2">
-		<div class="text-lg font-bold">Personal Information</div>
+		<div class="text-lg font-bold">
+			{{ t('personal_information') }}
+		</div>
 		<div class="text-sidebar-foreground/70 text-sm font-medium">
-			Edit Personal Information and Avatar
+			{{ t('change_personal_information') }}
 		</div>
 	</div>
 	<form
@@ -87,16 +89,20 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 				/>
 			</Avatar>
 			<div class="flex flex-col gap-4">
-				<Button type="button" variant="outline">Change avatar</Button>
+				<Button type="button" variant="outline">
+					{{ t('change_avatar') }}
+				</Button>
 				<div class="text-sidebar-foreground/50 text-sm font-medium">
-					JPG, GIF or PNG. 1MB max.
+					{{ t('jpg_gif_png_1_max') }}
 				</div>
 			</div>
 		</div>
 		<div class="grid items-start gap-6 content-start lg:grid-cols-2">
 			<FormField v-slot="{ componentField }" name="firstName">
 				<FormItem>
-					<FormLabel>First Name</FormLabel>
+					<FormLabel>
+						{{ t('first_name') }}
+					</FormLabel>
 					<FormControl>
 						<Input type="text" v-bind="componentField" />
 					</FormControl>
@@ -106,7 +112,9 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 
 			<FormField v-slot="{ componentField }" name="lastName">
 				<FormItem>
-					<FormLabel>Last Name</FormLabel>
+					<FormLabel>
+						{{ t('last_name') }}
+					</FormLabel>
 					<FormControl>
 						<Input type="text" v-bind="componentField" />
 					</FormControl>
@@ -120,7 +128,7 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 				:loading="isSaving"
 				:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
 			>
-				Save
+				{{ t('save') }}
 			</Button>
 		</div>
 	</form>
