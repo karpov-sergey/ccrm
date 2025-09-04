@@ -205,6 +205,7 @@ function handleMove(evt: any) {
 }
 
 /* applied to the element being dragged */
+/*noinspection CssUnusedSymbol*/
 .drag-class {
 	transform: scale(0.98);
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
@@ -214,12 +215,14 @@ function handleMove(evt: any) {
 }
 
 /* applied when element is chosen (picked) but before moving */
+/*noinspection CssUnusedSymbol*/
 .drag-chosen {
 	border: 1px dashed #6366f1;
 	background: #f5f7ff;
 }
 
 /* highlight for the column currently targeted as drop destination */
+/*noinspection CssUnusedSymbol*/
 .drop-target {
 	background: #e0f2fe; /* sky-100 */
 	outline: 2px dashed #0284c7; /* sky-600 */
