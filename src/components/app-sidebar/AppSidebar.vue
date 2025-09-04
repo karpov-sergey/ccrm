@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useNavigation } from '@/composables/navigation';
+import { useSidebar } from '@/components/ui/sidebar';
+import { useScreenWidth } from '@/composables/common.ts';
 
 import {
 	Sidebar,
@@ -19,6 +22,14 @@ import Logo from '@/components/logo/Logo.vue';
 
 const route = useRoute();
 const { userNavItems } = useNavigation();
+const { toggleSidebar } = useSidebar();
+const { isLargeScreen } = useScreenWidth();
+
+watch(route, () => {
+	if (!isLargeScreen.value) {
+		toggleSidebar();
+	}
+});
 </script>
 
 <template>
@@ -32,9 +43,14 @@ const { userNavItems } = useNavigation();
 				<SidebarGroupContent>
 					<SidebarMenu>
 						<SidebarMenuItem v-for="item in userNavItems" :key="item.id">
-							<SidebarMenuButton asChild :is-active="route.path === item.to">
-								<RouterLink :to="item.to">
-									<component :is="item.icon" />
+							<SidebarMenuButton
+								class="gap-4 text-base leading-6 hover:text-primary data-[active=true]:text-primary active:text-primary lg:text-sm"
+								asChild
+								size="auto"
+								:is-active="route.path === item.to"
+							>
+								<RouterLink :to="item.to" as="div">
+									<component class="w-6! h-6!" :is="item.icon" />
 									<span>{{ item.label }}</span>
 								</RouterLink>
 							</SidebarMenuButton>

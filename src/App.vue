@@ -10,8 +10,6 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
@@ -44,7 +42,10 @@ const currentPageName = computed(() => {
 
 <template>
 	<div class="app-container">
-		<div v-if="isLoading" class="flex justify-center items-center h-screen">
+		<div
+			v-if="isLoading"
+			class="flex justify-center items-center min-h-dvh px-4"
+		>
 			<Spinner />
 		</div>
 		<template v-else>
@@ -53,21 +54,22 @@ const currentPageName = computed(() => {
 				<AppSidebar />
 				<SidebarInset class="flex flex-1 flex-col min-w-0">
 					<header
-						class="flex h-16 shrink-0 items-center justify-between gap-2 px-4 border-b"
+						class="relative flex h-10 md:h-16 shrink-0 items-center gap-2 px-4 border-b"
 					>
-						<div class="flex items-center align-middle gap-2">
-							<SidebarTrigger class="-ml-1" />
-							<Separator orientation="vertical" class="mr-2 h-4" />
-							<h1 class="text-2xl font-bold">{{ currentPageName }}</h1>
-						</div>
-						<LanguageSwitcher />
+						<SidebarTrigger />
+
+						<h1
+							class="absolute left-1/2 -translate-x-1/2 text-center text-xl lg:static lg:translate-x-0 lg:left-auto lg:text-left lg:text-2xl font-bold"
+						>
+							{{ currentPageName }}
+						</h1>
 					</header>
 					<div class="flex-1 min-h-0 overflow-auto">
 						<RouterView />
 					</div>
 				</SidebarInset>
 			</SidebarProvider>
-			<div v-else class="flex justify-center items-center h-screen px-4">
+			<div v-else class="flex justify-center items-center min-h-dvh px-4">
 				<RouterView />
 			</div>
 		</template>

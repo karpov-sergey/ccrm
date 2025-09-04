@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth.ts';
 import { useNavigation } from '@/composables/navigation';
 
 import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from 'lucide-vue-next';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -41,6 +41,7 @@ const avatarFallbackText = computed(() => {
 
 const onLogoutClick = async () => {
 	await authStore.logout();
+
 	window.location.reload();
 };
 </script>
@@ -53,12 +54,14 @@ const onLogoutClick = async () => {
 						size="lg"
 						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
 					>
-						<Avatar class="h-8 w-8 rounded-lg">
-							<!--							<AvatarImage-->
-							<!--								:src="props.user.avatar"-->
-							<!--								:alt="`${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`"-->
-							<!--							/>-->
-							<AvatarFallback class="rounded-lg uppercase">
+						<Avatar class="h-10 w-10 rounded-lg">
+							<AvatarImage
+								:src="'https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001877.png'"
+								:alt="`${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`"
+							/>
+							<AvatarFallback
+								class="rounded-lg uppercase bg-primary text-white"
+							>
 								{{ avatarFallbackText }}
 							</AvatarFallback>
 						</Avatar>
