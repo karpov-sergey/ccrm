@@ -14,7 +14,7 @@ import TaskCard from '@/components/board/TaskCard.vue';
 import type { Task } from '@/types/tasks';
 
 const props = defineProps<{
-	element: Task;
+	task: Task;
 }>();
 
 const isOpen = ref(false);
@@ -31,7 +31,7 @@ const onDialogToggle = () => {
 <template>
 	<AlertDialog v-model:open="isOpen">
 		<AlertDialogTrigger as-child>
-			<TaskCard :task="props.element" class="mt-3 cursor-pointer" />
+			<TaskCard :task="props.task" class="mt-3 cursor-pointer" />
 		</AlertDialogTrigger>
 		<AlertDialogContent
 			class="p-0 max-h-[90dvh] min-w-[700px]"
@@ -42,7 +42,7 @@ const onDialogToggle = () => {
 				<AlertDialogDescription />
 			</template>
 			<div class="py-6 overflow-y-auto">
-				<TaskDetails @close="onDialogToggle" />
+				<TaskDetails :task="props.task" @close="onDialogToggle" />
 			</div>
 		</AlertDialogContent>
 	</AlertDialog>

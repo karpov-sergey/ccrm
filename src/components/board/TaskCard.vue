@@ -14,7 +14,7 @@ defineProps<{
 			</p>
 		</div>
 		<div class="flex mt-4 justify-between items-center">
-			<span class="text-sm text-gray-600">{{ task.date }}</span>
+			<span class="text-sm text-gray-600">{{ task.status }}</span>
 		</div>
 	</div>
 </template>

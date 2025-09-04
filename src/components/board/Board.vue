@@ -199,7 +199,7 @@ function handleMove(evt: any) {
 				@end="handleEnd"
 			>
 				<template #item="{ element }">
-					<TaskModal :element="element" />
+					<TaskModal :task="element" />
 				</template>
 			</draggable>
 		</div>

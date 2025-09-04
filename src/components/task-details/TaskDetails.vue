@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, defineEmits } from 'vue';
+import { ref, watch, defineEmits, defineProps } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -28,6 +28,12 @@ import {
 } from '@/components/ui/select';
 import { Edit, CornerDownLeft } from 'lucide-vue-next';
 
+import type { Task } from '@/types/tasks.ts';
+
+const props = defineProps<{
+	task: Task;
+}>();
+
 const emit = defineEmits(['close']);
 
 const { t } = useI18n();
@@ -43,8 +49,8 @@ const formSchema = toTypedSchema(
 const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		title: 'My Best Task I ever had',
-		status: 'todo',
+		title: props.task.title || 'Card Title',
+		status: props.task.status || 'todo',
 	},
 });
 
@@ -74,17 +80,18 @@ const onCancelClick = () => {
 };
 
 watch(
-	user,
-	(value) => {
-		if (!value) return;
+	() => props.task,
+	(task) => {
+		if (!task) return;
+		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
-				title: '',
-				status: 'todo',
+				title: task.title || 'Card Title',
+				status: task.status || 'todo',
 			},
 		});
 	},
-	{ immediate: true }
+	{ immediate: true, deep: false }
 );
 </script>
 
@@ -114,7 +121,7 @@ watch(
 				<!-- View mode: show text with edit icon -->
 				<div v-else class="flex justify-between items-center">
 					<div class="truncate pr-2">
-						{{ value || 'My Best Task I ever had' }}
+						{{ value }}
 					</div>
 					<Edit
 						class="h-4 w-4 text-primary cursor-pointer"
