@@ -51,6 +51,8 @@
       "invalid": "Invalid type. Expected: {expected}."
     },
     "custom": "Invalid value.",
-    "default": "Invalid input."
+    "default": "Invalid input.",
+		"passwords_must_be_same": "Passwords must be same",
+		"new_password_should_be_different_from_old": "New password should be different from the old password."
   }
 }

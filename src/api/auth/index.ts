@@ -41,3 +41,11 @@ export const updateUser = async (userData: UserPayload) => {
 
 	return handleResponse(response);
 };
+
+export const changePassword = async (password: string) => {
+	const response = await supabase.auth.updateUser({
+		password: password,
+	});
+
+	return handleResponse(response);
+};

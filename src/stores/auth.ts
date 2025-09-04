@@ -11,6 +11,7 @@ import {
 	login,
 	updateUser,
 	getUser,
+	changePassword,
 } from '@/api/auth';
 
 import type { User } from '@supabase/supabase-js';
@@ -103,6 +104,20 @@ export const useAuthStore = defineStore('auth', {
 				this.user = data.user ?? null;
 			} catch (error: any) {
 				toast.error(error.message);
+			}
+		},
+
+		async changePassword(password: string) {
+			try {
+				const data = await changePassword(password);
+
+				this.user = data.user ?? null;
+			} catch (error: any) {
+				if (error.code !== 'same_password') {
+					toast.error(error.message);
+				}
+
+				throw error;
 			}
 		},
 	},
