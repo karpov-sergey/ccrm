@@ -1,9 +1,59 @@
 <script setup lang="ts">
+import { onBeforeMount, ref } from 'vue';
 import Board from '@/components/board/Board.vue';
+import { getAllTasks } from '@/api/tasks';
+import Spinner from '@/components/ui/spinner/Spinner.vue';
+
+const isLoading = ref(true);
+const tasks = ref([]);
+const columns = ref([
+	{
+		title: 'Todo',
+		id: 1,
+		tasks: [],
+	},
+	{
+		title: 'In Progress',
+		id: 2,
+		tasks: [],
+	},
+	{
+		title: 'Review',
+		id: 3,
+		tasks: [],
+	},
+	{
+		title: 'Done',
+		id: 4,
+		tasks: [],
+	},
+]);
+
+onBeforeMount(async () => {
+	try {
+		tasks.value = await getAllTasks();
+		fillColumns();
+	} catch (error) {
+		console.error(error);
+	} finally {
+		isLoading.value = false;
+	}
+});
+
+const fillColumns = () => {
+	tasks.value.forEach((task) => {
+		const currentColumn = columns.value.find(
+			(column) => column.id === task.column_id
+		);
+
+		currentColumn?.tasks.push(task);
+	});
+};
 </script>
 
 <template>
-	<section class="p-4 h-full min-h-0">
-		<Board />
+	<section class="flex items-center justify-center p-4 h-full min-h-0">
+		<Spinner v-if="isLoading" />
+		<Board v-else :columns="columns" />
 	</section>
 </template>

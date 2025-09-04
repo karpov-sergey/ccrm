@@ -6,3 +6,9 @@ export const createTask = async (data: any) => {
 
 	return handleResponse(response);
 };
+
+export const getAllTasks = async () => {
+	const response = await supabase.from('tasks').select('*');
+
+	return handleResponse(response);
+};

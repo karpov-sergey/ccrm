@@ -3,8 +3,16 @@ import { useI18n } from 'vue-i18n';
 
 import { Home, SquareKanban } from 'lucide-vue-next';
 
-import type { NavigationItem } from '@/types/Navigation.ts';
 import { UserNavItems } from '@/enums/navigation/NavItems.ts';
+
+import type { FunctionalComponent } from 'vue';
+
+interface NavigationItem {
+	label: string;
+	to: string;
+	icon: FunctionalComponent;
+	id: string;
+}
 
 export const useNavigation = () => {
 	const { t } = useI18n();

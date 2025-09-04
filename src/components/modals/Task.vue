@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
 import {
 	AlertDialog,
 	AlertDialogTitle,
@@ -7,11 +7,15 @@ import {
 	AlertDialogTrigger,
 	AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 
 import TaskDetails from '@/components/task-details/TaskDetails.vue';
+import TaskCard from '@/components/board/TaskCard.vue';
 
-const isOpen = ref(true);
+const props = defineProps<{
+	element: any;
+}>();
+
+const isOpen = ref(false);
 
 const voidFocus = (event: Event) => {
 	event.preventDefault();
@@ -20,12 +24,13 @@ const voidFocus = (event: Event) => {
 const onDialogToggle = () => {
 	isOpen.value = !isOpen.value;
 };
+debugger;
 </script>
 
 <template>
-	<AlertDialog :default-open="true" :open="isOpen">
+	<AlertDialog :open="isOpen">
 		<AlertDialogTrigger as-child>
-			<Button variant="outline" @click="onDialogToggle"> Open Task </Button>
+			<TaskCard :task="props.element" class="mt-3 cursor-pointer" />
 		</AlertDialogTrigger>
 		<AlertDialogContent
 			class="p-0 max-h-[90dvh] min-w-[700px]"
@@ -35,7 +40,7 @@ const onDialogToggle = () => {
 				<AlertDialogTitle />
 				<AlertDialogDescription />
 			</template>
-			<div class="pt-3 pb-6 px-10 overflow-y-auto">
+			<div class="py-6 overflow-y-auto">
 				<TaskDetails @close="onDialogToggle" />
 			</div>
 		</AlertDialogContent>

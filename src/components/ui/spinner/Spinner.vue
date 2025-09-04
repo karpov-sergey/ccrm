@@ -10,9 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-	<div>
-		<Loader2
-			:class="cn('my-28 h-16 w-16 text-primary/60 animate-spin', props.class)"
-		/>
-	</div>
+	<Loader2
+		:class="cn('my-28 h-16 w-16 text-primary/60 animate-spin', props.class)"
+	/>
 </template>
