@@ -11,8 +11,10 @@ import {
 import TaskDetails from '@/components/task-details/TaskDetails.vue';
 import TaskCard from '@/components/board/TaskCard.vue';
 
+import type { Task } from '@/types/tasks';
+
 const props = defineProps<{
-	element: any;
+	element: Task;
 }>();
 
 const isOpen = ref(false);
@@ -24,11 +26,10 @@ const voidFocus = (event: Event) => {
 const onDialogToggle = () => {
 	isOpen.value = !isOpen.value;
 };
-debugger;
 </script>
 
 <template>
-	<AlertDialog :open="isOpen">
+	<AlertDialog v-model:open="isOpen">
 		<AlertDialogTrigger as-child>
 			<TaskCard :task="props.element" class="mt-3 cursor-pointer" />
 		</AlertDialogTrigger>

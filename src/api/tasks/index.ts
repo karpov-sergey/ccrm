@@ -1,13 +1,15 @@
 import { supabase } from '@/api/supabase';
 import { handleResponse } from '@/helpers/handleResponse.ts';
 
-export const createTask = async (data: any) => {
+import type { CreateTaskPayload, Task } from '@/types/tasks';
+
+export const createTask = async (data: CreateTaskPayload) => {
 	const response = await supabase.from('tasks').insert([data]);
 
 	return handleResponse(response);
 };
 
-export const getAllTasks = async () => {
+export const getAllTasks = async (): Promise<Task[]> => {
 	const response = await supabase.from('tasks').select('*');
 
 	return handleResponse(response);

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
 import Board from '@/components/board/Board.vue';
-import { getAllTasks } from '@/api/tasks';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 
+import { getAllTasks } from '@/api/tasks';
+
+import type { Task, BoardColumn } from '@/types/tasks';
+
 const isLoading = ref(true);
-const tasks = ref([]);
-const columns = ref([
+const tasks = ref<Task[]>([]);
+const columns = ref<BoardColumn[]>([
 	{
 		title: 'Todo',
 		id: 1,
@@ -41,7 +44,7 @@ onBeforeMount(async () => {
 });
 
 const fillColumns = () => {
-	tasks.value.forEach((task) => {
+	tasks.value.forEach((task: Task) => {
 		const currentColumn = columns.value.find(
 			(column) => column.id === task.column_id
 		);

@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import type { Task } from '@/types/tasks';
+
+defineProps<{
+	task: Task;
+}>();
+</script>
+
 <template>
 	<div class="bg-white shadow rounded px-3 pt-3 pb-5 border border-white">
 		<div class="flex justify-between">
@@ -10,11 +18,3 @@
 		</div>
 	</div>
 </template>
-<script setup lang="ts">
-defineProps({
-	task: {
-		type: Object,
-		default: () => ({}),
-	},
-});
-</script>

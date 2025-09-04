@@ -56,8 +56,6 @@ const titleEditModeToggle = () => {
 };
 
 const onSubmit = form.handleSubmit(async (values) => {
-	console.log(values);
-
 	try {
 		await createTask({
 			title: values.title,

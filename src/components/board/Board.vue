@@ -2,8 +2,9 @@
 import { ref, defineProps } from 'vue';
 
 import draggable from 'vuedraggable';
-import TaskCard from '@/components/board/TaskCard.vue';
-import Task from '@/components/modals/Task.vue';
+import TaskModal from '@/components/modals/Task.vue';
+
+import type { BoardColumn } from '@/types/tasks';
 
 // const columns = ref([
 // 	{
@@ -123,7 +124,7 @@ import Task from '@/components/modals/Task.vue';
 // ]);
 
 const props = defineProps<{
-	columns: any;
+	columns: BoardColumn[];
 }>();
 
 // Track dragging state and current drop (hover) column index
@@ -198,7 +199,7 @@ function handleMove(evt: any) {
 				@end="handleEnd"
 			>
 				<template #item="{ element }">
-					<Task :task="element" />
+					<TaskModal :element="element" />
 				</template>
 			</draggable>
 		</div>
