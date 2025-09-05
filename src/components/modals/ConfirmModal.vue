@@ -43,7 +43,7 @@ const onConfirm = () => {
 				{{ props.text || t('this_action_cannot_be_undone') }}
 			</AlertDialogDescription>
 			<AlertDialogFooter>
-				<AlertDialogCancel @click="onCancel">
+				<AlertDialogCancel>
 					{{ t('no') }}
 				</AlertDialogCancel>
 				<AlertDialogAction @click="onConfirm">
