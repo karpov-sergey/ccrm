@@ -42,14 +42,22 @@ watch(route, () => {
 				<SidebarGroupLabel>Application</SidebarGroupLabel>
 				<SidebarGroupContent>
 					<SidebarMenu>
-						<SidebarMenuItem v-for="item in userNavItems" :key="item.id">
+						<SidebarMenuItem
+							v-for="item in userNavItems"
+							class="pl-1"
+							:key="item.id"
+						>
 							<SidebarMenuButton
-								class="gap-4 text-base leading-6 hover:text-primary data-[active=true]:text-primary active:text-primary lg:text-sm"
+								class="gap-2 text-base leading-6 hover:text-primary data-[active=true]:text-primary active:text-primary lg:text-sm pl-1"
 								asChild
 								size="auto"
 								:is-active="route.path === item.to"
 							>
-								<RouterLink :to="item.to" as="div">
+								<RouterLink
+									class="group-data-[collapsible=icon]:size-10!"
+									:to="item.to"
+									as="div"
+								>
 									<component class="w-6! h-6!" :is="item.icon" />
 									<span>{{ item.label }}</span>
 								</RouterLink>
