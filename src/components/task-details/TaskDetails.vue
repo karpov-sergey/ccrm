@@ -200,7 +200,6 @@ watch(
 		</div>
 
 		<div class="px-6 pb-6 border-b-1">
-			<!-- Description: edit/view toggle similar to title -->
 			<div class="flex justify-between items-center mb-2">
 				<div class="font-medium">Description</div>
 				<Edit
@@ -220,7 +219,6 @@ watch(
 				</FormField>
 			</div>
 			<div v-show="!isDescriptionEditMode" class="ql-snow max-w-none text-sm">
-				<!-- Render with Quill's content styles for visual parity with editor -->
 				<div
 					v-if="form.values?.description"
 					class="ql-editor font-normal p-2!"

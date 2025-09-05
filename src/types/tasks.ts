@@ -18,13 +18,13 @@ export interface BoardColumn {
 	tasks: Task[];
 }
 
-export interface CreateTaskPayload {
+export interface updateTaskPayload {
 	title?: string;
 	status?: TaskStatus;
 	user_id?: string | null;
 	column_id?: number;
 	description?: string | null;
-	id: string;
+	id?: string;
 }
 
 export interface BoardModel {
