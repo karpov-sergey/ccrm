@@ -98,6 +98,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 		status: values.status,
 		user_id: user.value?.id,
 		column_id: getColumnId(values.status),
+		sort_index: props.task?.sort_index || null,
 		description: values.description
 			? DOMPurify.sanitize(values.description, {
 					USE_PROFILES: { html: true },

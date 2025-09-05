@@ -9,7 +9,8 @@ export interface Task {
 	user_id?: string | null;
 	column_id: number;
 	description?: string | null;
-	date?: string | null; // optional date label used in UI cards
+	date?: string | null;
+	sort_index?: number | null;
 }
 
 export interface BoardColumn {
@@ -24,6 +25,7 @@ export interface updateTaskPayload {
 	user_id?: string | null;
 	column_id?: number;
 	description?: string | null;
+	sort_index?: number | null;
 	id?: string;
 }
 

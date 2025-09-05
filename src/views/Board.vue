@@ -59,11 +59,29 @@ const fillColumns = () => {
 	});
 
 	// Refill tasks into their respective columns
+	// First, group by column
+	const byColumn = new Map<number, Task[]>();
+
 	tasks.value.forEach((task: Task) => {
-		const currentColumn = columns.value.find(
-			(column) => column.id === task.column_id
-		);
-		currentColumn?.tasks.push(task);
+		const list = byColumn.get(task.column_id) || [];
+		list.push(task);
+		byColumn.set(task.column_id, list);
+	});
+
+	// For each column, sort by sort_index if present, then push
+	columns.value.forEach((column) => {
+		const list = byColumn.get(column.id) || [];
+
+		list.sort((a, b) => {
+			const ai = a.sort_index ?? Number.POSITIVE_INFINITY;
+			const bi = b.sort_index ?? Number.POSITIVE_INFINITY;
+			if (ai !== bi) return ai - bi;
+
+			// fallback stable-ish ordering by title to avoid jitter when no indices
+			return (a.title || '').localeCompare(b.title || '');
+		});
+
+		list.forEach((t) => column.tasks.push(t));
 	});
 };
 

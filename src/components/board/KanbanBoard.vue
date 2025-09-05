@@ -75,26 +75,51 @@ const getStatusByColumnId = (columnId: number): TaskStatus => {
 };
 
 const onListChange = async (column: BoardColumn, event: any) => {
-	if (!event?.added) return;
-
-	const task: Task = event.added.element;
-
-	if (!task?.id) {
+	// Reorder within same column
+	if (event?.moved) {
+		// After vuedraggable updates the list, column.tasks reflects new order
+		// Persist new order: assign incremental sort_index starting from 0
+		try {
+			await Promise.all(
+				(column.tasks || []).map((t: Task, idx: number) =>
+					updateTask({ id: t.id, sort_index: idx })
+				)
+			);
+		} catch (e) {
+			console.error('Failed to persist order within column:', e);
+		} finally {
+			// No need to refetch immediately; but keep consistent behavior
+			onBoardUpdate();
+		}
 		return;
 	}
 
-	const nextStatus: TaskStatus = getStatusByColumnId(column.id);
+	// Cross-column move: event.added contains the element and its newIndex
+	if (event?.added) {
+		const task: Task = event.added.element;
+		if (!task?.id) return;
 
-	try {
-		await updateTask({
-			id: task.id,
-			status: nextStatus,
-			column_id: column.id,
-		});
-	} catch (error) {
-		console.error('Failed to update task status after drag:', error);
-	} finally {
-		onBoardUpdate();
+		const nextStatus: TaskStatus = getStatusByColumnId(column.id);
+		const newIndex: number = event.added.newIndex ?? 0;
+
+		try {
+			await updateTask({
+				id: task.id,
+				status: nextStatus,
+				column_id: column.id,
+				sort_index: newIndex,
+			});
+
+			await Promise.all(
+				column.tasks.map((t: Task, idx: number) =>
+					updateTask({ id: t.id, sort_index: idx })
+				)
+			);
+		} catch (error) {
+			console.error('Failed to update task after cross-column drag:', error);
+		} finally {
+			onBoardUpdate();
+		}
 	}
 };
 </script>
