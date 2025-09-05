@@ -166,7 +166,7 @@ watch(
 			</FormField>
 		</div>
 
-		<div class="min-h-[400px] px-6 pb-12">
+		<div class="min-h-[400px] px-6 pb-12 border-b-1">
 			<!-- Description: edit/view toggle similar to title -->
 			<div class="flex justify-between items-center mb-2">
 				<div class="font-medium">Description</div>
@@ -195,7 +195,7 @@ watch(
 				<div v-else class="text-muted-foreground">—</div>
 			</div>
 		</div>
-		<div class="flex gap-4 items-end px-6">
+		<div class="flex gap-4 items-end px-6 pt-4">
 			<Button type="button" variant="secondary" @click="onCancelClick">
 				{{ t('cancel') }}
 			</Button>
