@@ -42,9 +42,6 @@ onBeforeMount(async () => {
 });
 
 const updateBoard = async () => {
-	// Reset columns from the initial template, ensuring fresh task arrays
-	columns.value = columnsInitial.map((c) => ({ ...c, tasks: [] }));
-
 	try {
 		tasks.value = await getAllTasks();
 		fillColumns();
@@ -56,11 +53,16 @@ const updateBoard = async () => {
 };
 
 const fillColumns = () => {
+	// Clear existing tasks in place to preserve array references and avoid flicker
+	columns.value.forEach((col) => {
+		col.tasks.length = 0;
+	});
+
+	// Refill tasks into their respective columns
 	tasks.value.forEach((task: Task) => {
 		const currentColumn = columns.value.find(
 			(column) => column.id === task.column_id
 		);
-
 		currentColumn?.tasks.push(task);
 	});
 };
