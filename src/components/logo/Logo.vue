@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { CakeSlice } from 'lucide-vue-next';
 </script>
 
 <template>
 	<RouterLink class="pl-2" to="/">
-		<SidebarMenuButton size="lg" class="cursor-pointer">
+		<div class="flex">
 			<div
-				class="flex align-middle items-center gap-2 text-xs group-data-[state=expanded]:text-2xl transition-[font-size,line-height] duration-200 ease-in-out"
+				class="flex gap-2 items-center hover:text-primary transition-[color] duration-200 ease-in-out"
 			>
 				<CakeSlice class="size-8" />
-				<div class="text-xl font-bold">CCRM</div>
+				<div
+					class="md:text-[0px] font-bold md:group-data-[state=expanded]:text-xl transition-[font-size] duration-200 ease-in-out"
+				>
+					CCRM
+				</div>
 			</div>
-		</SidebarMenuButton>
+		</div>
 	</RouterLink>
 </template>

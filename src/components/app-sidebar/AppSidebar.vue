@@ -34,7 +34,7 @@ watch(route, () => {
 
 <template>
 	<Sidebar collapsible="icon">
-		<SidebarHeader>
+		<SidebarHeader class="py-4">
 			<Logo />
 		</SidebarHeader>
 		<SidebarContent>
