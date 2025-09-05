@@ -25,3 +25,9 @@ export const updateTask = async (data: CreateTaskPayload) => {
 
 	return handleResponse(response);
 };
+
+export const deleteTask = async (id: string) => {
+	const response = await supabase.from('tasks').delete().eq('id', id);
+
+	return handleResponse(response);
+};

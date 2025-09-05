@@ -11,7 +11,7 @@ import DOMPurify from 'dompurify';
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
 
-import { createTask, updateTask } from '@/api/tasks';
+import { createTask, deleteTask, updateTask } from '@/api/tasks';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -127,6 +127,15 @@ const onSubmit = form.handleSubmit(async (values) => {
 	}
 });
 
+const onRemoveSumbit = async (id: string) => {
+	try {
+		await deleteTask(id);
+	} catch (error) {
+	} finally {
+		emit('updateBoard');
+	}
+};
+
 const onCancelClick = () => {
 	emit('close');
 };
@@ -151,6 +160,13 @@ watch(
 <template>
 	<form class="grid gap-2" @submit="onSubmit">
 		<div class="text-xl pb-2 px-6 border-b-1">
+			<Button
+				@click="onRemoveSumbit(task?.id as string)"
+				type="button"
+				variant="destructive"
+				class="absolute right-2 top-2"
+				>Delete</Button
+			>
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
