@@ -21,14 +21,7 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form';
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
+import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
 import { Edit, CornerDownLeft } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
@@ -199,19 +192,7 @@ watch(
 			<FormField v-slot="{ componentField }" name="status">
 				<FormItem>
 					<FormControl>
-						<Select v-bind="componentField">
-							<SelectTrigger>
-								<SelectValue :placeholder="t('status')" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									<SelectItem value="todo"> To Do </SelectItem>
-									<SelectItem value="in_progress"> In Progress </SelectItem>
-									<SelectItem value="review"> Review </SelectItem>
-									<SelectItem value="done"> Done </SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
+						<SelectCustom v-bind="componentField" :placeholder="t('status')" />
 					</FormControl>
 					<FormMessage />
 				</FormItem>
