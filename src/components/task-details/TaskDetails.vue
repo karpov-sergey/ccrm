@@ -75,7 +75,6 @@ const isSaving = ref(false);
 const isTitleEditMode = ref(false);
 const isCreateMode = !props.task?.id;
 
-// Description edit/view state
 const isDescriptionEditMode = ref(false);
 
 const titleEditModeToggle = () => {
@@ -140,7 +139,6 @@ watch(
 	<form class="grid gap-2" @submit="onSubmit">
 		<div class="text-xl pb-2 px-6 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
-				<!-- Edit mode: show input -->
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
 						<CornerDownLeft
@@ -159,7 +157,6 @@ watch(
 						<FormMessage />
 					</FormItem>
 				</div>
-				<!-- View mode: show text with edit icon -->
 				<div v-else class="flex justify-between items-center">
 					<div class="truncate pr-2">
 						{{ value }}

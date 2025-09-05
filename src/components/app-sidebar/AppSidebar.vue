@@ -22,12 +22,12 @@ import Logo from '@/components/logo/Logo.vue';
 
 const route = useRoute();
 const { userNavItems } = useNavigation();
-const { toggleSidebar } = useSidebar();
+const { setOpen } = useSidebar();
 const { isLargeScreen } = useScreenWidth();
 
 watch(route, () => {
 	if (!isLargeScreen.value) {
-		toggleSidebar();
+		setOpen(false);
 	}
 });
 </script>

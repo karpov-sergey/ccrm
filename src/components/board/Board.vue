@@ -16,20 +16,23 @@ const emit = defineEmits(['updateBoard']);
 const isDragging = ref(false);
 const hoverColumnIndex = ref<number | null>(null);
 
-function handleStart() {
+const handleStart = () => {
 	isDragging.value = true;
-}
-function handleEnd() {
+};
+
+const handleEnd = () => {
 	isDragging.value = false;
 	hoverColumnIndex.value = null;
-}
+};
+
 // evt.to is the container element of the target list being hovered.
-function handleMove(evt: any) {
+const handleMove = (event: any) => {
 	// Determine hovered column by DOM. The container (evt.to) sits inside our wrapper
-	const toEl: HTMLElement | null = evt?.to || null;
+	const toEl: HTMLElement | null = event?.to || null;
 
 	if (!toEl) {
 		hoverColumnIndex.value = null;
+
 		return true;
 	}
 	const wrapper = toEl.closest('[data-col-index]') as HTMLElement | null;
@@ -40,13 +43,14 @@ function handleMove(evt: any) {
 		typeof wrapper.dataset.colIndex !== 'undefined'
 	) {
 		const idxParsed = parseInt(wrapper.dataset.colIndex as string, 10);
+
 		hoverColumnIndex.value = Number.isNaN(idxParsed) ? null : idxParsed;
 	} else {
 		hoverColumnIndex.value = null;
 	}
 
 	return true; // allow move
-}
+};
 
 const onBoardUpdate = () => {
 	emit('updateBoard');
@@ -62,7 +66,7 @@ const onBoardUpdate = () => {
 			v-for="(column, colIndex) in props.columns"
 			:key="column.title"
 			:class="[
-				'w-[200px] lg:w-[300px] flex-none px-3 py-3  mr-4 rounded-lg bg-gray-100',
+				'w-[200px] lg:w-[300px] flex-none px-3 py-3 mr-4 rounded-lg bg-gray-100',
 				isDragging && hoverColumnIndex === colIndex && 'drop-target',
 			]"
 			:data-col-index="colIndex"
