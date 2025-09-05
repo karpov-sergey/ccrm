@@ -32,6 +32,7 @@ import {
 import { Edit, CornerDownLeft } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
+import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
 const props = defineProps<{
 	task?: Task;
@@ -127,9 +128,13 @@ const onSubmit = form.handleSubmit(async (values) => {
 	}
 });
 
-const onRemoveSumbit = async (id: string) => {
+const onRemoveSubmit = async () => {
 	try {
-		await deleteTask(id);
+		if (!props.task?.id) {
+			return;
+		}
+
+		await deleteTask(props.task.id);
 	} catch (error) {
 	} finally {
 		emit('updateBoard');
@@ -160,13 +165,6 @@ watch(
 <template>
 	<form class="grid gap-2" @submit="onSubmit">
 		<div class="text-xl pb-2 px-6 border-b-1">
-			<Button
-				@click="onRemoveSumbit(task?.id as string)"
-				type="button"
-				variant="destructive"
-				class="absolute right-2 top-2"
-				>Delete</Button
-			>
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
@@ -254,13 +252,24 @@ watch(
 				<div v-else class="text-muted-foreground">—</div>
 			</div>
 		</div>
-		<div class="flex gap-4 items-end px-6 pt-4">
-			<Button type="button" variant="secondary" @click="onCancelClick">
-				{{ t('cancel') }}
-			</Button>
-			<Button type="submit" :disabled="isSaving" :loading="isSaving">
-				{{ t('save') }}
-			</Button>
+		<div class="flex gap-4 justify-between px-6 pt-4">
+			<div class="flex gap-4">
+				<Button type="button" variant="outline" @click="onCancelClick">
+					{{ t('cancel') }}
+				</Button>
+				<Button type="submit" :disabled="isSaving" :loading="isSaving">
+					{{ t('save') }}
+				</Button>
+			</div>
+			<ConfirmModal
+				v-if="!isCreateMode"
+				:title="t('are_you_sure_you_want_to_delete_this_item')"
+				@confirm="onRemoveSubmit"
+			>
+				<Button type="button" variant="destructive">
+					{{ t('delete') }}
+				</Button>
+			</ConfirmModal>
 		</div>
 	</form>
 </template>
