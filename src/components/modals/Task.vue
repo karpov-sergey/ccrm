@@ -4,7 +4,6 @@ import {
 	AlertDialog,
 	AlertDialogTitle,
 	AlertDialogContent,
-	AlertDialogTrigger,
 	AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 
@@ -31,16 +30,16 @@ const onDialogToggle = () => {
 
 <template>
 	<AlertDialog v-model:open="isOpen">
-		<template v-if="!props.disabled">
-			<AlertDialogTrigger as-child>
-				<button type="button" class="w-full text-left" @click.stop>
-					<TaskCard :task="props.task" class="cursor-pointer" />
-				</button>
-			</AlertDialogTrigger>
-		</template>
-		<template v-else>
-			<TaskCard :task="props.task" />
-		</template>
+		<!-- Card itself; click opens modal only when not disabled -->
+		<TaskCard
+			:task="props.task"
+			:class="{ 'cursor-pointer': !props.disabled }"
+			@click="
+				() => {
+					if (!props.disabled) isOpen = true;
+				}
+			"
+		/>
 		<AlertDialogContent
 			class="p-0 max-h-[90dvh] min-w-[700px]"
 			@open-auto-focus="voidFocus"

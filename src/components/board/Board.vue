@@ -165,7 +165,9 @@ function handleMove(evt: any) {
 </script>
 
 <template>
-	<div class="flex h-full w-full overflow-x-auto overflow-y-hidden">
+	<div
+		class="flex h-full w-full overflow-x-auto overflow-y-hidden transform-3d"
+	>
 		<div
 			v-for="(column, colIndex) in props.columns"
 			:key="column.title"
@@ -194,7 +196,7 @@ function handleMove(evt: any) {
 				:scroll-sensitivity="60"
 				:scroll-speed="10"
 				:delay="100"
-				:delay-on-touch-only="false"
+				:delay-on-touch-only="true"
 				:touch-start-threshold="10"
 				:move="handleMove"
 				@start="handleStart"
