@@ -58,54 +58,58 @@ const onBoardUpdate = () => {
 </script>
 
 <template>
-	<div
-		class="flex h-full w-full overflow-x-auto overflow-y-hidden transform-3d"
-	>
-		<TaskModal :disabled="isDragging" @update-board="onBoardUpdate" />
+	<div class="h-full w-full min-h-0 flex flex-col">
+		<div class="mb-4 flex-none">
+			<TaskModal :disabled="isDragging" @update-board="onBoardUpdate" />
+		</div>
 		<div
-			v-for="(column, colIndex) in props.columns"
-			:key="column.title"
-			:class="[
-				'w-[200px] lg:w-[300px] flex-none px-3 py-3 mr-4 rounded-lg bg-gray-100',
-				isDragging && hoverColumnIndex === colIndex && 'drop-target',
-			]"
-			:data-col-index="colIndex"
+			class="flex-1 flex w-full overflow-x-auto transform-3d min-h-0 items-stretch"
 		>
-			<p
-				class="pb-2 mb-2 text-center font-semibold tracking-wide text-sm border-b-1"
+			<div
+				v-for="(column, colIndex) in props.columns"
+				:key="column.title"
+				:class="[
+					'w-[200px] lg:w-[300px] flex-none px-3 py-3 mr-4 rounded-lg bg-gray-100 h-full flex flex-col min-h-0',
+					isDragging && hoverColumnIndex === colIndex && 'drop-target',
+				]"
+				:data-col-index="colIndex"
 			>
-				{{ column.title }}
-			</p>
-			<draggable
-				:list="column.tasks"
-				item-key="id"
-				:animation="200"
-				ghost-class="ghost-card"
-				chosen-class="drag-chosen"
-				drag-class="drag-class"
-				group="tasks"
-				class="h-full"
-				:empty-insert-threshold="30"
-				:scroll="true"
-				:scroll-sensitivity="60"
-				:scroll-speed="10"
-				:delay="100"
-				:delay-on-touch-only="true"
-				:touch-start-threshold="10"
-				:move="handleMove"
-				@start="handleStart"
-				@end="handleEnd"
-			>
-				<template #item="{ element }">
-					<div :key="element.id" class="mt-3">
-						<TaskModal
-							:task="element"
-							:disabled="isDragging"
-							@update-board="onBoardUpdate"
-						/>
-					</div>
-				</template>
-			</draggable>
+				<p
+					class="pb-2 mb-2 text-center font-semibold tracking-wide text-sm border-b-1"
+				>
+					{{ column.title }}
+				</p>
+				<draggable
+					:list="column.tasks"
+					item-key="id"
+					:animation="200"
+					ghost-class="ghost-card"
+					chosen-class="drag-chosen"
+					drag-class="drag-class"
+					group="tasks"
+					class="flex-1 min-h-0"
+					:empty-insert-threshold="30"
+					:scroll="true"
+					:scroll-sensitivity="60"
+					:scroll-speed="10"
+					:delay="100"
+					:delay-on-touch-only="true"
+					:touch-start-threshold="10"
+					:move="handleMove"
+					@start="handleStart"
+					@end="handleEnd"
+				>
+					<template #item="{ element }">
+						<div :key="element.id" class="mt-3">
+							<TaskModal
+								:task="element"
+								:disabled="isDragging"
+								@update-board="onBoardUpdate"
+							/>
+						</div>
+					</template>
+				</draggable>
+			</div>
 		</div>
 	</div>
 </template>
