@@ -91,10 +91,10 @@ const onListChange = async (column: BoardColumn, event: any) => {
 			// No need to refetch immediately; but keep consistent behavior
 			onBoardUpdate();
 		}
+
 		return;
 	}
 
-	// Cross-column move: event.added contains the element and its newIndex
 	if (event?.added) {
 		const task: Task = event.added.element;
 		if (!task?.id) return;
@@ -111,8 +111,8 @@ const onListChange = async (column: BoardColumn, event: any) => {
 			});
 
 			await Promise.all(
-				column.tasks.map((t: Task, idx: number) =>
-					updateTask({ id: t.id, sort_index: idx })
+				column.tasks.map((task: Task, index: number) =>
+					updateTask({ id: task.id, sort_index: index })
 				)
 			);
 		} catch (error) {
