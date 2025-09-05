@@ -30,7 +30,6 @@ const onDialogToggle = () => {
 
 <template>
 	<AlertDialog v-model:open="isOpen">
-		<!-- Card itself; click opens modal only when not disabled -->
 		<TaskCard
 			:task="props.task"
 			:class="{ 'cursor-pointer': !props.disabled }"
@@ -41,7 +40,7 @@ const onDialogToggle = () => {
 			"
 		/>
 		<AlertDialogContent
-			class="p-0 max-h-[90dvh] min-w-[700px]"
+			class="min-w-full p-0 max-h-[90dvh] md:min-w-[700px]"
 			@open-auto-focus="voidFocus"
 		>
 			<template v-show="false">

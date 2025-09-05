@@ -4,6 +4,8 @@ import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
@@ -43,6 +45,7 @@ const formSchema = toTypedSchema(
 	z.object({
 		title: z.string().min(2).max(50),
 		status: z.enum(['todo', 'in_progress', 'review', 'done']),
+		description: z.string().max(20000).nullable().optional(),
 	})
 );
 
@@ -51,14 +54,22 @@ const form = useForm({
 	initialValues: {
 		title: props.task.title || 'Card Title',
 		status: props.task.status || 'todo',
+		description: props.task.description || null,
 	},
 });
 
 const isSaving = ref(false);
 const isTitleEditMode = ref(false);
 
+// Description edit/view state
+const isDescriptionEditMode = ref(false);
+
 const titleEditModeToggle = () => {
 	isTitleEditMode.value = !isTitleEditMode.value;
+};
+
+const descriptionEditModeToggle = () => {
+	isDescriptionEditMode.value = !isDescriptionEditMode.value;
 };
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -68,6 +79,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			status: values.status,
 			user_id: user.value?.id,
 			column_id: 1,
+			description: values.description || null,
 		});
 	} catch (error) {
 	} finally {
@@ -88,6 +100,7 @@ watch(
 			values: {
 				title: task.title || 'Card Title',
 				status: task.status || 'todo',
+				description: (task as any).description || null,
 			},
 		});
 	},
@@ -151,6 +164,36 @@ watch(
 					<FormMessage />
 				</FormItem>
 			</FormField>
+		</div>
+
+		<div class="min-h-[400px] px-6 pb-12">
+			<!-- Description: edit/view toggle similar to title -->
+			<div class="flex justify-between items-center mb-2">
+				<div class="font-medium">Description</div>
+				<Edit
+					class="h-4 w-4 text-primary cursor-pointer"
+					@click="descriptionEditModeToggle"
+				/>
+			</div>
+			<div v-show="isDescriptionEditMode" class="border rounded-md">
+				<FormField v-slot="{ value, handleChange }" name="description">
+					<QuillEditor
+						theme="snow"
+						contentType="html"
+						v-model="form.values.description"
+						@update:content="(val: any) => handleChange(val)"
+					/>
+				</FormField>
+			</div>
+			<div v-show="!isDescriptionEditMode" class="ql-snow max-w-none">
+				<!-- Render with Quill's content styles for visual parity with editor -->
+				<div
+					v-if="form.values?.description"
+					class="ql-editor"
+					v-html="form.values?.description as any"
+				></div>
+				<div v-else class="text-muted-foreground">—</div>
+			</div>
 		</div>
 		<div class="flex gap-4 items-end px-6">
 			<Button type="button" variant="secondary" @click="onCancelClick">
