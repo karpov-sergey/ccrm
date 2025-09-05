@@ -85,12 +85,25 @@ const descriptionEditModeToggle = () => {
 	isDescriptionEditMode.value = !isDescriptionEditMode.value;
 };
 
+//temporary hardcoded column id, remove after columns set by user
+const getColumnId = (status: string) => {
+	const columnMap = {
+		todo: 1,
+		in_progress: 2,
+		review: 3,
+		done: 4,
+	};
+
+	//@ts-ignore
+	return columnMap[status] || 1;
+};
+
 const onSubmit = form.handleSubmit(async (values) => {
 	const data = {
 		title: values.title,
 		status: values.status,
 		user_id: user.value?.id,
-		column_id: 1,
+		column_id: getColumnId(values.status),
 		description: values.description
 			? DOMPurify.sanitize(values.description, {
 					USE_PROFILES: { html: true },

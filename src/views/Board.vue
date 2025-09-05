@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
-import Board from '@/components/board/Board.vue';
+import KanbanBoard from '@/components/board/KanbanBoard.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 
 import { getAllTasks } from '@/api/tasks';
@@ -73,6 +73,6 @@ const onBoardUpdate = async () => {
 <template>
 	<section class="flex items-center justify-center p-4 h-full min-h-0">
 		<Spinner v-if="isLoading" />
-		<Board v-else :columns="columns" @update-board="onBoardUpdate" />
+		<KanbanBoard v-else :columns="columns" @update-board="onBoardUpdate" />
 	</section>
 </template>
