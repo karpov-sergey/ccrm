@@ -234,14 +234,6 @@ watch(
 			</div>
 		</div>
 		<div class="flex gap-4 justify-between px-6 pt-4">
-			<div class="flex gap-4">
-				<Button type="button" variant="outline" @click="onCancelClick">
-					{{ t('cancel') }}
-				</Button>
-				<Button type="submit" :disabled="isSaving" :loading="isSaving">
-					{{ t('save') }}
-				</Button>
-			</div>
 			<ConfirmModal
 				v-if="!isCreateMode"
 				:title="t('are_you_sure_you_want_to_delete_this_item')"
@@ -251,6 +243,14 @@ watch(
 					{{ t('delete') }}
 				</Button>
 			</ConfirmModal>
+			<div class="flex gap-4">
+				<Button type="button" variant="outline" @click="onCancelClick">
+					{{ t('cancel') }}
+				</Button>
+				<Button type="submit" :disabled="isSaving" :loading="isSaving">
+					{{ t('save') }}
+				</Button>
+			</div>
 		</div>
 	</form>
 </template>

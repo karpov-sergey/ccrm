@@ -4,7 +4,9 @@ import { ref } from 'vue';
 import draggable from 'vuedraggable';
 import TaskModal from '@/components/modals/Task.vue';
 
-import type { BoardColumn } from '@/types/tasks';
+import { updateTask } from '@/api/tasks';
+
+import type { BoardColumn, Task, TaskStatus } from '@/types/tasks';
 
 const props = defineProps<{
 	columns: BoardColumn[];
@@ -55,6 +57,46 @@ const handleMove = (event: any) => {
 const onBoardUpdate = () => {
 	emit('updateBoard');
 };
+
+// Map fixed column ids to status values (kept in sync with TaskDetails.vue)
+const getStatusByColumnId = (columnId: number): TaskStatus => {
+	switch (columnId) {
+		case 1:
+			return 'todo';
+		case 2:
+			return 'in_progress';
+		case 3:
+			return 'review';
+		case 4:
+			return 'done';
+		default:
+			return 'todo';
+	}
+};
+
+const onListChange = async (column: BoardColumn, event: any) => {
+	if (!event?.added) return;
+
+	const task: Task = event.added.element;
+
+	if (!task?.id) {
+		return;
+	}
+
+	const nextStatus: TaskStatus = getStatusByColumnId(column.id);
+
+	try {
+		await updateTask({
+			id: task.id,
+			status: nextStatus,
+			column_id: column.id,
+		});
+	} catch (error) {
+		console.error('Failed to update task status after drag:', error);
+	} finally {
+		onBoardUpdate();
+	}
+};
 </script>
 
 <template>
@@ -98,6 +140,7 @@ const onBoardUpdate = () => {
 					:move="handleMove"
 					@start="handleStart"
 					@end="handleEnd"
+					@change="onListChange(column, $event)"
 				>
 					<template #item="{ element }">
 						<div :key="element.id" class="mt-3">

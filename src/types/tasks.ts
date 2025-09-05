@@ -19,12 +19,12 @@ export interface BoardColumn {
 }
 
 export interface CreateTaskPayload {
-	title: string;
-	status: TaskStatus;
+	title?: string;
+	status?: TaskStatus;
 	user_id?: string | null;
-	column_id: number;
+	column_id?: number;
 	description?: string | null;
-	id?: string;
+	id: string;
 }
 
 export interface BoardModel {

@@ -71,7 +71,7 @@ const onBoardUpdate = async () => {
 </script>
 
 <template>
-	<section class="p-4 h-full min-h-0">
+	<section class="flex justify-center items-center p-4 h-full min-h-0">
 		<Spinner v-if="isLoading" />
 		<KanbanBoard v-else :columns="columns" @update-board="onBoardUpdate" />
 	</section>
