@@ -14,3 +14,14 @@ export const getAllTasks = async (): Promise<Task[]> => {
 
 	return handleResponse(response);
 };
+
+export const updateTask = async (data: CreateTaskPayload) => {
+	const response = await supabase
+		.from('tasks')
+		.update(data)
+		.eq('id', data.id)
+		.select()
+		.single();
+
+	return handleResponse(response);
+};

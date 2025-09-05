@@ -7,15 +7,13 @@ defineProps<{
 </script>
 
 <template>
-	<div
-		class="bg-white shadow rounded-lg px-3 pt-3 pb-5 border border-transparent"
-	>
-		<div class="flex justify-between">
+	<div class="p-4 rounded-lg border border-transparent bg-white shadow">
+		<div class="flex justify-between mb-2">
 			<p class="text-gray-700 font-semibold font-sans tracking-wide text-sm">
 				{{ task.title }}
 			</p>
 		</div>
-		<div class="flex mt-4 justify-between items-center">
+		<div class="flex justify-between items-center">
 			<span class="text-sm text-gray-600">{{ task.status }}</span>
 		</div>
 	</div>

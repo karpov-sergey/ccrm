@@ -3,29 +3,30 @@
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 
 export interface Task {
-  id: number;
-  title: string;
-  status: TaskStatus;
-  user_id?: string | null;
-  column_id: number;
-  description?: string | null;
-  date?: string | null; // optional date label used in UI cards
+	id: string;
+	title: string;
+	status: TaskStatus;
+	user_id?: string | null;
+	column_id: number;
+	description?: string | null;
+	date?: string | null; // optional date label used in UI cards
 }
 
 export interface BoardColumn {
-  id: number;
-  title: string;
-  tasks: Task[];
+	id: number;
+	title: string;
+	tasks: Task[];
 }
 
 export interface CreateTaskPayload {
-  title: string;
-  status: TaskStatus;
-  user_id?: string | null;
-  column_id: number;
-  description?: string | null;
+	title: string;
+	status: TaskStatus;
+	user_id?: string | null;
+	column_id: number;
+	description?: string | null;
+	id?: string;
 }
 
 export interface BoardModel {
-  columns: BoardColumn[];
+	columns: BoardColumn[];
 }

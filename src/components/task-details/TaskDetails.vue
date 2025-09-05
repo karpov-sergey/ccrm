@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue';
+import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import DOMPurify from 'dompurify';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
 
-import { createTask } from '@/api/tasks';
+import { createTask, updateTask } from '@/api/tasks';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,13 +34,25 @@ import { Edit, CornerDownLeft } from 'lucide-vue-next';
 import type { Task } from '@/types/tasks.ts';
 
 const props = defineProps<{
-	task: Task;
+	task?: Task;
 }>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'updateBoard']);
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
+
+const toolbarOptions = [
+	['bold', 'italic', 'underline'], // toggled buttons
+	['image'],
+	[{ color: [] }, { background: [] }], // dropdown with defaults from theme
+
+	[{ list: 'ordered' }, { list: 'bullet' }],
+
+	[{ align: [] }],
+
+	['clean'], // remove formatting button
+];
 
 const formSchema = toTypedSchema(
 	z.object({
@@ -52,14 +65,15 @@ const formSchema = toTypedSchema(
 const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		title: props.task.title || 'Card Title',
-		status: props.task.status || 'todo',
-		description: props.task.description || null,
+		title: props.task?.title || 'Card Title',
+		status: props.task?.status || 'todo',
+		description: props.task?.description || null,
 	},
 });
 
 const isSaving = ref(false);
 const isTitleEditMode = ref(false);
+const isCreateMode = !props.task?.id;
 
 // Description edit/view state
 const isDescriptionEditMode = ref(false);
@@ -73,14 +87,28 @@ const descriptionEditModeToggle = () => {
 };
 
 const onSubmit = form.handleSubmit(async (values) => {
+	const data = {
+		title: values.title,
+		status: values.status,
+		user_id: user.value?.id,
+		column_id: 1,
+		description: values.description
+			? DOMPurify.sanitize(values.description, {
+					USE_PROFILES: { html: true },
+				})
+			: null,
+	};
+
 	try {
-		await createTask({
-			title: values.title,
-			status: values.status,
-			user_id: user.value?.id,
-			column_id: 1,
-			description: values.description || null,
-		});
+		isSaving.value = true;
+
+		if (isCreateMode) {
+			await createTask(data);
+		} else {
+			await updateTask({ ...data, id: props.task.id });
+		}
+
+		emit('updateBoard');
 	} catch (error) {
 	} finally {
 		isSaving.value = false;
@@ -166,7 +194,7 @@ watch(
 			</FormField>
 		</div>
 
-		<div class="min-h-[400px] px-6 pb-12 border-b-1">
+		<div class="px-6 pb-6 border-b-1">
 			<!-- Description: edit/view toggle similar to title -->
 			<div class="flex justify-between items-center mb-2">
 				<div class="font-medium">Description</div>
@@ -178,19 +206,24 @@ watch(
 			<div v-show="isDescriptionEditMode" class="border rounded-md">
 				<FormField v-slot="{ value, handleChange }" name="description">
 					<QuillEditor
+						:content="value"
 						theme="snow"
 						contentType="html"
-						v-model="form.values.description"
-						@update:content="(val: any) => handleChange(val)"
+						:toolbar="toolbarOptions"
+						@update:content="handleChange"
 					/>
 				</FormField>
 			</div>
-			<div v-show="!isDescriptionEditMode" class="ql-snow max-w-none">
+			<div v-show="!isDescriptionEditMode" class="ql-snow max-w-none text-sm">
 				<!-- Render with Quill's content styles for visual parity with editor -->
 				<div
 					v-if="form.values?.description"
-					class="ql-editor"
-					v-html="form.values?.description as any"
+					class="ql-editor font-normal p-2!"
+					v-html="
+						DOMPurify.sanitize(form.values?.description as any, {
+							USE_PROFILES: { html: true },
+						})
+					"
 				></div>
 				<div v-else class="text-muted-foreground">—</div>
 			</div>
@@ -199,9 +232,26 @@ watch(
 			<Button type="button" variant="secondary" @click="onCancelClick">
 				{{ t('cancel') }}
 			</Button>
-			<Button ref="savebtn" type="submit">
+			<Button type="submit" :disabled="isSaving" :loading="isSaving">
 				{{ t('save') }}
 			</Button>
 		</div>
 	</form>
 </template>
+
+<style scoped>
+/* Ensure Quill editor uses the same default font as the app */
+/*noinspection CssUnusedSymbol*/
+:global(.ql-toolbar),
+:global(.ql-snow .ql-editor),
+:global(.ql-editor) {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+/* Prevent Quill content from overflowing the modal horizontally */
+:global(.ql-editor) {
+	overflow-wrap: anywhere;
+}
+</style>

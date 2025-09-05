@@ -1,131 +1,16 @@
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, defineEmits } from 'vue';
 
 import draggable from 'vuedraggable';
 import TaskModal from '@/components/modals/Task.vue';
 
 import type { BoardColumn } from '@/types/tasks';
 
-// const columns = ref([
-// 	{
-// 		title: 'Backlog',
-// 		tasks: [
-// 			{
-// 				id: 1,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 			{
-// 				id: 2,
-// 				title: 'Provide documentation on integrations',
-// 				date: 'Sep 12',
-// 			},
-// 			{
-// 				id: 3,
-// 				title: 'Design shopping cart dropdown',
-// 				date: 'Sep 9',
-// 				type: 'Design',
-// 			},
-// 			{
-// 				id: 4,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 			{
-// 				id: 5,
-// 				title: 'Test checkout flow',
-// 				date: 'Sep 15',
-// 				type: 'QA',
-// 			},
-// 		],
-// 	},
-// 	{
-// 		title: 'In Progress',
-// 		tasks: [
-// 			{
-// 				id: 6,
-// 				title: 'Design shopping cart dropdown',
-// 				date: 'Sep 9',
-// 				type: 'Design',
-// 			},
-// 			{
-// 				id: 7,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 			{
-// 				id: 8,
-// 				title: 'Provide documentation on integrations',
-// 				date: 'Sep 12',
-// 				type: 'Backend',
-// 			},
-// 		],
-// 	},
-// 	{
-// 		title: 'Review',
-// 		tasks: [
-// 			{
-// 				id: 9,
-// 				title: 'Provide documentation on integrations',
-// 				date: 'Sep 12',
-// 			},
-// 			{
-// 				id: 10,
-// 				title: 'Design shopping cart dropdown',
-// 				date: 'Sep 9',
-// 				type: 'Design',
-// 			},
-// 			{
-// 				id: 11,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 			{
-// 				id: 12,
-// 				title: 'Design shopping cart dropdown',
-// 				date: 'Sep 9',
-// 				type: 'Design',
-// 			},
-// 			{
-// 				id: 13,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 		],
-// 	},
-// 	{
-// 		title: 'Done',
-// 		tasks: [
-// 			{
-// 				id: 14,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 			{
-// 				id: 15,
-// 				title: 'Design shopping cart dropdown',
-// 				date: 'Sep 9',
-// 				type: 'Design',
-// 			},
-// 			{
-// 				id: 16,
-// 				title: 'Add discount code to checkout page',
-// 				date: 'Sep 14',
-// 				type: 'Feature Request',
-// 			},
-// 		],
-// 	},
-// ]);
-
 const props = defineProps<{
 	columns: BoardColumn[];
 }>();
+
+const emit = defineEmits(['updateBoard']);
 
 // Track dragging state and current drop (hover) column index
 const isDragging = ref(false);
@@ -162,12 +47,17 @@ function handleMove(evt: any) {
 
 	return true; // allow move
 }
+
+const onBoardUpdate = () => {
+	emit('updateBoard');
+};
 </script>
 
 <template>
 	<div
 		class="flex h-full w-full overflow-x-auto overflow-y-hidden transform-3d"
 	>
+		<TaskModal :disabled="isDragging" @update-board="onBoardUpdate" />
 		<div
 			v-for="(column, colIndex) in props.columns"
 			:key="column.title"
@@ -204,7 +94,11 @@ function handleMove(evt: any) {
 			>
 				<template #item="{ element }">
 					<div :key="element.id" class="mt-3">
-						<TaskModal :task="element" :disabled="isDragging" />
+						<TaskModal
+							:task="element"
+							:disabled="isDragging"
+							@update-board="onBoardUpdate"
+						/>
 					</div>
 				</template>
 			</draggable>

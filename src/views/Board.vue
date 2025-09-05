@@ -9,7 +9,8 @@ import type { Task, BoardColumn } from '@/types/tasks';
 
 const isLoading = ref(true);
 const tasks = ref<Task[]>([]);
-const columns = ref<BoardColumn[]>([
+
+const columnsInitial: BoardColumn[] = [
 	{
 		title: 'Todo',
 		id: 1,
@@ -30,9 +31,20 @@ const columns = ref<BoardColumn[]>([
 		id: 4,
 		tasks: [],
 	},
-]);
+];
+
+const columns = ref<BoardColumn[]>(
+	columnsInitial.map((c) => ({ ...c, tasks: [] }))
+);
 
 onBeforeMount(async () => {
+	await updateBoard();
+});
+
+const updateBoard = async () => {
+	// Reset columns from the initial template, ensuring fresh task arrays
+	columns.value = columnsInitial.map((c) => ({ ...c, tasks: [] }));
+
 	try {
 		tasks.value = await getAllTasks();
 		fillColumns();
@@ -41,7 +53,7 @@ onBeforeMount(async () => {
 	} finally {
 		isLoading.value = false;
 	}
-});
+};
 
 const fillColumns = () => {
 	tasks.value.forEach((task: Task) => {
@@ -52,11 +64,15 @@ const fillColumns = () => {
 		currentColumn?.tasks.push(task);
 	});
 };
+
+const onBoardUpdate = async () => {
+	await updateBoard();
+};
 </script>
 
 <template>
 	<section class="flex items-center justify-center p-4 h-full min-h-0">
 		<Spinner v-if="isLoading" />
-		<Board v-else :columns="columns" />
+		<Board v-else :columns="columns" @update-board="onBoardUpdate" />
 	</section>
 </template>
