@@ -170,12 +170,14 @@ function handleMove(evt: any) {
 			v-for="(column, colIndex) in props.columns"
 			:key="column.title"
 			:class="[
-				'w-[200px] lg:w-[300px] flex-none px-3 py-3 rounded mr-4 bg-gray-100',
+				'w-[200px] lg:w-[300px] flex-none px-3 py-3  mr-4 rounded-lg bg-gray-100',
 				isDragging && hoverColumnIndex === colIndex && 'drop-target',
 			]"
 			:data-col-index="colIndex"
 		>
-			<p class="text-gray-700 font-semibold tracking-wide text-sm">
+			<p
+				class="pb-2 mb-2 text-center font-semibold tracking-wide text-sm border-b-1"
+			>
 				{{ column.title }}
 			</p>
 			<draggable
@@ -192,14 +194,16 @@ function handleMove(evt: any) {
 				:scroll-sensitivity="60"
 				:scroll-speed="10"
 				:delay="100"
-				:delay-on-touch-only="true"
+				:delay-on-touch-only="false"
 				:touch-start-threshold="10"
 				:move="handleMove"
 				@start="handleStart"
 				@end="handleEnd"
 			>
 				<template #item="{ element }">
-					<TaskModal :task="element" />
+					<div :key="element.id" class="mt-3">
+						<TaskModal :task="element" :disabled="isDragging" />
+					</div>
 				</template>
 			</draggable>
 		</div>
@@ -217,25 +221,27 @@ function handleMove(evt: any) {
 /* applied to the element being dragged */
 /*noinspection CssUnusedSymbol*/
 .drag-class {
-	transform: scale(0.98);
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-	border: 1px solid #6366f1; /* indigo-500 */
-	background: #eef2ff; /* indigo-100 */
-	opacity: 0.9;
+	border-color: var(--primary);
+	background: var(--card);
+	opacity: 0.95;
 }
 
 /* applied when element is chosen (picked) but before moving */
 /*noinspection CssUnusedSymbol*/
 .drag-chosen {
-	border: 1px dashed #6366f1;
-	background: #f5f7ff;
+	border-width: 1px;
+	border-style: dashed;
+	border-color: var(--primary);
+	background: var(--muted);
 }
 
 /* highlight for the column currently targeted as drop destination */
 /*noinspection CssUnusedSymbol*/
 .drop-target {
-	background: #e0f2fe; /* sky-100 */
-	outline: 2px dashed #0284c7; /* sky-600 */
+	background: var(--accent);
+	outline: 2px dashed var(--sidebar-ring);
+	border-radius: 0.65rem;
 	outline-offset: -4px;
 	transition: background-color 120ms ease;
 }

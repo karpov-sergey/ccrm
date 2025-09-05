@@ -15,6 +15,7 @@ import type { Task } from '@/types/tasks';
 
 const props = defineProps<{
 	task: Task;
+	disabled?: boolean;
 }>();
 
 const isOpen = ref(false);
@@ -30,9 +31,16 @@ const onDialogToggle = () => {
 
 <template>
 	<AlertDialog v-model:open="isOpen">
-		<AlertDialogTrigger as-child>
-			<TaskCard :task="props.task" class="mt-3 cursor-pointer" />
-		</AlertDialogTrigger>
+		<template v-if="!props.disabled">
+			<AlertDialogTrigger as-child>
+				<button type="button" class="w-full text-left" @click.stop>
+					<TaskCard :task="props.task" class="cursor-pointer" />
+				</button>
+			</AlertDialogTrigger>
+		</template>
+		<template v-else>
+			<TaskCard :task="props.task" />
+		</template>
 		<AlertDialogContent
 			class="p-0 max-h-[90dvh] min-w-[700px]"
 			@open-auto-focus="voidFocus"
