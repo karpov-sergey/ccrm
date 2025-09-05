@@ -11,7 +11,6 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
-	SidebarGroupLabel,
 	SidebarGroupContent,
 	SidebarMenu,
 	SidebarMenuItem,
@@ -39,7 +38,6 @@ watch(route, () => {
 		</SidebarHeader>
 		<SidebarContent>
 			<SidebarGroup>
-				<SidebarGroupLabel>Application</SidebarGroupLabel>
 				<SidebarGroupContent>
 					<SidebarMenu>
 						<SidebarMenuItem
