@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { Home, SquareKanban } from 'lucide-vue-next';
+import { Home, SquareKanban, Contact } from 'lucide-vue-next';
 
 import { UserNavItems } from '@/enums/navigation/NavItems.ts';
 
@@ -29,6 +29,12 @@ export const useNavigation = () => {
 			to: '/board',
 			icon: SquareKanban,
 			id: UserNavItems.BOARD,
+		},
+		{
+			label: t(UserNavItems.CONTACTS),
+			to: '/contacts',
+			icon: Contact,
+			id: UserNavItems.CONTACTS,
 		},
 	]);
 
