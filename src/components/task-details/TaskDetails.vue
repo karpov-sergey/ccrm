@@ -22,7 +22,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
-import { CornerDownLeft, Check, X } from 'lucide-vue-next';
+import { CornerDownLeft, Check, X, Edit } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
@@ -72,6 +72,10 @@ const isCreateMode = !props.task?.id;
 
 const isDescriptionEditMode = ref(false);
 
+// Draft/original buffers for description editing
+const descriptionDraft = ref<string | null>(null);
+const descriptionOriginal = ref<string | null>(null);
+
 const titleInputRef = ref<{
 	focus: () => void;
 	el?: HTMLInputElement | null;
@@ -81,21 +85,29 @@ const titleInputRef = ref<{
 const focusTitleInput = () => {
 	const api = titleInputRef.value as {
 		focus?: () => void;
-		el?: HTMLInputElement | null;
+		element?: HTMLInputElement | null;
 	} | null;
-	if (!api) return;
+
+	if (!api) {
+		return;
+	}
+
 	api.focus?.();
-	const el = api.el ?? null;
-	if (el) {
-		const len = el.value?.length ?? 0;
+
+	const element = api.element ?? null;
+
+	if (element) {
+		const length = element.value?.length ?? 0;
+
 		try {
-			el.setSelectionRange?.(len, len);
+			element.setSelectionRange?.(length, length);
 		} catch {}
 	}
 };
 
 const titleEditModeToggle = () => {
 	isTitleEditMode.value = !isTitleEditMode.value;
+
 	if (isTitleEditMode.value) {
 		nextTick(() => {
 			focusTitleInput();
@@ -104,6 +116,16 @@ const titleEditModeToggle = () => {
 };
 
 const descriptionEditModeToggle = () => {
+	// toggling into edit mode: snapshot original and prepare draft
+	if (!isDescriptionEditMode.value) {
+		descriptionOriginal.value = form.values?.description ?? null;
+		descriptionDraft.value = descriptionOriginal.value;
+	} else {
+		// leaving edit mode without explicit save: discard draft
+		descriptionDraft.value = null;
+		descriptionOriginal.value = null;
+	}
+
 	isDescriptionEditMode.value = !isDescriptionEditMode.value;
 };
 
@@ -183,17 +205,33 @@ const onCancelClick = () => {
 };
 
 const onDescriptionEditSave = () => {
+	// commit draft into form value, sanitize, exit edit mode
+	const raw = descriptionDraft.value;
+	const sanitized = raw
+		? DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } })
+		: null;
+	form.setFieldValue('description', sanitized);
 	isDescriptionEditMode.value = false;
+	descriptionDraft.value = null;
+	descriptionOriginal.value = null;
 };
 
 const onDescriptionEditCancel = () => {
+	// revert to original form value, exit edit mode
+	form.setFieldValue('description', descriptionOriginal.value ?? null);
 	isDescriptionEditMode.value = false;
+	descriptionDraft.value = null;
+	descriptionOriginal.value = null;
 };
 
 watch(
 	() => props.task,
 	(task) => {
 		if (!task) return;
+		// If task prop changes, exit description edit and clear buffers
+		isDescriptionEditMode.value = false;
+		descriptionDraft.value = null;
+		descriptionOriginal.value = null;
 		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
@@ -239,6 +277,10 @@ watch(
 					@click="titleEditModeToggle"
 				>
 					{{ value }}
+					<Edit
+						class="h-4 w-4 text-primary cursor-pointer"
+						@click="titleEditModeToggle"
+					/>
 				</div>
 			</FormField>
 		</div>
@@ -257,13 +299,13 @@ watch(
 			<div class="font-medium mb-2">Description</div>
 
 			<div v-show="isDescriptionEditMode" class="">
-				<FormField v-slot="{ value, handleChange }" name="description">
+				<FormField v-slot name="description">
 					<QuillEditor
 						theme="snow"
 						contentType="html"
-						:content="value"
+						:content="descriptionDraft ?? ''"
 						:toolbar="toolbarOptions"
-						@update:content="handleChange"
+						@update:content="(val) => (descriptionDraft = val as any)"
 						@keyup.enter.stop.prevent
 					/>
 				</FormField>
@@ -284,7 +326,7 @@ watch(
 			</div>
 			<div
 				v-show="!isDescriptionEditMode"
-				class="ql-snow max-w-none text-sm"
+				class="ql-snow max-w-none text-sm cursor-text"
 				@click="descriptionEditModeToggle"
 			>
 				<div
@@ -313,7 +355,11 @@ watch(
 				<Button type="button" variant="outline" @click="onCancelClick">
 					{{ t('cancel') }}
 				</Button>
-				<Button type="submit" :disabled="isSaving" :loading="isSaving">
+				<Button
+					type="submit"
+					:disabled="isSaving || !form.meta.value.dirty"
+					:loading="isSaving"
+				>
 					{{ t('save') }}
 				</Button>
 			</div>
