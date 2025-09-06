@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -22,10 +22,11 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
-import { Edit, CornerDownLeft } from 'lucide-vue-next';
+import { CornerDownLeft } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
 	task?: Task;
@@ -71,8 +72,35 @@ const isCreateMode = !props.task?.id;
 
 const isDescriptionEditMode = ref(false);
 
+const titleInputRef = ref<{
+	focus: () => void;
+	el?: HTMLInputElement | null;
+} | null>(null);
+
+//focus title workaround
+const focusTitleInput = () => {
+	const api = titleInputRef.value as {
+		focus?: () => void;
+		el?: HTMLInputElement | null;
+	} | null;
+	if (!api) return;
+	api.focus?.();
+	const el = api.el ?? null;
+	if (el) {
+		const len = el.value?.length ?? 0;
+		try {
+			el.setSelectionRange?.(len, len);
+		} catch {}
+	}
+};
+
 const titleEditModeToggle = () => {
 	isTitleEditMode.value = !isTitleEditMode.value;
+	if (isTitleEditMode.value) {
+		nextTick(() => {
+			focusTitleInput();
+		});
+	}
 };
 
 const descriptionEditModeToggle = () => {
@@ -92,7 +120,16 @@ const getColumnId = (status: string) => {
 	return columnMap[status] || 1;
 };
 
+const onFormEnterKeyUp = (event: KeyboardEvent) => {
+	const element = event.target as HTMLElement | null;
+	element?.blur?.();
+};
+
 const onSubmit = form.handleSubmit(async (values) => {
+	if (!!isTitleEditMode.value) {
+		return;
+	}
+
 	const data = {
 		title: values.title,
 		status: values.status,
@@ -111,8 +148,12 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 		if (isCreateMode) {
 			await createTask(data);
+
+			toast.success(t('task_created_successfully'));
 		} else {
 			await updateTask({ ...data, id: props.task.id });
+
+			toast.success(t('task_updated_successfully'));
 		}
 
 		emit('updateBoard');
@@ -129,6 +170,8 @@ const onRemoveSubmit = async () => {
 		}
 
 		await deleteTask(props.task.id);
+
+		toast.success(t('task_deleted_successfully'));
 	} catch (error) {
 	} finally {
 		emit('updateBoard');
@@ -157,8 +200,12 @@ watch(
 </script>
 
 <template>
-	<form class="grid gap-2" @submit="onSubmit">
-		<div class="text-xl pb-2 px-6 border-b-1">
+	<form
+		class="grid gap-2"
+		@submit="onSubmit"
+		@keyup.enter.prevent.stop="onFormEnterKeyUp"
+	>
+		<div class="text-xl pb-6 px-6 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
@@ -168,24 +215,22 @@ watch(
 						<FormControl>
 							<Input
 								v-bind="componentField"
+								ref="titleInputRef"
 								class="pr-10"
 								type="text"
-								autofocus
-								@keydown.enter="titleEditModeToggle"
 								@blur="titleEditModeToggle"
 							/>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</div>
-				<div v-else class="flex justify-between items-center">
-					<div class="truncate pr-2">
-						{{ value }}
-					</div>
-					<Edit
-						class="h-4 w-4 text-primary cursor-pointer"
-						@click="titleEditModeToggle"
-					/>
+
+				<div
+					v-else
+					class="flex justify-between items-center"
+					@click="titleEditModeToggle"
+				>
+					{{ value }}
 				</div>
 			</FormField>
 		</div>
@@ -201,13 +246,8 @@ watch(
 		</div>
 
 		<div class="px-6 pb-6 border-b-1">
-			<div class="flex justify-between items-center mb-2">
-				<div class="font-medium">Description</div>
-				<Edit
-					class="h-4 w-4 text-primary cursor-pointer"
-					@click="descriptionEditModeToggle"
-				/>
-			</div>
+			<div class="font-medium mb-2">Description</div>
+
 			<div v-show="isDescriptionEditMode" class="border rounded-md">
 				<FormField v-slot="{ value, handleChange }" name="description">
 					<QuillEditor
@@ -216,10 +256,15 @@ watch(
 						contentType="html"
 						:toolbar="toolbarOptions"
 						@update:content="handleChange"
+						@blur="descriptionEditModeToggle"
 					/>
 				</FormField>
 			</div>
-			<div v-show="!isDescriptionEditMode" class="ql-snow max-w-none text-sm">
+			<div
+				v-show="!isDescriptionEditMode"
+				class="ql-snow max-w-none text-sm"
+				@click="descriptionEditModeToggle"
+			>
 				<div
 					v-if="form.values?.description"
 					class="ql-editor font-normal p-2!"

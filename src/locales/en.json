@@ -39,6 +39,9 @@
 	"in_progress": "In Progress",
 	"review": "Review",
 	"done": "Done",
+	"task_deleted_successfully": "Task deleted successfully.",
+	"task_created_successfully": "Task created successfully.",
+	"task_updated_successfully": "Task updated successfully.",
   "auth": {
     "invalid_credentials": "Invalid email or password.",
     "user_not_found": "User not found.",

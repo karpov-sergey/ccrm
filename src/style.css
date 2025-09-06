@@ -116,7 +116,7 @@
 
 @layer base {
   * {
-		@apply border-border outline-ring/50;
+		@apply border-border outline-ring/0;
   }
   body {
 		@apply bg-background text-foreground font-sans;
@@ -128,7 +128,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/0;
 	}
   body {
     @apply bg-background text-foreground;
