@@ -10,6 +10,7 @@ import DOMPurify from 'dompurify';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
+import { useDueDateVariant } from '@/composables/dateStatus.ts';
 
 import { createTask, deleteTask, updateTask } from '@/api/tasks';
 
@@ -40,6 +41,7 @@ import {
 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
+import { Badge } from '@/components/ui/badge';
 
 const props = defineProps<{
 	task?: Task;
@@ -50,6 +52,7 @@ const emit = defineEmits(['close', 'updateBoard']);
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
+const { dueDateBadgeVariant, dueDateText } = useDueDateVariant();
 
 const toolbarOptions = [
 	['bold', 'italic', 'underline'], // toggled buttons
@@ -85,6 +88,7 @@ const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
 		title: props.task?.title || 'Card Title',
+		//@ts-ignore
 		status:
 			props.task?.status ||
 			(!!props.originalStatus && props.originalStatus) ||
@@ -445,10 +449,18 @@ watch(
 			</div>
 			<div
 				v-else
-				class="flex cursor-pointer py-1.5"
+				class="flex gap-2 cursor-pointer py-1.5"
 				:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
 				@click="dueDateEditModeToggle"
 			>
+				<Badge
+					v-if="form.values?.date"
+					:variant="dueDateBadgeVariant(form.values?.date)"
+					class="flex gap-2 text-sm"
+				>
+					{{ dueDateText(form.values?.date) }}
+				</Badge>
+
 				{{
 					form.values?.date
 						? new Date(form.values.date).toLocaleDateString(undefined, {

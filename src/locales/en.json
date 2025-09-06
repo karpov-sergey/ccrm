@@ -50,7 +50,8 @@
 		"today": "Today",
 		"tomorrow": "Tomorrow",
 		"in_3_days": "In 3 days",
-		"in_a_week": "In a week"
+		"in_a_week": "In a week",
+		"outdated": "Outdated"
 	},
   "auth": {
     "invalid_credentials": "Invalid email or password.",
