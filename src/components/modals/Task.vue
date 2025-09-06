@@ -12,11 +12,14 @@ import {
 import TaskDetails from '@/components/task-details/TaskDetails.vue';
 import TaskCard from '@/components/board/TaskCard.vue';
 
+import { Plus } from 'lucide-vue-next';
+
 import type { Task } from '@/types/tasks';
 
 const props = defineProps<{
 	task?: Task;
 	disabled?: boolean;
+	originalStatus?: string;
 }>();
 
 const emit = defineEmits(['updateBoard']);
@@ -51,7 +54,9 @@ const onOpenClick = () => {
 			:class="{ 'cursor-pointer': !props.disabled }"
 			@click="onOpenClick"
 		/>
-		<Button v-else @click="onOpenClick">Add Task</Button>
+		<Button v-else type="button" size="sm" @click="onOpenClick">
+			<Plus class="h-4 w-4" />
+		</Button>
 		<AlertDialogContent
 			class="min-w-full p-0 max-h-[90dvh] md:min-w-[700px] overflow-hidden"
 			@open-auto-focus="voidFocus"
@@ -63,6 +68,7 @@ const onOpenClick = () => {
 			<div class="py-6 overflow-y-auto max-h-[90dvh]">
 				<TaskDetails
 					:task="props.task"
+					:originalStatus="props.originalStatus"
 					@close="onDialogToggle"
 					@update-board="onBoardUpdate"
 				/>

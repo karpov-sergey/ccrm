@@ -3,6 +3,7 @@ import { ref } from 'vue';
 
 import draggable from 'vuedraggable';
 import TaskModal from '@/components/modals/Task.vue';
+import Badge from '@/components/ui/badge/Badge.vue';
 
 import { updateTask } from '@/api/tasks';
 
@@ -126,9 +127,6 @@ const onListChange = async (column: BoardColumn, event: any) => {
 
 <template>
 	<div class="h-full w-full min-h-0 flex flex-col">
-		<div class="mb-4 flex-none">
-			<TaskModal :disabled="isDragging" @update-board="onBoardUpdate" />
-		</div>
 		<div
 			class="flex-1 flex w-full overflow-x-auto transform-3d min-h-0 items-stretch"
 		>
@@ -141,11 +139,20 @@ const onListChange = async (column: BoardColumn, event: any) => {
 				]"
 				:data-col-index="colIndex"
 			>
-				<p
-					class="pb-2 mb-2 text-center font-semibold tracking-wide text-sm border-b-1"
+				<div
+					class="flex items-center justify-between gap-2 pb-2 mb-2 font-semibold tracking-wide text-sm border-b-1"
 				>
-					{{ column.title }}
-				</p>
+					<div class="flex gap-2">
+						{{ column.title }}
+						<Badge variant="outline">{{ column.tasks.length }}</Badge>
+					</div>
+
+					<TaskModal
+						:disabled="isDragging"
+						@update-board="onBoardUpdate"
+						:originalStatus="column.status"
+					/>
+				</div>
 				<draggable
 					:list="column.tasks"
 					item-key="id"

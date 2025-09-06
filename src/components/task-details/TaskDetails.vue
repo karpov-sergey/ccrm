@@ -43,6 +43,7 @@ import type { Task } from '@/types/tasks.ts';
 
 const props = defineProps<{
 	task?: Task;
+	originalStatus?: string;
 }>();
 
 const emit = defineEmits(['close', 'updateBoard']);
@@ -84,7 +85,10 @@ const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
 		title: props.task?.title || 'Card Title',
-		status: props.task?.status || 'todo',
+		status:
+			props.task?.status ||
+			(!!props.originalStatus && props.originalStatus) ||
+			'todo',
 		description: props.task?.description || null,
 		date: props.task?.date || null,
 		checklist: props.task?.checklist || [],

@@ -15,21 +15,25 @@ const columnsInitial: BoardColumn[] = [
 		title: 'Todo',
 		id: 1,
 		tasks: [],
+		status: 'todo',
 	},
 	{
 		title: 'In Progress',
 		id: 2,
 		tasks: [],
+		status: 'in_progress',
 	},
 	{
 		title: 'Review',
 		id: 3,
 		tasks: [],
+		status: 'review',
 	},
 	{
 		title: 'Done',
 		id: 4,
 		tasks: [],
+		status: 'done',
 	},
 ];
 

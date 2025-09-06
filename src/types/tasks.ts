@@ -18,6 +18,7 @@ export interface BoardColumn {
 	id: number;
 	title: string;
 	tasks: Task[];
+	status: TaskStatus;
 }
 
 export interface UpdateTaskPayload {
