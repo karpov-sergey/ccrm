@@ -1,4 +1,4 @@
-// Centralized types for tasks and board
+import type { ChecklistItem } from './checklist';
 
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 
@@ -11,6 +11,7 @@ export interface Task {
 	description?: string | null;
 	date?: string | null;
 	sort_index?: number | null;
+	checklist?: ChecklistItem[] | null;
 }
 
 export interface BoardColumn {
@@ -19,13 +20,14 @@ export interface BoardColumn {
 	tasks: Task[];
 }
 
-export interface updateTaskPayload {
+export interface UpdateTaskPayload {
 	title?: string;
 	status?: TaskStatus;
 	user_id?: string | null;
 	column_id?: number;
 	description?: string | null;
 	sort_index?: number | null;
+	checklist?: ChecklistItem[] | null;
 	id?: string;
 }
 

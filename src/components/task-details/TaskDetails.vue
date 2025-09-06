@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/form';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
 import { CornerDownLeft, Check, X, Edit } from 'lucide-vue-next';
+import Checklist from '@/components/checklist/Checklist.vue';
 
 import type { Task } from '@/types/tasks.ts';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
@@ -54,6 +55,15 @@ const formSchema = toTypedSchema(
 		title: z.string().min(2).max(50),
 		status: z.enum(['todo', 'in_progress', 'review', 'done']),
 		description: z.string().max(20000).nullable().optional(),
+		checklist: z
+			.array(
+				z.object({
+					id: z.string(),
+					title: z.string().default(''),
+					completed: z.boolean().default(false),
+				})
+			)
+			.optional(),
 	})
 );
 
@@ -63,6 +73,7 @@ const form = useForm({
 		title: props.task?.title || 'Card Title',
 		status: props.task?.status || 'todo',
 		description: props.task?.description || null,
+		checklist: (props.task as any)?.checklist || [],
 	},
 });
 
@@ -78,31 +89,22 @@ const descriptionOriginal = ref<string | null>(null);
 
 const titleInputRef = ref<{
 	focus: () => void;
-	el?: HTMLInputElement | null;
+	focusEnd?: () => void;
+	element?: HTMLInputElement | null;
 } | null>(null);
 
-//focus title workaround
+// Focus title input via the Input.vue exposed helpers
 const focusTitleInput = () => {
-	const api = titleInputRef.value as {
-		focus?: () => void;
-		element?: HTMLInputElement | null;
-	} | null;
+	const api = titleInputRef.value;
 
 	if (!api) {
 		return;
 	}
 
+	// Prefer placing the caret at the end
+	api.focusEnd?.();
+	// Fallback to simple focus if focusEnd is not available
 	api.focus?.();
-
-	const element = api.element ?? null;
-
-	if (element) {
-		const length = element.value?.length ?? 0;
-
-		try {
-			element.setSelectionRange?.(length, length);
-		} catch {}
-	}
 };
 
 const titleEditModeToggle = () => {
@@ -143,7 +145,8 @@ const getColumnId = (status: string) => {
 };
 
 const onFormEnterKeyUp = (event: KeyboardEvent) => {
-	const element = event.target as HTMLElement | null;
+	const element = event.currentTarget as HTMLElement | null;
+
 	element?.blur?.();
 };
 
@@ -163,6 +166,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					USE_PROFILES: { html: true },
 				})
 			: null,
+		checklist: values.checklist ?? [],
 	};
 
 	try {
@@ -238,6 +242,7 @@ watch(
 				title: task.title || 'Card Title',
 				status: task.status || 'todo',
 				description: (task as any).description || null,
+				checklist: (task as any).checklist || [],
 			},
 		});
 	},
@@ -342,7 +347,14 @@ watch(
 			</div>
 		</div>
 
-		<div class="px-6 pb-6 border-b-1">123123</div>
+		<div class="px-6 pb-6 border-b-1">
+			<FormField v-slot="{ value, handleChange }" name="checklist">
+				<Checklist
+					:modelValue="value"
+					@update:modelValue="(v) => handleChange(v)"
+				/>
+			</FormField>
+		</div>
 		<div class="flex gap-4 justify-between px-6 pt-4">
 			<ConfirmModal
 				v-if="!isCreateMode"

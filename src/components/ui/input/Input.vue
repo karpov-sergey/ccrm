@@ -18,23 +18,33 @@ const modelValue = useVModel(props, 'modelValue', emits, {
 	defaultValue: props.defaultValue,
 });
 
-// Keep a ref to the native input to allow parent components to call focus()
-const inputEl = ref<HTMLInputElement | null>(null);
+// Keep a reference to the native input to allow parent components to call focus()
+const inputElement = ref<HTMLInputElement | null>(null);
 
 function focus() {
-	const el = inputEl.value;
-	if (!el) return;
-	el.focus();
+	const element = inputElement.value;
+	if (!element) return;
+	element.focus();
 }
 
-// Expose focus() and the native element to parent via template ref
-// Allows: const r = ref(); <Input ref="r" />; r.value?.focus(); r.value?.el
-defineExpose({ focus, el: inputEl });
+function focusEnd() {
+	const element = inputElement.value;
+	if (!element) return;
+	element.focus();
+	try {
+		const length = element.value?.length ?? 0;
+		element.setSelectionRange?.(length, length);
+	} catch {}
+}
+
+// Expose focus helpers and the native element to parent via template reference
+// Allows: const refInstance = ref(); <Input ref="refInstance" />; refInstance.value?.focus(); refInstance.value?.focusEnd(); refInstance.value?.element
+defineExpose({ focus, focusEnd, element: inputElement });
 </script>
 
 <template>
 	<input
-		ref="inputEl"
+		ref="inputElement"
 		v-model="modelValue"
 		data-slot="input"
 		:class="

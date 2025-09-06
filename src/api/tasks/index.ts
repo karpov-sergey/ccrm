@@ -1,9 +1,9 @@
 import { supabase } from '@/api/supabase';
 import { handleResponse } from '@/helpers/handleResponse.ts';
 
-import type { updateTaskPayload, Task } from '@/types/tasks.ts';
+import type { UpdateTaskPayload, Task } from '@/types/tasks.ts';
 
-export const createTask = async (data: updateTaskPayload) => {
+export const createTask = async (data: UpdateTaskPayload) => {
 	const response = await supabase.from('tasks').insert([data]);
 
 	return handleResponse(response);
@@ -15,7 +15,7 @@ export const getAllTasks = async (): Promise<Task[]> => {
 	return handleResponse(response);
 };
 
-export const updateTask = async (data: updateTaskPayload) => {
+export const updateTask = async (data: UpdateTaskPayload) => {
 	const response = await supabase
 		.from('tasks')
 		.update(data)
