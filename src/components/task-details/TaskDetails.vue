@@ -400,7 +400,9 @@ watch(
 						})
 					"
 				></div>
-				<div v-else class="text-muted-foreground">—</div>
+				<div v-else class="text-sm text-muted-foreground cursor-pointer">
+					{{ t('add_description') }}
+				</div>
 			</div>
 		</div>
 
@@ -440,6 +442,7 @@ watch(
 			<div
 				v-else
 				class="flex cursor-pointer py-1.5"
+				:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
 				@click="dueDateEditModeToggle"
 			>
 				{{
@@ -449,7 +452,7 @@ watch(
 								month: 'long',
 								day: 'numeric',
 							})
-						: '—'
+						: t('add_due_date')
 				}}
 			</div>
 		</div>
@@ -473,7 +476,7 @@ watch(
 					{{ t('delete') }}
 				</Button>
 			</ConfirmModal>
-			<div class="flex gap-4">
+			<div class="w-full flex justify-end items-end gap-4">
 				<Button type="button" variant="outline" @click="onCancelClick">
 					{{ t('cancel') }}
 				</Button>

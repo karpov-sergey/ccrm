@@ -44,6 +44,8 @@
 	"task_updated_successfully": "Task updated successfully",
 	"please_enter_item_name": "Please enter item name",
 	"description": "Description",
+	"add_due_date": "Add due date",
+	"add_description": "Add description",
 	"calendar": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",
