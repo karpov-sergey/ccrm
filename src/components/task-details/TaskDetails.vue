@@ -22,12 +22,13 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
-import { CornerDownLeft, Check, X, Edit } from 'lucide-vue-next';
 import Checklist from '@/components/checklist/Checklist.vue';
+import { toast } from 'vue-sonner';
+import ConfirmModal from '@/components/modals/ConfirmModal.vue';
+
+import { CornerDownLeft, Check, X, Edit, Trash2 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
-import ConfirmModal from '@/components/modals/ConfirmModal.vue';
-import { toast } from 'vue-sonner';
 
 const props = defineProps<{
 	task?: Task;
@@ -145,7 +146,7 @@ const getColumnId = (status: string) => {
 };
 
 const onFormEnterKeyUp = (event: KeyboardEvent) => {
-	const element = event.currentTarget as HTMLElement | null;
+	const element = event.target as HTMLElement | null;
 
 	element?.blur?.();
 };
@@ -364,7 +365,8 @@ watch(
 				:title="t('are_you_sure_you_want_to_delete_this_item')"
 				@confirm="onRemoveSubmit"
 			>
-				<Button type="button" variant="destructive">
+				<Button class="text-destructive" type="button" variant="link">
+					<Trash2 class="h-4 w-4" />
 					{{ t('delete') }}
 				</Button>
 			</ConfirmModal>
