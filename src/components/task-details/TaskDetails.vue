@@ -22,7 +22,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
-import { CornerDownLeft } from 'lucide-vue-next';
+import { CornerDownLeft, Check, X } from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
@@ -182,6 +182,14 @@ const onCancelClick = () => {
 	emit('close');
 };
 
+const onDescriptionEditSave = () => {
+	isDescriptionEditMode.value = false;
+};
+
+const onDescriptionEditCancel = () => {
+	isDescriptionEditMode.value = false;
+};
+
 watch(
 	() => props.task,
 	(task) => {
@@ -248,17 +256,31 @@ watch(
 		<div class="px-6 pb-6 border-b-1">
 			<div class="font-medium mb-2">Description</div>
 
-			<div v-show="isDescriptionEditMode" class="border rounded-md">
+			<div v-show="isDescriptionEditMode" class="">
 				<FormField v-slot="{ value, handleChange }" name="description">
 					<QuillEditor
-						:content="value"
 						theme="snow"
 						contentType="html"
+						:content="value"
 						:toolbar="toolbarOptions"
 						@update:content="handleChange"
-						@blur="descriptionEditModeToggle"
+						@keyup.enter.stop.prevent
 					/>
 				</FormField>
+				<div class="flex justify-end gap-4 mt-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						@click="onDescriptionEditCancel"
+					>
+						<X class="h-4 w-4" />
+					</Button>
+
+					<Button type="button" size="icon" @click="onDescriptionEditSave">
+						<Check class="h-4 w-4" />
+					</Button>
+				</div>
 			</div>
 			<div
 				v-show="!isDescriptionEditMode"
