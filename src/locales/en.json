@@ -47,6 +47,7 @@
 	"description": "Description",
 	"add_due_date": "Add due date",
 	"add_description": "Add description",
+	"edit_contact": "Edit contact",
 	"calendar": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",

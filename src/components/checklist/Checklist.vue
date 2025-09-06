@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { Trash2, Plus, CheckCheck } from 'lucide-vue-next';
 
-import type { ChecklistItem } from '@/types/checklist';
+import type { ChecklistItem } from '@/types/Checklist.ts';
 
 const props = defineProps<{
 	modelValue?: ChecklistItem[] | null;

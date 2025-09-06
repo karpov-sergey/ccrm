@@ -14,7 +14,7 @@ import TaskCard from '@/components/board/TaskCard.vue';
 
 import { Plus } from 'lucide-vue-next';
 
-import type { Task } from '@/types/tasks';
+import type { Task } from '@/types/Tasks.ts';
 
 const props = defineProps<{
 	task?: Task;

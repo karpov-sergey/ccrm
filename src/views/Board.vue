@@ -5,7 +5,7 @@ import Spinner from '@/components/ui/spinner/Spinner.vue';
 
 import { getAllTasks } from '@/api/tasks';
 
-import type { Task, BoardColumn } from '@/types/tasks';
+import type { Task, BoardColumn } from '@/types/Tasks.ts';
 
 const isLoading = ref(true);
 const tasks = ref<Task[]>([]);

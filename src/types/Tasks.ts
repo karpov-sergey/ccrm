@@ -1,4 +1,4 @@
-import type { ChecklistItem } from './checklist';
+import type { ChecklistItem } from './Checklist.ts';
 
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 

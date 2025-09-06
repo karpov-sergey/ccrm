@@ -9,7 +9,7 @@ import { useDueDateVariant } from '@/composables/dateStatus.ts';
 
 import { TimerReset, CheckCheck } from 'lucide-vue-next';
 
-import type { Task } from '@/types/tasks';
+import type { Task } from '@/types/Tasks.ts';
 
 const props = defineProps<{
 	task: Task;

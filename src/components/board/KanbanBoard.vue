@@ -7,7 +7,7 @@ import Badge from '@/components/ui/badge/Badge.vue';
 
 import { updateTask } from '@/api/tasks';
 
-import type { BoardColumn, Task, TaskStatus } from '@/types/tasks';
+import type { BoardColumn, Task, TaskStatus } from '@/types/Tasks.ts';
 
 const props = defineProps<{
 	columns: BoardColumn[];

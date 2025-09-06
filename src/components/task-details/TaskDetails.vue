@@ -40,7 +40,7 @@ import {
 	TimerReset,
 } from 'lucide-vue-next';
 
-import type { Task } from '@/types/tasks.ts';
+import type { Task } from '@/types/Tasks.ts';
 import { Badge } from '@/components/ui/badge';
 
 const props = defineProps<{
