@@ -54,10 +54,16 @@ const onCalendarUpdate = (v?: DateValue) => {
 	emit('update:modelValue', v ? v.toString() : null);
 	close();
 };
+
+const onOpenUpdate = (isOpen: boolean) => {
+	if (!isOpen) {
+		close();
+	}
+};
 </script>
 
 <template>
-	<Popover :open="isOpen">
+	<Popover :open="isOpen" @update:open="onOpenUpdate">
 		<PopoverTrigger as-child @click="isOpen = !isOpen">
 			<slot />
 		</PopoverTrigger>
