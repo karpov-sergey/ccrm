@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import dayjs from 'dayjs';
+import DOMPurify from 'dompurify';
 
 import { Badge } from '@/components/ui/badge';
 
@@ -26,14 +27,36 @@ const taskChecklistProgress = computed(() => {
 const isAllTaskCheckboxItemsChecked = computed(() => {
 	return taskChecklistProgress.value.done === taskChecklistProgress.value.total;
 });
+
+const purifiedDescription = computed(() => {
+	return DOMPurify.sanitize(props.task.description as string, {
+		USE_PROFILES: { html: false },
+	});
+});
+
+const isAdditionalInfoVisible = computed(() => {
+	return (
+		purifiedDescription.value.length ||
+		taskChecklistProgress.value.total ||
+		props.task.date
+	);
+});
 </script>
 
 <template>
 	<div class="p-2 text-sm rounded-lg border border-transparent bg-white shadow">
-		<div class="mb-2 font-semibold font-sans tracking-wide text-sm">
+		<div
+			class="mb-2 font-semibold font-sans tracking-wide text-sm last-of-type:mb-0"
+		>
 			{{ task.title }}
 		</div>
-		<div class="flex gap-2 items-center">
+		<div
+			v-if="purifiedDescription.length"
+			class="text-xs text-muted-foreground mb-2 line-clamp-2"
+		>
+			{{ purifiedDescription }}
+		</div>
+		<div v-if="isAdditionalInfoVisible" class="flex gap-2 items-center">
 			<Badge
 				v-if="task.checklist?.length"
 				variant="outline"
