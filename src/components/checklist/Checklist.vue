@@ -83,7 +83,7 @@ const removeItem = (id: string) => {
 					'text-primary': isAllChecked,
 				}"
 			/>
-			<div class="font-medium2">Checklist</div>
+			<div class="font-medium">Checklist</div>
 			<div>{{ progress.done }}/{{ progress.total }}</div>
 		</div>
 

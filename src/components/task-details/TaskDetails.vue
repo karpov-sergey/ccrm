@@ -73,7 +73,7 @@ const form = useForm({
 		title: props.task?.title || 'Card Title',
 		status: props.task?.status || 'todo',
 		description: props.task?.description || null,
-		checklist: (props.task as any)?.checklist || [],
+		checklist: props.task?.checklist || [],
 	},
 });
 
@@ -231,7 +231,10 @@ const onDescriptionEditCancel = () => {
 watch(
 	() => props.task,
 	(task) => {
-		if (!task) return;
+		if (!task) {
+			return;
+		}
+
 		// If task prop changes, exit description edit and clear buffers
 		isDescriptionEditMode.value = false;
 		descriptionDraft.value = null;
@@ -241,8 +244,8 @@ watch(
 			values: {
 				title: task.title || 'Card Title',
 				status: task.status || 'todo',
-				description: (task as any).description || null,
-				checklist: (task as any).checklist || [],
+				description: task.description || null,
+				checklist: task.checklist || [],
 			},
 		});
 	},
