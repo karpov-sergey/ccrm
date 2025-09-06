@@ -341,6 +341,8 @@ watch(
 				<div v-else class="text-muted-foreground">—</div>
 			</div>
 		</div>
+
+		<div class="px-6 pb-6 border-b-1">123123</div>
 		<div class="flex gap-4 justify-between px-6 pt-4">
 			<ConfirmModal
 				v-if="!isCreateMode"
