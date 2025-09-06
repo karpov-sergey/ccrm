@@ -43,6 +43,13 @@
 	"task_created_successfully": "Task created successfully",
 	"task_updated_successfully": "Task updated successfully",
 	"please_enter_item_name": "Please enter item name",
+	"description": "Description",
+	"calendar": {
+		"today": "Today",
+		"tomorrow": "Tomorrow",
+		"in_3_days": "In 3 days",
+		"in_a_week": "In a week"
+	},
   "auth": {
     "invalid_credentials": "Invalid email or password.",
     "user_not_found": "User not found.",

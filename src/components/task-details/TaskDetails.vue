@@ -25,8 +25,19 @@ import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
 import Checklist from '@/components/checklist/Checklist.vue';
 import { toast } from 'vue-sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
+import DatePicker from '@/components/date-picker/DatePicker.vue';
 
-import { CornerDownLeft, Check, X, Edit, Trash2 } from 'lucide-vue-next';
+import {
+	CornerDownLeft,
+	Check,
+	X,
+	Edit,
+	Trash2,
+	Calendar as CalendarIcon,
+	Flag,
+	NotebookPen,
+	TimerReset,
+} from 'lucide-vue-next';
 
 import type { Task } from '@/types/tasks.ts';
 
@@ -293,7 +304,8 @@ watch(
 				</div>
 			</FormField>
 		</div>
-		<div class="px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
+			<Flag class="h-4 w-4" />
 			<FormField v-slot="{ componentField }" name="status">
 				<FormItem>
 					<FormControl>
@@ -305,8 +317,12 @@ watch(
 		</div>
 
 		<div class="px-6 pb-6 border-b-1">
-			<div class="font-medium mb-2">Description</div>
-
+			<div class="flex items-center gap-2 mb-2">
+				<NotebookPen class="h-4 w-4" />
+				<div class="font-medium">
+					{{ t('description') }}
+				</div>
+			</div>
 			<div v-show="isDescriptionEditMode" class="">
 				<FormField v-slot name="description">
 					<QuillEditor
@@ -349,6 +365,16 @@ watch(
 				></div>
 				<div v-else class="text-muted-foreground">—</div>
 			</div>
+		</div>
+
+		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
+			<TimerReset class="h-4 w-4" />
+			<DatePicker>
+				<Button variant="outline">
+					<CalendarIcon class="mr-2 h-4 w-4" />
+					{{ 'Pick a date' }}
+				</Button>
+			</DatePicker>
 		</div>
 
 		<div class="px-6 pb-6 border-b-1">
