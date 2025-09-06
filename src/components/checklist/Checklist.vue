@@ -119,7 +119,7 @@ const removeItem = (id: string) => {
 			<Button
 				type="button"
 				variant="outline"
-				class="w-full py-3 flex items-center justify-center gap-2 text-sm hover:bg-transparent hover:text-primary border-0 focus-visible:ring-0"
+				class="w-full py-3 flex items-center justify-center gap-2 text-sm hover:bg-transparent hover:text-primary border-0 focus-visible:ring-0 shadow-none"
 				:disabled="disabled"
 				@click="addItem"
 			>

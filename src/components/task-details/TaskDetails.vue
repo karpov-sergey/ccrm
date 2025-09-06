@@ -91,9 +91,9 @@ const form = useForm({
 
 const isSaving = ref(false);
 const isTitleEditMode = ref(false);
-const isCreateMode = !props.task?.id;
-
 const isDescriptionEditMode = ref(false);
+const isDueDateEditMode = ref(false);
+const isCreateMode = !props.task?.id;
 
 // Draft/original buffers for description editing
 const descriptionDraft = ref<string | null>(null);
@@ -240,6 +240,18 @@ const onDescriptionEditCancel = () => {
 	descriptionOriginal.value = null;
 };
 
+const dueDateEditModeToggle = () => {
+	isDueDateEditMode.value = !isDueDateEditMode.value;
+};
+
+const onDueDateEditSave = () => {
+	isDueDateEditMode.value = false;
+};
+
+const onDueDateEditCancel = () => {
+	isDueDateEditMode.value = false;
+};
+
 watch(
 	() => props.task,
 	(task) => {
@@ -334,7 +346,7 @@ watch(
 						@keyup.enter.stop.prevent
 					/>
 				</FormField>
-				<div class="flex justify-end gap-4 mt-2">
+				<div class="flex justify-end gap-2 mt-2">
 					<Button
 						type="button"
 						variant="outline"
@@ -369,12 +381,36 @@ watch(
 
 		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
 			<TimerReset class="h-4 w-4" />
-			<DatePicker>
-				<Button variant="outline">
-					<CalendarIcon class="mr-2 h-4 w-4" />
-					{{ 'Pick a date' }}
-				</Button>
-			</DatePicker>
+			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
+				<DatePicker>
+					<Button variant="outline">
+						{{ 'Pick a date' }}
+						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
+					</Button>
+				</DatePicker>
+
+				<div class="flex gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						@click="onDueDateEditCancel"
+					>
+						<X class="h-4 w-4" />
+					</Button>
+
+					<Button type="button" size="icon" @click="onDueDateEditSave">
+						<Check class="h-4 w-4" />
+					</Button>
+				</div>
+			</div>
+			<div
+				v-else
+				class="flex cursor-pointer py-1.5"
+				@click="dueDateEditModeToggle"
+			>
+				November 12 2024
+			</div>
 		</div>
 
 		<div class="px-6 pb-6 border-b-1">
