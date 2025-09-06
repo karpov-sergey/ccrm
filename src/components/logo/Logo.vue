@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CakeSlice } from 'lucide-vue-next';
+import { ChefHat } from 'lucide-vue-next';
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import { CakeSlice } from 'lucide-vue-next';
 			<div
 				class="flex gap-2 items-center hover:text-primary transition-[color] duration-200 ease-in-out"
 			>
-				<CakeSlice class="size-8" />
+				<ChefHat class="size-8" />
 				<div
 					class="md:text-[0px] font-bold md:group-data-[state=expanded]:text-xl transition-[font-size] duration-200 ease-in-out"
 				>
