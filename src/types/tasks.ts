@@ -26,6 +26,7 @@ export interface UpdateTaskPayload {
 	user_id?: string | null;
 	column_id?: number;
 	description?: string | null;
+	date?: string | null;
 	sort_index?: number | null;
 	checklist?: ChecklistItem[] | null;
 	id?: string;

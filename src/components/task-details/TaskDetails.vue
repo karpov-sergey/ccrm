@@ -67,6 +67,7 @@ const formSchema = toTypedSchema(
 		title: z.string().min(2).max(50),
 		status: z.enum(['todo', 'in_progress', 'review', 'done']),
 		description: z.string().max(20000).nullable().optional(),
+		date: z.string().nullable().optional(),
 		checklist: z
 			.array(
 				z.object({
@@ -85,6 +86,7 @@ const form = useForm({
 		title: props.task?.title || 'Card Title',
 		status: props.task?.status || 'todo',
 		description: props.task?.description || null,
+		date: props.task?.date || null,
 		checklist: props.task?.checklist || [],
 	},
 });
@@ -98,6 +100,10 @@ const isCreateMode = !props.task?.id;
 // Draft/original buffers for description editing
 const descriptionDraft = ref<string | null>(null);
 const descriptionOriginal = ref<string | null>(null);
+
+// Draft/original buffers for due date editing (stored as YYYY-MM-DD string)
+const dueDateDraft = ref<string | null>(null);
+const dueDateOriginal = ref<string | null>(null);
 
 const titleInputRef = ref<{
 	focus: () => void;
@@ -143,6 +149,17 @@ const descriptionEditModeToggle = () => {
 	isDescriptionEditMode.value = !isDescriptionEditMode.value;
 };
 
+const dueDateEditModeToggle = () => {
+	if (!isDueDateEditMode.value) {
+		dueDateOriginal.value = form.values?.date ?? null;
+		dueDateDraft.value = dueDateOriginal.value;
+	} else {
+		dueDateDraft.value = null;
+		dueDateOriginal.value = null;
+	}
+	isDueDateEditMode.value = !isDueDateEditMode.value;
+};
+
 //temporary hardcoded column id, remove after columns set by user
 const getColumnId = (status: string) => {
 	const columnMap = {
@@ -178,6 +195,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					USE_PROFILES: { html: true },
 				})
 			: null,
+		date: values.date ?? null,
 		checklist: values.checklist ?? [],
 	};
 
@@ -240,16 +258,18 @@ const onDescriptionEditCancel = () => {
 	descriptionOriginal.value = null;
 };
 
-const dueDateEditModeToggle = () => {
-	isDueDateEditMode.value = !isDueDateEditMode.value;
-};
-
 const onDueDateEditSave = () => {
+	form.setFieldValue('date', dueDateDraft.value ?? null);
 	isDueDateEditMode.value = false;
+	dueDateDraft.value = null;
+	dueDateOriginal.value = null;
 };
 
 const onDueDateEditCancel = () => {
+	form.setFieldValue('date', dueDateOriginal.value ?? null);
 	isDueDateEditMode.value = false;
+	dueDateDraft.value = null;
+	dueDateOriginal.value = null;
 };
 
 watch(
@@ -263,12 +283,17 @@ watch(
 		isDescriptionEditMode.value = false;
 		descriptionDraft.value = null;
 		descriptionOriginal.value = null;
+		// Exit due date edit and clear buffers
+		isDueDateEditMode.value = false;
+		dueDateDraft.value = null;
+		dueDateOriginal.value = null;
 		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
 				title: task.title || 'Card Title',
 				status: task.status || 'todo',
 				description: task.description || null,
+				date: task.date || null,
 				checklist: task.checklist || [],
 			},
 		});
@@ -382,9 +407,17 @@ watch(
 		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
 			<TimerReset class="h-4 w-4" />
 			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-				<DatePicker>
+				<DatePicker v-model="dueDateDraft">
 					<Button variant="outline">
-						{{ 'Pick a date' }}
+						{{
+							dueDateDraft
+								? new Date(dueDateDraft).toLocaleDateString(undefined, {
+										year: 'numeric',
+										month: 'long',
+										day: 'numeric',
+									})
+								: 'Pick a date'
+						}}
 						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 					</Button>
 				</DatePicker>
@@ -409,7 +442,15 @@ watch(
 				class="flex cursor-pointer py-1.5"
 				@click="dueDateEditModeToggle"
 			>
-				November 12 2024
+				{{
+					form.values?.date
+						? new Date(form.values.date).toLocaleDateString(undefined, {
+								year: 'numeric',
+								month: 'long',
+								day: 'numeric',
+							})
+						: '—'
+				}}
 			</div>
 		</div>
 

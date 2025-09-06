@@ -14,7 +14,15 @@ defineProps<{
 			</p>
 		</div>
 		<div class="flex justify-between items-center">
-			<span class="text-sm text-gray-600">{{ task.status }}</span>
+			<span v-if="task.date" class="text-sm">
+				{{
+					new Date(task.date).toLocaleDateString(undefined, {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric',
+					})
+				}}
+			</span>
 		</div>
 	</div>
 </template>

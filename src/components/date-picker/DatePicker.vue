@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import type { DateValue } from '@internationalized/date';
-import { getLocalTimeZone, today } from '@internationalized/date';
+import { getLocalTimeZone, today, parseDate } from '@internationalized/date';
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Calendar } from '@/components/ui/calendar';
 import {
 	Popover,
@@ -20,6 +20,12 @@ import {
 
 const { t } = useI18n();
 
+const props = defineProps<{ modelValue?: string | null }>();
+
+const emit = defineEmits<{
+	(e: 'update:modelValue', v: string | null): void;
+}>();
+
 const items = [
 	{ value: 0, label: t('calendar.today') },
 	{ value: 1, label: t('calendar.tomorrow') },
@@ -30,8 +36,23 @@ const items = [
 const value = ref<DateValue>();
 const isOpen = ref(false);
 
-const onCalendarUpdate = () => {
-	isOpen.value = false;
+watch(
+	() => props.modelValue,
+	(v) => {
+		try {
+			value.value = v ? parseDate(v) : undefined;
+		} catch (e) {
+			value.value = undefined;
+		}
+	},
+	{ immediate: true }
+);
+
+const close = () => (isOpen.value = false);
+
+const onCalendarUpdate = (v?: DateValue) => {
+	emit('update:modelValue', v ? v.toString() : null);
+	close();
 };
 </script>
 
@@ -45,8 +66,9 @@ const onCalendarUpdate = () => {
 				@update:model-value="
 					(v) => {
 						if (!v) return;
-						value = today(getLocalTimeZone()).add({ days: Number(v) });
-						isOpen = false;
+						const d = today(getLocalTimeZone()).add({ days: Number(v) });
+						emit('update:modelValue', d.toString());
+						close();
 					}
 				"
 			>
