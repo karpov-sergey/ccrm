@@ -17,9 +17,15 @@ const contacts = ref<Contact[]>([]);
 const columnHelper = createColumnHelper<Contact>();
 
 const contactColumns = [
-	columnHelper.accessor('first_name', {
-		header: () => 'Name',
-	}),
+	// Selection column will be provided by DataTable itself as the first column
+	columnHelper.accessor(
+		(row) => `${row.first_name} ${row.last_name}`.trim(),
+		{
+			id: 'name',
+			header: () => 'Name',
+			cell: (info) => info.getValue(),
+		}
+	),
 	columnHelper.accessor('email', {
 		header: () => 'Email',
 	}),

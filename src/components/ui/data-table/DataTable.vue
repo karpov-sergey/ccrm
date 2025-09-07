@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, watch, type VNodeChild } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDebounceFn } from '@vueuse/core';
 
@@ -20,28 +20,35 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-
+import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 
 import { Trash2 } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
-type Props<T> = {
-	columns: any[];
-	data: T[];
+import type {
+	Header,
+	Cell,
+	HeaderContext,
+	CellContext,
+	ColumnDef,
+	Row,
+} from '@tanstack/vue-table';
+
+interface DataTableProps {
+	columns: ColumnDef<any, any>[];
+	data: any[];
 	enableSearch?: boolean;
-};
+}
 
 const { t } = useI18n();
 
-const props = defineProps<Props<any>>();
+const props = defineProps<DataTableProps>();
 
 const sorting = ref<SortingState>([]);
 const globalFilter = ref('');
-
-// Local safe renderer similar to flexRender
-const renderDef = (def: unknown, ctx: unknown) =>
-	typeof def === 'function' ? (def as (ctx: unknown) => unknown)(ctx) : def;
+const inputValue = ref('');
+const rowSelection = ref<Record<string, boolean>>({});
 
 const table = useVueTable({
 	data: props.data,
@@ -53,92 +60,184 @@ const table = useVueTable({
 		get globalFilter() {
 			return globalFilter.value;
 		},
+		get rowSelection() {
+			return rowSelection.value;
+		},
 	},
 	onSortingChange: (updater) => {
-		// updater can be a function or a value
 		sorting.value =
 			typeof updater === 'function' ? updater(sorting.value) : updater;
 	},
 	onGlobalFilterChange: (value) => {
 		globalFilter.value = value as string;
 	},
+	onRowSelectionChange: (updater) => {
+		rowSelection.value =
+			typeof updater === 'function' ? updater(rowSelection.value) : updater;
+	},
 	getCoreRowModel: getCoreRowModel(),
 	getSortedRowModel: getSortedRowModel(),
 	getFilteredRowModel: getFilteredRowModel(),
 });
 
-const debouncedSetGlobalFilter = useDebounceFn((val: string | number) => {
-	table.setGlobalFilter(String(val));
-}, 150);
+type Renderable<RowData, TValue> =
+	| VNodeChild
+	| ((
+			ctx: HeaderContext<RowData, TValue> | CellContext<RowData, TValue>
+	  ) => VNodeChild);
 
-const setFilter = (value: string | number) => {
-	debouncedSetGlobalFilter(value);
+const renderDefinition = <RowData, TValue>(
+	definition: Renderable<RowData, TValue>,
+	context: HeaderContext<RowData, TValue> | CellContext<RowData, TValue>
+): VNodeChild => {
+	return typeof definition === 'function'
+		? (
+				definition as (
+					ctx: HeaderContext<RowData, TValue> | CellContext<RowData, TValue>
+				) => VNodeChild
+			)(context)
+		: definition;
+};
+
+const onHeaderClick = <RowData, TValue>(
+	header: Header<RowData, TValue>,
+	event: MouseEvent
+): void => {
+	header.column.getToggleSortingHandler()?.(event);
+};
+
+const renderHeader = <RowData, TValue>(
+	header: Header<RowData, TValue>
+): VNodeChild => {
+	return renderDefinition<RowData, TValue>(
+		header.column.columnDef.header as Renderable<RowData, TValue>,
+		header.getContext() as HeaderContext<RowData, TValue>
+	);
+};
+
+const renderCell = <RowData, TValue>(
+	cell: Cell<RowData, TValue>
+): VNodeChild => {
+	return renderDefinition<RowData, TValue>(
+		cell.column.columnDef.cell as Renderable<RowData, TValue>,
+		cell.getContext() as CellContext<RowData, TValue>
+	);
+};
+
+const headerCheckboxState = computed<boolean | 'indeterminate'>(() => {
+	return table.getIsAllPageRowsSelected()
+		? true
+		: table.getIsSomePageRowsSelected()
+			? 'indeterminate'
+			: false;
+});
+
+const onToggleAllSelection = (value: boolean | 'indeterminate'): void => {
+	table.toggleAllPageRowsSelected(!!value);
+};
+
+const rowIsSelected = <RowData,>(row: Row<RowData>): boolean => {
+	return row.getIsSelected();
+};
+
+const onToggleRowSelection = <RowData,>(
+	row: Row<RowData>,
+	value: boolean | 'indeterminate'
+): void => {
+	row.toggleSelected(!!value);
+};
+
+const applyGlobalFilter = useDebounceFn((value: string | number) => {
+	table.setGlobalFilter(String(value));
+}, 200);
+
+const onInputChange = (value: string | number): void => {
+	inputValue.value = String(value ?? '');
 };
 
 const onRemoveSubmit = () => {
 	console.log('onRemoveSubmit');
 };
+
+const selectedRows = computed(() => {
+	return table.getSelectedRowModel().rows.length;
+});
+
+watch(inputValue, (newValue) => applyGlobalFilter(newValue));
+watch(globalFilter, (newValue) => {
+	if (newValue !== inputValue.value) inputValue.value = newValue ?? '';
+});
 </script>
 
 <template>
-	<div>
-		<div
-			v-if="props.enableSearch"
-			class="flex items-center justify-between mb-3"
+	<div v-if="props.enableSearch" class="flex items-center justify-between mb-3">
+		<Input
+			class="w-[220px]"
+			placeholder="Search..."
+			:modelValue="inputValue"
+			@update:modelValue="onInputChange"
+		/>
+
+		<ConfirmModal
+			:title="t('are_you_sure_you_want_to_delete_this_contact')"
+			@confirm="onRemoveSubmit"
 		>
-			<Input
-				class="w-[150px]"
-				placeholder="Search..."
-				:modelValue="globalFilter"
-				@update:modelValue="setFilter"
-			/>
-
-			<ConfirmModal
-				:title="t('are_you_sure_you_want_to_delete_this_contact')"
-				@confirm="onRemoveSubmit"
+			<Button
+				class="text-destructive"
+				type="button"
+				variant="link"
+				:disabled="!selectedRows"
 			>
-				<Button
-					class="text-destructive"
-					type="button"
-					variant="link"
-					:disabled="true"
-				>
-					<Trash2 class="h-4 w-4" />
-					{{ t('delete') }}
-				</Button>
-			</ConfirmModal>
-		</div>
-
-		<Table>
-			<TableHeader>
-				<TableRow
-					v-for="headerGroup in table.getHeaderGroups()"
-					:key="headerGroup.id"
-				>
-					<TableHead
-						v-for="header in headerGroup.headers"
-						:key="header.id"
-						class="cursor-pointer"
-						@click="header.column.getToggleSortingHandler()?.($event)"
-					>
-						{{ renderDef(header.column.columnDef.header, header.getContext()) }}
-						<span v-if="header.column.getIsSorted() === 'asc'">↑</span>
-						<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
-					</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				<template v-if="table.getRowModel().rows.length">
-					<TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-						<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-							{{ renderDef(cell.column.columnDef.cell, cell.getContext()) }}
-						</TableCell>
-					</TableRow>
-				</template>
-				<TableEmpty v-else :colspan="table.getAllLeafColumns().length">
-					No results.
-				</TableEmpty>
-			</TableBody>
-		</Table>
+				<Trash2 class="h-4 w-4" />
+				{{ t('delete') }}
+			</Button>
+		</ConfirmModal>
 	</div>
+	<Table>
+		<TableHeader>
+			<TableRow
+				v-for="headerGroup in table.getHeaderGroups()"
+				:key="headerGroup.id"
+			>
+				<TableHead>
+					<Checkbox
+						:modelValue="headerCheckboxState"
+						@update:modelValue="onToggleAllSelection"
+					/>
+				</TableHead>
+				<TableHead
+					v-for="header in headerGroup.headers"
+					:key="header.id"
+					class="cursor-pointer"
+					@click="onHeaderClick(header, $event)"
+				>
+					{{ renderHeader(header) }}
+					<span v-if="header.column.getIsSorted() === 'asc'">↑</span>
+					<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
+					<span v-else></span>
+				</TableHead>
+			</TableRow>
+		</TableHeader>
+		<TableBody>
+			<template v-if="table.getRowModel().rows.length">
+				<TableRow v-for="row in table.getRowModel().rows" :key="row.id">
+					<TableCell>
+						<Checkbox
+							:modelValue="rowIsSelected(row)"
+							@update:modelValue="
+								(val: boolean | 'indeterminate') =>
+									onToggleRowSelection(row, val)
+							"
+						/>
+					</TableCell>
+					<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+						{{ renderCell(cell) }}
+					</TableCell>
+				</TableRow>
+			</template>
+			<TableEmpty v-else :colspan="table.getAllLeafColumns().length + 1">
+				No results.
+			</TableEmpty>
+		</TableBody>
+	</Table>
 </template>

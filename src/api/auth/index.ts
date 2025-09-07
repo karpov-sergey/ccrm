@@ -6,7 +6,7 @@ import type { SignupPayload, UserPayload } from '@/types/User.ts';
 export const signUp = async (data: SignupPayload) => {
 	const response = await supabase.auth.signUp(data);
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const login = async (email: string, password: string) => {
@@ -15,7 +15,7 @@ export const login = async (email: string, password: string) => {
 		password,
 	});
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const logout = async () => {
@@ -31,7 +31,7 @@ export const getSession = async () => {
 export const getUser = async () => {
 	const response = await supabase.auth.getUser();
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const updateUser = async (userData: UserPayload) => {
@@ -39,7 +39,7 @@ export const updateUser = async (userData: UserPayload) => {
 		data: userData,
 	});
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const changePassword = async (password: string) => {
@@ -47,5 +47,5 @@ export const changePassword = async (password: string) => {
 		password: password,
 	});
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };

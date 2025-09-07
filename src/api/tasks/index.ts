@@ -6,13 +6,13 @@ import type { UpdateTaskPayload, Task } from '@/types/Tasks.ts';
 export const createTask = async (data: UpdateTaskPayload) => {
 	const response = await supabase.from('tasks').insert([data]);
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const getAllTasks = async (): Promise<Task[]> => {
 	const response = await supabase.from('tasks').select('*');
 
-	return handleResponse(response);
+	return handleResponse<Task[] | null>(response) ?? [];
 };
 
 export const updateTask = async (data: UpdateTaskPayload) => {

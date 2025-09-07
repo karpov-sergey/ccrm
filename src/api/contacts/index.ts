@@ -6,13 +6,13 @@ import type { Contact, UpdateContactPayload } from '@/types/Contacts.ts';
 export const createContact = async (data: UpdateContactPayload) => {
 	const response = await supabase.from('contacts').insert([data]);
 
-	return handleResponse(response);
+	return handleResponse<typeof response.data>(response);
 };
 
 export const getAllContacts = async (): Promise<Contact[]> => {
 	const response = await supabase.from('contacts').select('*');
 
-	return handleResponse(response);
+	return handleResponse<Contact[] | null>(response) ?? [];
 };
 //
 // export const updateTask = async (data: UpdateTaskPayload) => {
