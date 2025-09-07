@@ -29,6 +29,9 @@ const contactColumns = [
 		header: () => 'Name',
 		cell: (info) => info.getValue(),
 	}),
+	columnHelper.accessor('phones', {
+		header: () => 'Phones',
+	}),
 	columnHelper.accessor('email', {
 		header: () => 'Email',
 	}),

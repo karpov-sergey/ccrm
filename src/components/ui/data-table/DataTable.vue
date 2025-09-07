@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 
-import { Trash2 } from 'lucide-vue-next';
+import { Trash2, PhoneOutgoing } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
 import type {
@@ -244,7 +244,25 @@ watch(globalFilter, (newValue) => {
 							class="p-4"
 							:key="cell.id"
 						>
-							{{ renderCell(cell) }}
+							<template v-if="cell.column.id === 'phones'">
+								<div
+									v-for="(phone, index) in cell.getValue()"
+									:key="`${phone}_${index}`"
+									class="flex gap-2 items-center mb-1 text-muted-foreground last-of-type:mb-0 hover:text-primary transition-colors"
+								>
+									<PhoneOutgoing class="h-4 w-4" />
+									<a
+										:key="`${phone}_${index}`"
+										:href="`tel:${cell.getValue()}`"
+										class="underline"
+									>
+										{{ phone }}
+									</a>
+								</div>
+							</template>
+							<template v-else>
+								{{ renderCell(cell) }}
+							</template>
 						</TableCell>
 					</TableRow>
 				</template>
@@ -253,7 +271,7 @@ watch(globalFilter, (newValue) => {
 					class="text-sm text-muted-foreground"
 					:colspan="table.getAllLeafColumns().length + 1"
 				>
-					No results.
+					{{ t('no_results_found') }}
 				</TableEmpty>
 			</TableBody>
 		</Table>
