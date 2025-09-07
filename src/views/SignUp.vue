@@ -149,8 +149,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 								"
 								@click="onSetPasswordVisibilityClick"
 							>
-								<Eye class="z-50" v-if="!isPasswordVisible" />
-								<EyeClosed class="z-50" v-if="isPasswordVisible" />
+								<Eye v-if="!isPasswordVisible" />
+								<EyeClosed v-if="isPasswordVisible" />
 							</Button>
 						</FormControl>
 						<FormMessage />

@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 
-import { Trash2, PhoneOutgoing } from 'lucide-vue-next';
+import { Trash2, PhoneOutgoing, ExternalLink } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
 import type {
@@ -34,6 +34,7 @@ import type {
 	ColumnDef,
 	Row,
 } from '@tanstack/vue-table';
+import Link from '@/components/ui/link/Link.vue';
 
 interface DataTableProps {
 	columns: ColumnDef<any, any>[];
@@ -257,16 +258,24 @@ watch(globalFilter, (newValue) => {
 									:key="`${phone}_${index}`"
 									class="mb-1 last-of-type:mb-0"
 								>
-									<a
+									<Link
 										:key="`${phone}_${index}`"
-										:href="`tel:${cell.getValue()}`"
-										class="inline-flex gap-2 items-center text-muted-foreground underline hover:text-primary transition-colors"
+										:href="`tel:${phone}`"
+										:text="phone"
 									>
 										<PhoneOutgoing class="h-4 w-4" />
-
-										{{ phone }}
-									</a>
+									</Link>
 								</div>
+							</template>
+
+							<template v-else-if="cell.column.id === 'email'">
+								<Link
+									v-if="!!cell.getValue()?.length"
+									:href="`mailto:${cell.getValue()}`"
+									:text="cell.getValue()"
+								>
+									<ExternalLink class="h-4 w-4" />
+								</Link>
 							</template>
 							<template v-else>
 								{{ renderCell(cell) }}

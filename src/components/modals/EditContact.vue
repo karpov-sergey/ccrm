@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
@@ -26,14 +27,20 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-
-import { Plus, Trash2, Edit, PhoneOutgoing } from 'lucide-vue-next';
-
-import type { Contact } from '@/types/Contacts.ts';
+import { toast } from 'vue-sonner';
+import Link from '@/components/ui/link/Link.vue';
 
 import { createContact, updateContact } from '@/api/contacts';
-import { storeToRefs } from 'pinia';
-import { toast } from 'vue-sonner';
+
+import {
+	Plus,
+	Trash2,
+	Edit,
+	PhoneOutgoing,
+	ExternalLink,
+} from 'lucide-vue-next';
+
+import type { Contact } from '@/types/Contacts.ts';
 
 const props = defineProps<{
 	isForceEdit?: boolean;
@@ -53,7 +60,7 @@ const phoneRegex = /^[+0-9 ()-]{4,20}$/;
 
 const formSchema = toTypedSchema(
 	z.object({
-		firstName: z.string().min(2).max(50),
+		firstName: z.string().nonempty().min(2).max(50),
 		lastName: z.string().min(2).max(50).optional(),
 		phones: z
 			.array(
@@ -66,6 +73,7 @@ const formSchema = toTypedSchema(
 			)
 			.max(5)
 			.optional(),
+		email: z.string().email().optional(),
 	})
 );
 
@@ -75,6 +83,7 @@ const form = useForm({
 		firstName: '',
 		lastName: '',
 		phones: [''],
+		email: '',
 	},
 });
 
@@ -139,6 +148,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 				phones: (values.phones || [])
 					.map((p) => p.trim())
 					.filter((p) => p.length > 0),
+				email: values.email || '',
 			});
 
 			toast.success(t('contact_updated_successfully'));
@@ -150,6 +160,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 				phones: (values.phones || [])
 					.map((p) => p.trim())
 					.filter((p) => p.length > 0),
+				email: values.email || '',
 			});
 
 			toast.success(t('contact_created_successfully'));
@@ -173,6 +184,7 @@ const resetFormValuesFromContact = () => {
 				phones: (props.contact.phones && props.contact.phones.length > 0
 					? props.contact.phones
 					: ['']) as string[],
+				email: props.contact.email ?? '',
 			},
 		});
 	} else {
@@ -181,6 +193,7 @@ const resetFormValuesFromContact = () => {
 				firstName: '',
 				lastName: '',
 				phones: [''],
+				email: '',
 			},
 		});
 	}
@@ -239,7 +252,11 @@ const toggleEditMode = () => {
 						</FormItem>
 					</FormField>
 
-					<FormField v-slot="{ value, componentField }" name="lastName">
+					<FormField
+						v-if="isEditMode || contact?.last_name"
+						v-slot="{ value, componentField }"
+						name="lastName"
+					>
 						<FormItem>
 							<FormLabel>
 								{{ t('last_name') }}
@@ -254,7 +271,10 @@ const toggleEditMode = () => {
 						</FormItem>
 					</FormField>
 
-					<div class="flex flex-col gap-2">
+					<div
+						v-if="isEditMode || contact?.phones?.length"
+						class="flex flex-col gap-2"
+					>
 						<label
 							class="flex items-center justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 						>
@@ -284,14 +304,9 @@ const toggleEditMode = () => {
 											v-bind="componentField"
 										/>
 										<div v-else class="border-b pb-1">
-											<a
-												:href="`tel:${value}`"
-												class="text-sm inline-flex gap-2 items-center text-muted-foreground underline hover:text-primary transition-colors"
-											>
+											<Link :href="`tel:${value}`" :text="value">
 												<PhoneOutgoing class="h-4 w-4" />
-
-												{{ value }}
-											</a>
+											</Link>
 										</div>
 									</FormControl>
 									<FormMessage />
@@ -319,6 +334,27 @@ const toggleEditMode = () => {
 							<Plus class="h-4 w-4" />
 						</Button>
 					</div>
+
+					<FormField
+						v-if="isEditMode || contact?.email?.length"
+						v-slot="{ value, componentField }"
+						name="email"
+					>
+						<FormItem>
+							<FormLabel>
+								{{ t('email') }}
+							</FormLabel>
+							<FormControl>
+								<Input v-if="isEditMode" type="text" v-bind="componentField" />
+								<div v-else class="border-b pb-1">
+									<Link :href="`mailto:${value}`" :text="value">
+										<ExternalLink class="h-4 w-4" />
+									</Link>
+								</div>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					</FormField>
 				</div>
 				<DialogFooter
 					class="flex flex-row items-center justify-between gap-2 pt-6"
