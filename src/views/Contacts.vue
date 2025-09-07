@@ -11,6 +11,7 @@ import { createColumnHelper } from '@tanstack/vue-table';
 import { deleteContacts, getAllContacts } from '@/api/contacts';
 
 import { Plus } from 'lucide-vue-next';
+import { Icon } from '@iconify/vue';
 
 import type { Contact } from '@/types/Contacts.ts';
 
@@ -74,6 +75,9 @@ const onDeleteContacts = async (ids: string[]) => {
 					</Button>
 				</EditContact>
 			</div>
+
+			<Icon icon="simple-icons:facebook" class="w-6 h-6 mb-2" />
+
 			<DataTable
 				:columns="contactColumns"
 				:data="contacts"

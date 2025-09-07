@@ -42,7 +42,8 @@ const isSaving = ref(false);
 const formSchema = toTypedSchema(
 	z.object({
 		firstName: z.string().min(2).max(50),
-		lastName: z.string().min(2).max(50),
+		lastName: z.string().min(2).max(50).optional(),
+		phones: z.array(z.string().min(2).max(20)).max(5).optional(),
 	})
 );
 
@@ -51,6 +52,7 @@ const form = useForm({
 	initialValues: {
 		firstName: '',
 		lastName: '',
+		phones: [],
 	},
 });
 
@@ -74,8 +76,9 @@ const onSubmit = form.handleSubmit(async (values) => {
 	try {
 		await createContact({
 			first_name: values.firstName,
-			last_name: values.lastName,
+			last_name: values.lastName || '',
 			user_id: user.value?.id,
+			phones: values.phones || [],
 		});
 
 		isModalOpen.value = false;

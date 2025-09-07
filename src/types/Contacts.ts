@@ -1,11 +1,17 @@
 export interface UpdateContactPayload {
-	id?: string;
-	first_name: string;
-	last_name: string;
 	email?: string;
-	phone?: string;
+	first_name: string;
+	id?: string;
+	last_name?: string;
 	notes?: string;
-	user_id?: string | null;
+	user_id?: string;
+	address?: null;
+	birthday?: null;
+	facebook?: null;
+	instagram?: null;
+	phones?: string[] | [];
+	telegram?: null;
+	whatsapp?: null;
 }
 
 export interface Contact {
@@ -15,6 +21,12 @@ export interface Contact {
 	id: string;
 	last_name: string;
 	notes: string;
-	phone: string;
 	user_id: string;
+	address: null;
+	birthday: null;
+	facebook: null;
+	instagram: null;
+	phones: string[] | [];
+	telegram: null;
+	whatsapp: null;
 }

@@ -239,7 +239,11 @@ watch(globalFilter, (newValue) => {
 								"
 							/>
 						</TableCell>
-						<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+						<TableCell
+							v-for="cell in row.getVisibleCells()"
+							class="p-4"
+							:key="cell.id"
+						>
 							{{ renderCell(cell) }}
 						</TableCell>
 					</TableRow>
