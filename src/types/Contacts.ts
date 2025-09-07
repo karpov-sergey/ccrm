@@ -7,3 +7,14 @@ export interface UpdateContactPayload {
 	notes?: string;
 	user_id?: string | null;
 }
+
+export interface Contact {
+	created_at: string;
+	email?: string;
+	first_name: string;
+	id: string;
+	last_name: string;
+	notes: string;
+	phone: string;
+	user_id: string;
+}

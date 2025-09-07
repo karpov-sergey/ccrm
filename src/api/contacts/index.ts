@@ -1,7 +1,7 @@
 import { supabase } from '@/api/supabase';
 import { handleResponse } from '@/helpers/handleResponse.ts';
 
-import type { UpdateContactPayload } from '@/types/Contacts.ts';
+import type { Contact, UpdateContactPayload } from '@/types/Contacts.ts';
 
 export const createContact = async (data: UpdateContactPayload) => {
 	const response = await supabase.from('contacts').insert([data]);
@@ -9,11 +9,11 @@ export const createContact = async (data: UpdateContactPayload) => {
 	return handleResponse(response);
 };
 
-// export const getAllTasks = async (): Promise<Task[]> => {
-// 	const response = await supabase.from('tasks').select('*');
-//
-// 	return handleResponse(response);
-// };
+export const getAllContacts = async (): Promise<Contact[]> => {
+	const response = await supabase.from('contacts').select('*');
+
+	return handleResponse(response);
+};
 //
 // export const updateTask = async (data: UpdateTaskPayload) => {
 // 	const response = await supabase

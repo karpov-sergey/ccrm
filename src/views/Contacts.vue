@@ -1,30 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import EditContact from '@/components/modals/EditContact.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
-
-const isLoading = ref(false);
-
 import DataTable from '@/components/ui/data-table/DataTable.vue';
+
 import { createColumnHelper } from '@tanstack/vue-table';
+import { getAllContacts } from '@/api/contacts';
 
-type Contact = {
-	id: number;
-	name: string;
-	email: string;
-};
+import type { Contact } from '@/types/Contacts.ts';
 
-const contacts: Contact[] = [
-	{ id: 1, name: 'Alice Johnson', email: 'alice@example.com' },
-	{ id: 2, name: 'Bob Smith', email: 'bob@example.com' },
-];
+const isLoading = ref(true);
+const contacts = ref<Contact[]>([]);
 
 const columnHelper = createColumnHelper<Contact>();
 
 const contactColumns = [
-	columnHelper.accessor('name', {
+	columnHelper.accessor('first_name', {
 		header: () => 'Name',
 	}),
 	columnHelper.accessor('email', {
@@ -32,20 +25,33 @@ const contactColumns = [
 	}),
 ];
 
-const onAddNewContactClick = () => {};
+onBeforeMount(async () => {
+	await updateContactsList();
+});
+
+const updateContactsList = async () => {
+	try {
+		contacts.value = await getAllContacts();
+	} catch (error) {
+		console.error(error);
+	} finally {
+		isLoading.value = false;
+	}
+};
 </script>
 
 <template>
 	<section
-		class="flex p-4"
-		:class="{ 'justify-center items-center h-full': isLoading }"
+		class="p-4"
+		:class="{ 'flex justify-center items-center h-full': isLoading }"
 	>
 		<Spinner v-if="isLoading" />
 		<template v-else>
-			<EditContact>
-				<Button @click="onAddNewContactClick"> Add New Contact </Button>
-			</EditContact>
-
+			<div class="mb-4">
+				<EditContact>
+					<Button> Add New Contact </Button>
+				</EditContact>
+			</div>
 			<DataTable
 				:columns="contactColumns"
 				:data="contacts"
