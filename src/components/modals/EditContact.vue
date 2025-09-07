@@ -29,9 +29,12 @@ import {
 
 import { createContact } from '@/api/contacts';
 import { storeToRefs } from 'pinia';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
+
+const emit = defineEmits(['contact-created']);
 
 const isModalOpen = ref(false);
 const isSaving = ref(false);
@@ -76,6 +79,10 @@ const onSubmit = form.handleSubmit(async (values) => {
 		});
 
 		isModalOpen.value = false;
+
+		emit('contact-created');
+
+		toast.success(t('contact_created_successfully'));
 	} catch (error) {
 	} finally {
 		isSaving.value = false;

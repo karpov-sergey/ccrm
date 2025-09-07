@@ -26,8 +26,8 @@ export const getAllContacts = async (): Promise<Contact[]> => {
 // 	return handleResponse(response);
 // };
 //
-// export const deleteTask = async (id: string) => {
-// 	const response = await supabase.from('tasks').delete().eq('id', id);
-//
-// 	return handleResponse(response);
-// };
+export const deleteContacts = async (ids: string[]) => {
+	const response = await supabase.from('contacts').delete().in('id', ids);
+
+	return handleResponse(response);
+};

@@ -45,6 +45,8 @@ const { t } = useI18n();
 
 const props = defineProps<DataTableProps>();
 
+const emit = defineEmits(['delete-contacts']);
+
 const sorting = ref<SortingState>([]);
 const globalFilter = ref('');
 const inputValue = ref('');
@@ -156,7 +158,9 @@ const onInputChange = (value: string | number): void => {
 };
 
 const onRemoveSubmit = () => {
-	console.log('onRemoveSubmit');
+	const ids = table.getSelectedRowModel().rows.map((row) => row.original.id);
+
+	emit('delete-contacts', ids);
 };
 
 const selectedRows = computed(() => {
@@ -193,51 +197,61 @@ watch(globalFilter, (newValue) => {
 			</Button>
 		</ConfirmModal>
 	</div>
-	<Table>
-		<TableHeader>
-			<TableRow
-				v-for="headerGroup in table.getHeaderGroups()"
-				:key="headerGroup.id"
-			>
-				<TableHead>
-					<Checkbox
-						:modelValue="headerCheckboxState"
-						@update:modelValue="onToggleAllSelection"
-					/>
-				</TableHead>
-				<TableHead
-					v-for="header in headerGroup.headers"
-					:key="header.id"
-					class="cursor-pointer"
-					@click="onHeaderClick(header, $event)"
+	<div class="rounded-lg border">
+		<Table>
+			<TableHeader>
+				<TableRow
+					v-for="headerGroup in table.getHeaderGroups()"
+					:key="headerGroup.id"
 				>
-					{{ renderHeader(header) }}
-					<span v-if="header.column.getIsSorted() === 'asc'">↑</span>
-					<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
-					<span v-else></span>
-				</TableHead>
-			</TableRow>
-		</TableHeader>
-		<TableBody>
-			<template v-if="table.getRowModel().rows.length">
-				<TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-					<TableCell>
+					<TableHead>
 						<Checkbox
-							:modelValue="rowIsSelected(row)"
-							@update:modelValue="
-								(val: boolean | 'indeterminate') =>
-									onToggleRowSelection(row, val)
-							"
+							:modelValue="headerCheckboxState"
+							@update:modelValue="onToggleAllSelection"
 						/>
-					</TableCell>
-					<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-						{{ renderCell(cell) }}
-					</TableCell>
+					</TableHead>
+					<TableHead
+						v-for="header in headerGroup.headers"
+						:key="header.id"
+						class="cursor-pointer"
+						@click="onHeaderClick(header, $event)"
+					>
+						{{ renderHeader(header) }}
+						<span v-if="header.column.getIsSorted() === 'asc'">↑</span>
+						<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
+						<span v-else></span>
+					</TableHead>
 				</TableRow>
-			</template>
-			<TableEmpty v-else :colspan="table.getAllLeafColumns().length + 1">
-				No results.
-			</TableEmpty>
-		</TableBody>
-	</Table>
+			</TableHeader>
+			<TableBody>
+				<template v-if="table.getRowModel().rows.length">
+					<TableRow
+						v-for="row in table.getRowModel().rows"
+						:key="row.id"
+						:class="{ 'bg-muted': rowIsSelected(row) }"
+					>
+						<TableCell class="p-4">
+							<Checkbox
+								:modelValue="rowIsSelected(row)"
+								@update:modelValue="
+									(val: boolean | 'indeterminate') =>
+										onToggleRowSelection(row, val)
+								"
+							/>
+						</TableCell>
+						<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+							{{ renderCell(cell) }}
+						</TableCell>
+					</TableRow>
+				</template>
+				<TableEmpty
+					v-else
+					class="text-sm text-muted-foreground"
+					:colspan="table.getAllLeafColumns().length + 1"
+				>
+					No results.
+				</TableEmpty>
+			</TableBody>
+		</Table>
+	</div>
 </template>

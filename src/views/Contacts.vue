@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { Button } from '@/components/ui/button';
 import EditContact from '@/components/modals/EditContact.vue';
@@ -7,9 +8,13 @@ import Spinner from '@/components/ui/spinner/Spinner.vue';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
 
 import { createColumnHelper } from '@tanstack/vue-table';
-import { getAllContacts } from '@/api/contacts';
+import { deleteContacts, getAllContacts } from '@/api/contacts';
+
+import { Plus } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
+
+const { t } = useI18n();
 
 const isLoading = ref(true);
 const contacts = ref<Contact[]>([]);
@@ -18,14 +23,11 @@ const columnHelper = createColumnHelper<Contact>();
 
 const contactColumns = [
 	// Selection column will be provided by DataTable itself as the first column
-	columnHelper.accessor(
-		(row) => `${row.first_name} ${row.last_name}`.trim(),
-		{
-			id: 'name',
-			header: () => 'Name',
-			cell: (info) => info.getValue(),
-		}
-	),
+	columnHelper.accessor((row) => `${row.first_name} ${row.last_name}`.trim(), {
+		id: 'name',
+		header: () => 'Name',
+		cell: (info) => info.getValue(),
+	}),
 	columnHelper.accessor('email', {
 		header: () => 'Email',
 	}),
@@ -36,12 +38,23 @@ onBeforeMount(async () => {
 });
 
 const updateContactsList = async () => {
+	isLoading.value = true;
+
 	try {
 		contacts.value = await getAllContacts();
 	} catch (error) {
 		console.error(error);
 	} finally {
 		isLoading.value = false;
+	}
+};
+
+const onDeleteContacts = async (ids: string[]) => {
+	try {
+		await deleteContacts(ids);
+	} catch (error) {
+	} finally {
+		await updateContactsList();
 	}
 };
 </script>
@@ -53,15 +66,19 @@ const updateContactsList = async () => {
 	>
 		<Spinner v-if="isLoading" />
 		<template v-else>
-			<div class="mb-4">
-				<EditContact>
-					<Button> Add New Contact </Button>
+			<div class="mb-2">
+				<EditContact @contact-created="updateContactsList">
+					<Button class="flex gap-2 items-center">
+						<Plus class="w-4 h-4" />
+						{{ t('add_new_contact') }}
+					</Button>
 				</EditContact>
 			</div>
 			<DataTable
 				:columns="contactColumns"
 				:data="contacts"
 				:enable-search="true"
+				@delete-contacts="onDeleteContacts"
 			/>
 		</template>
 	</section>

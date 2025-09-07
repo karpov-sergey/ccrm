@@ -49,6 +49,8 @@
 	"add_due_date": "Add due date",
 	"add_description": "Add description",
 	"edit_contact": "Edit contact",
+	"add_new_contact": "Add new contact",
+	"contact_created_successfully": "Contact created successfully",
 	"calendar": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",
