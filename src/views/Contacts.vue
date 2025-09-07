@@ -10,7 +10,7 @@ import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { createColumnHelper } from '@tanstack/vue-table';
 import { deleteContacts, getAllContacts } from '@/api/contacts';
 
-import { Plus } from 'lucide-vue-next';
+import { Plus, EyeIcon } from 'lucide-vue-next';
 import { Icon } from '@iconify/vue';
 
 import type { Contact } from '@/types/Contacts.ts';
@@ -71,7 +71,10 @@ const onDeleteContacts = async (ids: string[]) => {
 		<Spinner v-if="isLoading" />
 		<template v-else>
 			<div class="mb-2">
-				<EditContact @contact-created="updateContactsList">
+				<EditContact
+					:is-force-edit="true"
+					@contact-created="updateContactsList"
+				>
 					<Button class="flex gap-2 items-center">
 						<Plus class="w-4 h-4" />
 						{{ t('add_new_contact') }}
@@ -86,7 +89,16 @@ const onDeleteContacts = async (ids: string[]) => {
 				:data="contacts"
 				:enable-search="true"
 				@delete-contacts="onDeleteContacts"
-			/>
+			>
+				<template #row-actions-header> </template>
+				<template #row-actions="{ row }: { row: Contact }">
+					<EditContact :contact="row" @contact-created="updateContactsList">
+						<Button type="button" size="icon">
+							<EyeIcon class="w-4 h-4" />
+						</Button>
+					</EditContact>
+				</template>
+			</DataTable>
 		</template>
 	</section>
 </template>

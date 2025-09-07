@@ -182,20 +182,23 @@ watch(globalFilter, (newValue) => {
 			@update:modelValue="onInputChange"
 		/>
 
-		<ConfirmModal
-			:title="t('are_you_sure_you_want_to_delete_this_contact')"
-			@confirm="onRemoveSubmit"
-		>
-			<Button
-				class="text-destructive"
-				type="button"
-				variant="link"
-				:disabled="!selectedRows"
+		<div class="flex items-center gap-2">
+			<slot />
+			<ConfirmModal
+				:title="t('are_you_sure_you_want_to_delete_this_contact')"
+				@confirm="onRemoveSubmit"
 			>
-				<Trash2 class="h-4 w-4" />
-				{{ t('delete') }}
-			</Button>
-		</ConfirmModal>
+				<Button
+					class="text-destructive"
+					type="button"
+					variant="link"
+					:disabled="!selectedRows"
+				>
+					<Trash2 class="h-4 w-4" />
+					{{ t('delete') }}
+				</Button>
+			</ConfirmModal>
+		</div>
 	</div>
 	<div class="rounded-lg border">
 		<Table>
@@ -220,6 +223,10 @@ watch(globalFilter, (newValue) => {
 						<span v-if="header.column.getIsSorted() === 'asc'">↑</span>
 						<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
 						<span v-else></span>
+					</TableHead>
+					<!-- Extra actions column header (non-sortable) -->
+					<TableHead>
+						<slot name="row-actions-header" />
 					</TableHead>
 				</TableRow>
 			</TableHeader>
@@ -248,14 +255,15 @@ watch(globalFilter, (newValue) => {
 								<div
 									v-for="(phone, index) in cell.getValue()"
 									:key="`${phone}_${index}`"
-									class="flex gap-2 items-center mb-1 text-muted-foreground last-of-type:mb-0 hover:text-primary transition-colors"
+									class="mb-1 last-of-type:mb-0"
 								>
-									<PhoneOutgoing class="h-4 w-4" />
 									<a
 										:key="`${phone}_${index}`"
 										:href="`tel:${cell.getValue()}`"
-										class="underline"
+										class="inline-flex gap-2 items-center text-muted-foreground underline hover:text-primary transition-colors"
 									>
+										<PhoneOutgoing class="h-4 w-4" />
+
 										{{ phone }}
 									</a>
 								</div>
@@ -264,12 +272,15 @@ watch(globalFilter, (newValue) => {
 								{{ renderCell(cell) }}
 							</template>
 						</TableCell>
+						<TableCell class="p-4">
+							<slot name="row-actions" :row="row.original" />
+						</TableCell>
 					</TableRow>
 				</template>
 				<TableEmpty
 					v-else
 					class="text-sm text-muted-foreground"
-					:colspan="table.getAllLeafColumns().length + 1"
+					:colspan="table.getAllLeafColumns().length + 1 + 1"
 				>
 					{{ t('no_results_found') }}
 				</TableEmpty>

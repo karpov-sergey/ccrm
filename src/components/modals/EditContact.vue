@@ -29,17 +29,16 @@ import {
 
 import { Plus, Trash2, Edit } from 'lucide-vue-next';
 
+import type { Contact } from '@/types/Contacts.ts';
+
 import { createContact } from '@/api/contacts';
 import { storeToRefs } from 'pinia';
 import { toast } from 'vue-sonner';
 
-interface Props {
-	isEditVisible?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	isEditVisible: false,
-});
+const props = defineProps<{
+	isForceEdit?: boolean;
+	contact?: Contact;
+}>();
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
@@ -48,7 +47,7 @@ const emit = defineEmits(['contact-created']);
 
 const isModalOpen = ref(false);
 const isSaving = ref(false);
-const isEditMode = ref(false);
+const isEditModeSwitched = ref(false);
 
 const phoneRegex = /^[+0-9 ()-]{4,20}$/;
 
@@ -92,6 +91,10 @@ const form = useForm({
 // 	},
 // 	{ immediate: true }
 // );
+
+const isEditMode = computed((): boolean => {
+	return props.isForceEdit || isEditModeSwitched.value;
+});
 
 const phonesCanAddMore = computed(() => {
 	const phones = form.values.phones;
@@ -172,7 +175,7 @@ const onOpenUpdate = (isOpen: boolean) => {
 };
 
 const toggleEditMode = () => {
-	isEditMode.value = !isEditMode.value;
+	isEditModeSwitched.value = !isEditModeSwitched.value;
 };
 </script>
 
@@ -271,7 +274,12 @@ const toggleEditMode = () => {
 				<DialogFooter
 					class="flex flex-row items-center justify-between gap-2 pt-6"
 				>
-					<Button type="button" size="icon" @click="toggleEditMode">
+					<Button
+						v-if="!props.isForceEdit"
+						type="button"
+						size="icon"
+						@click="toggleEditMode"
+					>
 						<Edit class="h-4 w-4" />
 					</Button>
 					<div class="w-full flex items-center justify-end gap-2">
