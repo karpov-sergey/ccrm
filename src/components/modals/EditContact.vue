@@ -100,7 +100,7 @@ const onCancelClick = () => {};
 		<DialogTrigger as-child>
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
-		<DialogContent class="sm:max-w-[425px]">
+		<DialogContent class="sm:max-w-[425px]" @open-auto-focus.prevent>
 			<form @submit="onSubmit">
 				<DialogHeader>
 					<DialogTitle>

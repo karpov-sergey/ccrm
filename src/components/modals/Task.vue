@@ -26,10 +26,6 @@ const emit = defineEmits(['updateBoard']);
 
 const isOpen = ref(false);
 
-const voidFocus = (event: Event) => {
-	event.preventDefault();
-};
-
 const onDialogToggle = () => {
 	isOpen.value = !isOpen.value;
 };
@@ -59,7 +55,6 @@ const onOpenClick = () => {
 		</Button>
 		<AlertDialogContent
 			class="min-w-full p-0 max-h-[90dvh] md:min-w-[700px] overflow-hidden"
-			@open-auto-focus="voidFocus"
 		>
 			<template v-show="false">
 				<AlertDialogTitle />
