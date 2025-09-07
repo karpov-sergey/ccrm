@@ -9,23 +9,24 @@ export const createContact = async (data: UpdateContactPayload) => {
 	return handleResponse<typeof response.data>(response);
 };
 
+export const updateContact = async (data: UpdateContactPayload & { id: string }) => {
+	const { id, ...rest } = data;
+	const response = await supabase
+		.from('contacts')
+		.update(rest)
+		.eq('id', id)
+		.select()
+		.single();
+
+	return handleResponse<typeof response.data>(response);
+};
+
 export const getAllContacts = async (): Promise<Contact[]> => {
 	const response = await supabase.from('contacts').select('*');
 
 	return handleResponse<Contact[] | null>(response) ?? [];
 };
-//
-// export const updateTask = async (data: UpdateTaskPayload) => {
-// 	const response = await supabase
-// 		.from('tasks')
-// 		.update(data)
-// 		.eq('id', data.id)
-// 		.select()
-// 		.single();
-//
-// 	return handleResponse(response);
-// };
-//
+
 export const deleteContacts = async (ids: string[]) => {
 	const response = await supabase.from('contacts').delete().in('id', ids);
 

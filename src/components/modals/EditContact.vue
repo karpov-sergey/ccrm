@@ -27,11 +27,11 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 
-import { Plus, Trash2, Edit } from 'lucide-vue-next';
+import { Plus, Trash2, Edit, PhoneOutgoing } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
 
-import { createContact } from '@/api/contacts';
+import { createContact, updateContact } from '@/api/contacts';
 import { storeToRefs } from 'pinia';
 import { toast } from 'vue-sonner';
 
@@ -77,20 +77,6 @@ const form = useForm({
 		phones: [''],
 	},
 });
-
-// watch(
-// 	user,
-// 	(value) => {
-// 		if (!value) return;
-// 		form.resetForm({
-// 			values: {
-// 				firstName: value.user_metadata?.firstName ?? '',
-// 				lastName: value.user_metadata?.lastName ?? '',
-// 			},
-// 		});
-// 	},
-// 	{ immediate: true }
-// );
 
 const isEditMode = computed((): boolean => {
 	return props.isForceEdit || isEditModeSwitched.value;
@@ -144,33 +130,76 @@ const onSubmit = form.handleSubmit(async (values) => {
 	isSaving.value = true;
 
 	try {
-		await createContact({
-			first_name: values.firstName,
-			last_name: values.lastName || '',
-			user_id: user.value?.id,
-			phones: (values.phones || [])
-				.map((p) => p.trim())
-				.filter((p) => p.length > 0),
-		});
+		if (props.contact?.id) {
+			await updateContact({
+				id: props.contact.id,
+				first_name: values.firstName,
+				last_name: values.lastName || '',
+				user_id: user.value?.id,
+				phones: (values.phones || [])
+					.map((p) => p.trim())
+					.filter((p) => p.length > 0),
+			});
+
+			toast.success(t('contact_updated_successfully'));
+		} else {
+			await createContact({
+				first_name: values.firstName,
+				last_name: values.lastName || '',
+				user_id: user.value?.id,
+				phones: (values.phones || [])
+					.map((p) => p.trim())
+					.filter((p) => p.length > 0),
+			});
+
+			toast.success(t('contact_created_successfully'));
+		}
 
 		isModalOpen.value = false;
 
 		emit('contact-created');
-
-		toast.success(t('contact_created_successfully'));
 	} catch (error) {
 	} finally {
 		isSaving.value = false;
 	}
 });
 
+const resetFormValuesFromContact = () => {
+	if (props.contact) {
+		form.resetForm({
+			values: {
+				firstName: props.contact.first_name ?? '',
+				lastName: props.contact.last_name ?? '',
+				phones: (props.contact.phones && props.contact.phones.length > 0
+					? props.contact.phones
+					: ['']) as string[],
+			},
+		});
+	} else {
+		form.resetForm({
+			values: {
+				firstName: '',
+				lastName: '',
+				phones: [''],
+			},
+		});
+	}
+};
+
 const onOpenClick = () => {
+	resetFormValuesFromContact();
+	isEditModeSwitched.value = false;
 	isModalOpen.value = true;
 };
 
 const onOpenUpdate = (isOpen: boolean) => {
-	if (!isOpen) {
+	if (isOpen) {
+		resetFormValuesFromContact();
+		isEditModeSwitched.value = false;
+		isModalOpen.value = true;
+	} else {
 		isModalOpen.value = false;
+		isEditModeSwitched.value = false;
 	}
 };
 
@@ -188,33 +217,38 @@ const toggleEditMode = () => {
 			<form @submit="onSubmit">
 				<DialogHeader>
 					<DialogTitle>
-						{{ t('edit_contact') }}
-						<template v-if="isEditMode">123</template>
+						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
 					</DialogTitle>
 					<DialogDescription>
 						Make changes to this contact here. Click save when you're done.
 					</DialogDescription>
 				</DialogHeader>
 				<div class="grid gap-4 py-4">
-					<FormField v-slot="{ componentField }" name="firstName">
+					<FormField v-slot="{ value, componentField }" name="firstName">
 						<FormItem>
 							<FormLabel>
 								{{ t('first_name') }}
 							</FormLabel>
 							<FormControl>
-								<Input type="text" v-bind="componentField" />
+								<Input v-if="isEditMode" type="text" v-bind="componentField" />
+								<div v-else class="border-b pb-1">
+									{{ value }}
+								</div>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					</FormField>
 
-					<FormField v-slot="{ componentField }" name="lastName">
+					<FormField v-slot="{ value, componentField }" name="lastName">
 						<FormItem>
 							<FormLabel>
 								{{ t('last_name') }}
 							</FormLabel>
 							<FormControl>
-								<Input type="text" v-bind="componentField" />
+								<Input v-if="isEditMode" type="text" v-bind="componentField" />
+								<div v-else class="border-b pb-1">
+									{{ value }}
+								</div>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -237,20 +271,34 @@ const toggleEditMode = () => {
 							:key="`${index}`"
 							class="flex items-start gap-2"
 						>
-							<FormField :name="`phones.${index}`" v-slot="{ componentField }">
+							<FormField
+								:name="`phones.${index}`"
+								v-slot="{ value, componentField }"
+							>
 								<FormItem class="flex-1">
 									<FormControl>
 										<Input
+											v-if="isEditMode"
 											type="tel"
 											placeholder="+1 234 567 890"
 											v-bind="componentField"
 										/>
+										<div v-else class="border-b pb-1">
+											<a
+												:href="`tel:${value}`"
+												class="text-sm inline-flex gap-2 items-center text-muted-foreground underline hover:text-primary transition-colors"
+											>
+												<PhoneOutgoing class="h-4 w-4" />
+
+												{{ value }}
+											</a>
+										</div>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							</FormField>
 							<Button
-								v-if="canRemovePhone(index)"
+								v-if="isEditMode && canRemovePhone(index)"
 								type="button"
 								variant="destructive"
 								size="icon"
@@ -261,6 +309,7 @@ const toggleEditMode = () => {
 						</div>
 
 						<Button
+							v-if="isEditMode"
 							class="w-full"
 							type="button"
 							variant="secondary"
@@ -275,7 +324,7 @@ const toggleEditMode = () => {
 					class="flex flex-row items-center justify-between gap-2 pt-6"
 				>
 					<Button
-						v-if="!props.isForceEdit"
+						v-if="!props.isForceEdit && props.contact"
 						type="button"
 						size="icon"
 						@click="toggleEditMode"
@@ -289,6 +338,7 @@ const toggleEditMode = () => {
 							</Button>
 						</DialogClose>
 						<Button
+							v-if="isEditMode"
 							type="submit"
 							:loading="isSaving"
 							:disabled="
