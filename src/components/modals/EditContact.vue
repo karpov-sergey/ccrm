@@ -237,7 +237,7 @@ const toggleEditMode = () => {
 			</DialogHeader>
 			<form
 				id="contact-form"
-				class="grid content-start items-start gap-4 py-4 overflow-y-auto"
+				class="grid content-start items-start gap-4 py-4 px-2 overflow-y-auto"
 				@submit="onSubmit"
 			>
 				<FormField v-slot="{ value, componentField }" name="firstName">
@@ -292,7 +292,7 @@ const toggleEditMode = () => {
 					<div
 						v-for="(_, index) in form.values.phones"
 						:key="`${index}`"
-						class="flex items-start gap-2 px-2"
+						class="flex items-start gap-2"
 					>
 						<FormField
 							:name="`phones.${index}`"
