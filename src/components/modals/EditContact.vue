@@ -7,8 +7,10 @@ import * as z from 'zod';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
+import { useFormattedDate } from '@/composables/common.ts';
 
 import { Button } from '@/components/ui/button';
+import DatePicker from '@/components/date-picker/DatePicker.vue';
 import {
 	Dialog,
 	DialogContent,
@@ -27,6 +29,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'vue-sonner';
 import Link from '@/components/ui/link/Link.vue';
 
@@ -49,6 +52,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
+const { formattedDate } = useFormattedDate();
 
 const emit = defineEmits(['contact-created']);
 
@@ -74,6 +78,19 @@ const formSchema = toTypedSchema(
 			.max(5)
 			.optional(),
 		email: z.string().email().optional(),
+		birthday: z.string().optional(),
+		instagram: z
+			.string()
+			.url({ message: t('validation.string.url') })
+			.optional(),
+		facebook: z
+			.string()
+			.url({ message: t('validation.string.url') })
+			.optional(),
+		whatsapp: z.string().optional(),
+		telegram: z.string().optional(),
+		address: z.string().optional(),
+		notes: z.string().optional(),
 	})
 );
 
@@ -84,6 +101,13 @@ const form = useForm({
 		lastName: '',
 		phones: [''],
 		email: '',
+		birthday: '',
+		instagram: '',
+		facebook: '',
+		whatsapp: '',
+		telegram: '',
+		address: '',
+		notes: '',
 	},
 });
 
@@ -149,6 +173,13 @@ const onSubmit = form.handleSubmit(async (values) => {
 					.map((p) => p.trim())
 					.filter((p) => p.length > 0),
 				email: values.email || '',
+				birthday: values.birthday || '',
+				instagram: values.instagram || '',
+				facebook: values.facebook || '',
+				whatsapp: values.whatsapp || '',
+				telegram: values.telegram || '',
+				address: values.address || '',
+				notes: values.notes || '',
 			});
 
 			toast.success(t('contact_updated_successfully'));
@@ -161,6 +192,13 @@ const onSubmit = form.handleSubmit(async (values) => {
 					.map((p) => p.trim())
 					.filter((p) => p.length > 0),
 				email: values.email || '',
+				birthday: values.birthday || '',
+				instagram: values.instagram || '',
+				facebook: values.facebook || '',
+				whatsapp: values.whatsapp || '',
+				telegram: values.telegram || '',
+				address: values.address || '',
+				notes: values.notes || '',
 			});
 
 			toast.success(t('contact_created_successfully'));
@@ -185,6 +223,13 @@ const resetFormValuesFromContact = () => {
 					? props.contact.phones
 					: ['']) as string[],
 				email: props.contact.email ?? '',
+				birthday: (props.contact.birthday as unknown as string) ?? '',
+				instagram: (props.contact.instagram as unknown as string) ?? '',
+				facebook: (props.contact.facebook as unknown as string) ?? '',
+				whatsapp: (props.contact.whatsapp as unknown as string) ?? '',
+				telegram: (props.contact.telegram as unknown as string) ?? '',
+				address: (props.contact.address as unknown as string) ?? '',
+				notes: (props.contact.notes as unknown as string) ?? '',
 			},
 		});
 	} else {
@@ -194,6 +239,13 @@ const resetFormValuesFromContact = () => {
 				lastName: '',
 				phones: [''],
 				email: '',
+				birthday: '',
+				instagram: '',
+				facebook: '',
+				whatsapp: '',
+				telegram: '',
+				address: '',
+				notes: '',
 			},
 		});
 	}
@@ -226,7 +278,7 @@ const toggleEditMode = () => {
 		<DialogTrigger as-child>
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
-		<DialogContent @open-auto-focus.prevent>
+		<DialogContent class="md:max-w-[600px] p-2 md:p-4" @open-auto-focus.prevent>
 			<DialogHeader>
 				<DialogTitle>
 					{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
@@ -237,7 +289,7 @@ const toggleEditMode = () => {
 			</DialogHeader>
 			<form
 				id="contact-form"
-				class="grid content-start items-start gap-4 py-4 px-2 overflow-y-auto"
+				class="grid lg:grid-cols-2 content-start items-start gap-4 py-4 px-2 overflow-y-auto"
 				@submit="onSubmit"
 			>
 				<FormField v-slot="{ value, componentField }" name="firstName">
@@ -276,7 +328,7 @@ const toggleEditMode = () => {
 
 				<div
 					v-if="isEditMode || contact?.phones?.length"
-					class="flex flex-col gap-2"
+					class="flex flex-col gap-2 md:col-span-2"
 				>
 					<label
 						class="flex items-center justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -355,6 +407,183 @@ const toggleEditMode = () => {
 								<Link :href="`mailto:${value}`" :text="value">
 									<ExternalLink class="h-4 w-4" />
 								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.instagram"
+					v-slot="{ value, componentField }"
+					name="instagram"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('instagram') }}
+						</FormLabel>
+						<FormControl>
+							<Input
+								v-if="isEditMode"
+								type="text"
+								placeholder="https://instagram.com/username"
+								v-bind="componentField"
+							/>
+							<div v-else>
+								<Link :href="value" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.facebook"
+					v-slot="{ value, componentField }"
+					name="facebook"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('facebook') }}
+						</FormLabel>
+						<FormControl>
+							<Input
+								v-if="isEditMode"
+								type="text"
+								placeholder="https://facebook.com/profile"
+								v-bind="componentField"
+							/>
+							<div v-else>
+								<Link :href="value" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.whatsapp"
+					v-slot="{ value, componentField }"
+					name="whatsapp"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('whatsapp') }}
+						</FormLabel>
+						<FormControl>
+							<Input
+								v-if="isEditMode"
+								type="text"
+								placeholder="https://wa.me/1234567890"
+								v-bind="componentField"
+							/>
+							<div v-else>
+								<Link :href="value" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.telegram"
+					v-slot="{ value, componentField }"
+					name="telegram"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('telegram') }}
+						</FormLabel>
+						<FormControl>
+							<Input
+								v-if="isEditMode"
+								type="text"
+								placeholder="https://t.me/username"
+								v-bind="componentField"
+							/>
+							<div v-else>
+								<Link :href="value" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.birthday"
+					v-slot="{ value, componentField }"
+					name="birthday"
+				>
+					<FormItem class="overflow-hidden">
+						<FormLabel>
+							{{ t('date_of_birth') }}
+						</FormLabel>
+						<FormControl>
+							<DatePicker
+								v-if="isEditMode"
+								:model-value="value"
+								@update:model-value="componentField['onUpdate:modelValue']"
+							>
+								<Button
+									variant="outline"
+									class="w-full justify-start text-left font-normal"
+								>
+									{{ value ? formattedDate(value) : t('birthday') }}
+								</Button>
+							</DatePicker>
+							<div v-else>
+								{{ formattedDate(value) }}
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.address"
+					v-slot="{ value, componentField }"
+					name="address"
+				>
+					<FormItem class="md:col-span-2">
+						<FormLabel>
+							{{ t('address') }}
+						</FormLabel>
+						<FormControl>
+							<Input v-if="isEditMode" type="text" v-bind="componentField" />
+							<div v-else>
+								{{ value }}
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
+					v-if="isEditMode || contact?.notes"
+					v-slot="{ value, componentField }"
+					name="notes"
+				>
+					<FormItem class="md:col-span-2">
+						<FormLabel>
+							{{ t('notes') }}
+						</FormLabel>
+						<FormControl>
+							<Textarea
+								v-if="isEditMode"
+								v-bind="componentField"
+								class="max-h-[200px]"
+								rows="4"
+							/>
+							<div v-else>
+								{{ value }}
 							</div>
 						</FormControl>
 						<FormMessage />

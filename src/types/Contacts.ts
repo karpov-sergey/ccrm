@@ -5,13 +5,13 @@ export interface UpdateContactPayload {
 	last_name?: string;
 	notes?: string;
 	user_id?: string;
-	address?: null;
-	birthday?: null;
-	facebook?: null;
-	instagram?: null;
+	address?: string;
+	birthday?: string;
+	facebook?: string;
+	instagram?: string;
 	phones?: string[] | [];
-	telegram?: null;
-	whatsapp?: null;
+	telegram?: string;
+	whatsapp?: string;
 }
 
 export interface Contact {
@@ -22,11 +22,11 @@ export interface Contact {
 	last_name: string;
 	notes: string;
 	user_id: string;
-	address: null;
-	birthday: null;
-	facebook: null;
-	instagram: null;
+	address: string;
+	birthday: string;
+	facebook: string;
+	instagram: string;
 	phones: string[] | [];
-	telegram: null;
-	whatsapp: null;
+	telegram: string;
+	whatsapp: string;
 }

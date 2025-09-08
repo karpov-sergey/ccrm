@@ -317,7 +317,7 @@ watch(
 		@submit="onSubmit"
 		@keyup.enter.prevent.stop="onFormEnterKeyUp"
 	>
-		<div class="text-xl pb-4 px-6 border-b-1">
+		<div class="text-xl pb-4 px-4 md:px-6 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
@@ -350,7 +350,7 @@ watch(
 				</div>
 			</FormField>
 		</div>
-		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
 			<Flag class="h-4 w-4" />
 			<FormField v-slot="{ componentField }" name="status">
 				<FormItem>
@@ -362,7 +362,7 @@ watch(
 			</FormField>
 		</div>
 
-		<div class="px-6 pb-6 border-b-1">
+		<div class="px-4 md:px-6 pb-6 border-b-1">
 			<div class="flex items-center gap-2 mb-2">
 				<NotebookPen class="h-4 w-4" />
 				<div class="font-medium">
@@ -415,10 +415,10 @@ watch(
 			</div>
 		</div>
 
-		<div class="flex items-center gap-2 px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
 			<TimerReset class="h-4 w-4" />
 			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-				<DatePicker v-model="dueDateDraft">
+				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
 					<Button variant="outline">
 						{{
 							dueDateDraft
@@ -474,7 +474,7 @@ watch(
 			</div>
 		</div>
 
-		<div class="px-6 pb-6">
+		<div class="px-4 md:px-6 pb-6">
 			<FormField v-slot="{ value, handleChange }" name="checklist">
 				<Checklist
 					:modelValue="value"

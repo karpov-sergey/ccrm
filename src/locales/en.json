@@ -54,13 +54,22 @@
 	"contact_updated_successfully": "Contact updated successfully",
 	"phones": "Phones",
 	"invalid_phone_number": "Invalid phone number",
+	"birthday": "Birthday",
+	"instagram": "Instagram",
+	"facebook": "Facebook",
+	"whatsapp": "WhatsApp",
+	"telegram": "Telegram",
+	"address": "Address",
+	"notes": "Notes",
 	"no_results_found": "No results found",
+	"date_of_birth": "Date of birth",
 	"calendar": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",
 		"in_3_days": "In 3 days",
 		"in_a_week": "In a week",
-		"outdated": "Outdated"
+		"outdated": "Outdated",
+		"select_date": "Select date"
 	},
   "auth": {
     "invalid_credentials": "Invalid email or password.",

@@ -76,3 +76,15 @@ export const useNameAbbreviation = () => {
 
 	return { nameAbbreviation };
 };
+
+export const useFormattedDate = () => {
+	const formattedDate = (date: Date | string) => {
+		return new Date(date).toLocaleDateString(undefined, {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+		});
+	};
+
+	return { formattedDate };
+};

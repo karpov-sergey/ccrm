@@ -23,7 +23,10 @@ import {
 
 const { t } = useI18n();
 
-const props = defineProps<{ modelValue?: string | null }>();
+const props = defineProps<{
+	modelValue?: string | null;
+	isPreselectVisible?: boolean;
+}>();
 const emit = defineEmits<{
 	(event: 'update:modelValue', value: string | null): void;
 }>();
@@ -122,6 +125,7 @@ const onNativeDateChange = (event: Event) => {
 		</PopoverTrigger>
 		<PopoverContent class="flex w-auto flex-col gap-y-2 p-2">
 			<Select
+				v-if="isPreselectVisible"
 				@update:model-value="
 					(value) => {
 						if (!value) return;
