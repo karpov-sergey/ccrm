@@ -270,9 +270,9 @@ watch(globalFilter, (newValue) => {
 
 							<template v-else-if="cell.column.id === 'email'">
 								<Link
-									v-if="!!cell.getValue()?.length"
-									:href="`mailto:${cell.getValue()}`"
-									:text="cell.getValue()"
+									v-if="String(cell.getValue() ?? '').length > 0"
+									:href="`mailto:${String(cell.getValue() ?? '')}`"
+									:text="String(cell.getValue() ?? '')"
 								>
 									<ExternalLink class="h-4 w-4" />
 								</Link>
