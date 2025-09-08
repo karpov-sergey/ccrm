@@ -312,11 +312,12 @@ watch(
 
 <template>
 	<form
-		class="grid gap-2"
+		id="task-form"
+		class="grid gap-2 overflow-y-auto"
 		@submit="onSubmit"
 		@keyup.enter.prevent.stop="onFormEnterKeyUp"
 	>
-		<div class="text-xl pb-6 px-6 border-b-1">
+		<div class="text-xl pb-4 px-6 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative">
@@ -481,31 +482,33 @@ watch(
 				/>
 			</FormField>
 		</div>
-		<div class="flex gap-4 justify-between px-6 pt-4">
-			<ConfirmModal
-				v-if="!isCreateMode"
-				:title="t('are_you_sure_you_want_to_delete_this_item')"
-				@confirm="onRemoveSubmit"
-			>
-				<Button class="text-destructive" type="button" variant="link">
-					<Trash2 class="h-4 w-4" />
-					{{ t('delete') }}
-				</Button>
-			</ConfirmModal>
-			<div class="w-full flex justify-end items-end gap-4">
-				<Button type="button" variant="outline" @click="onCancelClick">
-					{{ t('cancel') }}
-				</Button>
-				<Button
-					type="submit"
-					:disabled="isSaving || !form.meta.value.dirty"
-					:loading="isSaving"
-				>
-					{{ t('save') }}
-				</Button>
-			</div>
-		</div>
 	</form>
+
+	<div class="flex gap-4 justify-between px-6 pt-4">
+		<ConfirmModal
+			v-if="!isCreateMode"
+			:title="t('are_you_sure_you_want_to_delete_this_item')"
+			@confirm="onRemoveSubmit"
+		>
+			<Button class="text-destructive" type="button" variant="link">
+				<Trash2 class="h-4 w-4" />
+				{{ t('delete') }}
+			</Button>
+		</ConfirmModal>
+		<div class="w-full flex justify-end items-end gap-4">
+			<Button type="button" variant="outline" @click="onCancelClick">
+				{{ t('cancel') }}
+			</Button>
+			<Button
+				type="submit"
+				form="task-form"
+				:disabled="isSaving || !form.meta.value.dirty"
+				:loading="isSaving"
+			>
+				{{ t('save') }}
+			</Button>
+		</div>
+	</div>
 </template>
 
 <style scoped>

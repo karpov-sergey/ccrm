@@ -226,7 +226,7 @@ const toggleEditMode = () => {
 		<DialogTrigger as-child>
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
-		<DialogContent class="sm:max-w-[425px]" @open-auto-focus.prevent>
+		<DialogContent @open-auto-focus.prevent>
 			<DialogHeader>
 				<DialogTitle>
 					{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
@@ -235,7 +235,11 @@ const toggleEditMode = () => {
 					Make changes to this contact here. Click save when you're done.
 				</DialogDescription>
 			</DialogHeader>
-			<form id="contact-form" class="grid gap-4 py-4" @submit="onSubmit">
+			<form
+				id="contact-form"
+				class="grid content-start items-start gap-4 py-4 overflow-y-auto"
+				@submit="onSubmit"
+			>
 				<FormField v-slot="{ value, componentField }" name="firstName">
 					<FormItem>
 						<FormLabel>

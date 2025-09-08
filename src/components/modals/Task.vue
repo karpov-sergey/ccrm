@@ -53,22 +53,17 @@ const onOpenClick = () => {
 		<Button v-else type="button" size="sm" @click="onOpenClick">
 			<Plus class="h-4 w-4" />
 		</Button>
-		<DialogContent
-			class="min-w-full p-0 max-h-[90dvh] md:min-w-[700px] overflow-hidden"
-			@open-auto-focus.prevent
-		>
+		<DialogContent class="p-0 pt-4 md:min-w-[700px]" @open-auto-focus.prevent>
 			<template v-show="false">
 				<DialogTitle />
 				<DialogDescription />
 			</template>
-			<div class="py-6 overflow-y-auto max-h-[90dvh]">
-				<TaskDetails
-					:task="props.task"
-					:originalStatus="props.originalStatus"
-					@close="onDialogToggle"
-					@update-board="onBoardUpdate"
-				/>
-			</div>
+			<TaskDetails
+				:task="props.task"
+				:originalStatus="props.originalStatus"
+				@close="onDialogToggle"
+				@update-board="onBoardUpdate"
+			/>
 		</DialogContent>
 	</Dialog>
 </template>
