@@ -265,7 +265,9 @@ watch(globalFilter, (newValue) => {
 										</AvatarFallback>
 									</Avatar>
 
-									{{ cell.getValue() }}
+									<div class="truncate font-semibold capitalize">
+										{{ cell.getValue() }}
+									</div>
 								</div>
 							</template>
 							<template v-else-if="cell.column.id === 'phones'">
