@@ -15,6 +15,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/auth.ts';
@@ -83,7 +84,9 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-	<Card class="w-full md:w-[500px]">
+	<Card
+		class="grid grid-rows-[auto_1fr_auto] w-full h-dvh rounded-none border-0 shadow-none md:h-auto md:w-[500px] md:rounded-xl md:border md:shadow-md"
+	>
 		<CardHeader class="gap-4">
 			<CardTitle class="flex items-center justify-between text-2xl">
 				{{ t('signup') }}
@@ -94,7 +97,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form class="grid gap-4" @submit="onSubmit">
+			<form id="signup-form" class="grid gap-4" @submit="onSubmit">
 				<div class="grid gap-4 items-start lg:grid-cols-2">
 					<FormField v-slot="{ componentField }" name="firstName">
 						<FormItem>
@@ -156,22 +159,25 @@ const onSubmit = form.handleSubmit(async (values) => {
 						<FormMessage />
 					</FormItem>
 				</FormField>
-				<Button
-					type="submit"
-					class="w-full"
-					:loading="isLoading"
-					:disabled="isLoading || !form.meta.value.valid"
-				>
-					{{ t('create_an_account') }}
-				</Button>
-				<!--				<Button variant="outline" class="w-full"> Sign up with GitHub </Button>-->
 			</form>
-			<div class="mt-4 text-end text-sm">
+		</CardContent>
+
+		<CardFooter class="flex flex-col">
+			<Button
+				type="submit"
+				form="signup-form"
+				class="w-full mb-6"
+				:loading="isLoading"
+				:disabled="isLoading || !form.meta.value.valid"
+			>
+				{{ t('create_an_account') }}
+			</Button>
+			<div class="w-full text-sm text-right">
 				{{ t('already_have_an_account') }}
 				<RouterLink class="underline" to="/login">
 					{{ t('login') }}
 				</RouterLink>
 			</div>
-		</CardContent>
+		</CardFooter>
 	</Card>
 </template>
