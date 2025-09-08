@@ -247,7 +247,7 @@ const toggleEditMode = () => {
 						</FormLabel>
 						<FormControl>
 							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else class="border-b pb-1">
+							<div v-else>
 								{{ value }}
 							</div>
 						</FormControl>
@@ -266,7 +266,7 @@ const toggleEditMode = () => {
 						</FormLabel>
 						<FormControl>
 							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else class="border-b pb-1">
+							<div v-else>
 								{{ value }}
 							</div>
 						</FormControl>
@@ -292,7 +292,7 @@ const toggleEditMode = () => {
 					<div
 						v-for="(_, index) in form.values.phones"
 						:key="`${index}`"
-						class="flex items-start gap-2"
+						class="flex items-start gap-2 px-2"
 					>
 						<FormField
 							:name="`phones.${index}`"
@@ -306,7 +306,7 @@ const toggleEditMode = () => {
 										placeholder="+1 234 567 890"
 										v-bind="componentField"
 									/>
-									<div v-else class="border-b pb-1">
+									<div v-else>
 										<Link :href="`tel:${value}`" :text="value">
 											<PhoneOutgoing class="h-4 w-4" />
 										</Link>
@@ -326,16 +326,18 @@ const toggleEditMode = () => {
 						</Button>
 					</div>
 
-					<Button
-						v-if="isEditMode"
-						class="w-full"
-						type="button"
-						variant="secondary"
-						:disabled="!phonesCanAddMore"
-						@click="addPhone"
-					>
-						<Plus class="h-4 w-4" />
-					</Button>
+					<div class="px-2">
+						<Button
+							v-if="isEditMode"
+							class="w-full"
+							type="button"
+							variant="secondary"
+							:disabled="!phonesCanAddMore"
+							@click="addPhone"
+						>
+							<Plus class="h-4 w-4" />
+						</Button>
+					</div>
 				</div>
 
 				<FormField
@@ -349,7 +351,7 @@ const toggleEditMode = () => {
 						</FormLabel>
 						<FormControl>
 							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else class="border-b pb-1">
+							<div v-else>
 								<Link :href="`mailto:${value}`" :text="value">
 									<ExternalLink class="h-4 w-4" />
 								</Link>

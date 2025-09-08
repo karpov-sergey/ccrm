@@ -19,9 +19,12 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+
+import { useNameAbbreviation } from '@/composables/common.ts';
 
 import { Trash2, PhoneOutgoing, ExternalLink } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
@@ -43,6 +46,7 @@ interface DataTableProps {
 }
 
 const { t } = useI18n();
+const { nameAbbreviation } = useNameAbbreviation();
 
 const props = defineProps<DataTableProps>();
 
@@ -225,6 +229,7 @@ watch(globalFilter, (newValue) => {
 						<span v-else-if="header.column.getIsSorted() === 'desc'">↓</span>
 						<span v-else></span>
 					</TableHead>
+
 					<!-- Extra actions column header (non-sortable) -->
 					<TableHead>
 						<slot name="row-actions-header" />
@@ -252,7 +257,18 @@ watch(globalFilter, (newValue) => {
 							class="p-4"
 							:key="cell.id"
 						>
-							<template v-if="cell.column.id === 'phones'">
+							<template v-if="cell.column.id === 'name'">
+								<div class="flex items-center gap-2">
+									<Avatar>
+										<AvatarFallback>
+											{{ nameAbbreviation(String(cell.getValue()) ?? '') }}
+										</AvatarFallback>
+									</Avatar>
+
+									{{ cell.getValue() }}
+								</div>
+							</template>
+							<template v-else-if="cell.column.id === 'phones'">
 								<div
 									v-for="(phone, index) in cell.getValue()"
 									:key="`${phone}_${index}`"

@@ -28,7 +28,9 @@ export const useScreenWidth = () => {
 	// tablet: >=768 and <1024 (md-only)
 	// desktop: >=1024 (lg and up)
 	const isMobileScreen = useMediaQuery('(max-width: 767.98px)');
-	const isTabletScreen = useMediaQuery('(min-width: 768px) and (max-width: 1023.98px)');
+	const isTabletScreen = useMediaQuery(
+		'(min-width: 768px) and (max-width: 1023.98px)'
+	);
 	const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
 	// Optional: current breakpoint using VueUse breakpoints helper
@@ -65,4 +67,12 @@ export const useScreenWidth = () => {
 		// Extra info
 		currentBreakpoint,
 	};
+};
+
+export const useNameAbbreviation = () => {
+	const nameAbbreviation = (fullName: string) => {
+		return `${fullName.split(' ')[0].substring(0, 1).toUpperCase()} ${fullName.split(' ')[1].substring(0, 1).toUpperCase()}`;
+	};
+
+	return { nameAbbreviation };
 };
