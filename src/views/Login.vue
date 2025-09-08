@@ -16,6 +16,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
@@ -89,9 +90,11 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-	<Card class="w-full md:w-[500px]">
-		<CardHeader class="gap-4">
-			<CardTitle class="flex items-center justify-between text-2xl">
+	<Card
+		class="grid grid-rows-[auto_1fr_auto] w-full h-dvh rounded-none border-0 shadow-none md:h-auto md:w-[500px] md:rounded-xl md:border md:shadow-md"
+	>
+		<CardHeader class="block">
+			<CardTitle class="flex items-center justify-between text-2xl mb-4">
 				{{ t('login') }}
 				<LanguageSwitcher />
 			</CardTitle>
@@ -100,7 +103,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form class="grid gap-4 mb-6" @submit="onSubmit">
+			<form id="login-form" class="grid gap-4 mb-6" @submit="onSubmit">
 				<FormField v-slot="{ componentField }" name="email">
 					<FormItem>
 						<FormLabel>{{ t('email') }}</FormLabel>
@@ -115,7 +118,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					</FormItem>
 				</FormField>
 				<FormField v-slot="{ componentField }" name="password">
-					<FormItem class="relative mb-6">
+					<FormItem class="relative">
 						<FormLabel>{{ t('password') }}</FormLabel>
 						<FormControl>
 							<Input
@@ -140,21 +143,24 @@ const onSubmit = form.handleSubmit(async (values) => {
 						<FormMessage />
 					</FormItem>
 				</FormField>
-				<Button
-					type="submit"
-					class="w-full"
-					:loading="isLoading"
-					:disabled="isLoading || !form.meta.value.valid"
-				>
-					{{ t('login') }}
-				</Button>
 			</form>
-			<div class="mt-4 text-end text-sm">
+		</CardContent>
+		<CardFooter class="flex flex-col">
+			<Button
+				type="submit"
+				form="login-form"
+				class="w-full mb-6"
+				:loading="isLoading"
+				:disabled="isLoading || !form.meta.value.valid"
+			>
+				{{ t('login') }}
+			</Button>
+			<div class="w-full text-sm text-right">
 				{{ t('dont_have_account') }}
 				<RouterLink class="underline" to="/signup">
 					{{ t('signup') }}
 				</RouterLink>
 			</div>
-		</CardContent>
+		</CardFooter>
 	</Card>
 </template>
