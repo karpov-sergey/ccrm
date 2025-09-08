@@ -3,11 +3,11 @@ import { ref } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import {
-	AlertDialog,
-	AlertDialogTitle,
-	AlertDialogContent,
-	AlertDialogDescription,
-} from '@/components/ui/alert-dialog';
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogDescription,
+} from '@/components/ui/dialog';
 
 import TaskDetails from '@/components/task-details/TaskDetails.vue';
 import TaskCard from '@/components/board/TaskCard.vue';
@@ -43,7 +43,7 @@ const onOpenClick = () => {
 </script>
 
 <template>
-	<AlertDialog v-model:open="isOpen">
+	<Dialog v-model:open="isOpen">
 		<TaskCard
 			v-if="props.task?.id"
 			:task="props.task"
@@ -53,12 +53,13 @@ const onOpenClick = () => {
 		<Button v-else type="button" size="sm" @click="onOpenClick">
 			<Plus class="h-4 w-4" />
 		</Button>
-		<AlertDialogContent
+		<DialogContent
 			class="min-w-full p-0 max-h-[90dvh] md:min-w-[700px] overflow-hidden"
+			@open-auto-focus.prevent
 		>
 			<template v-show="false">
-				<AlertDialogTitle />
-				<AlertDialogDescription />
+				<DialogTitle />
+				<DialogDescription />
 			</template>
 			<div class="py-6 overflow-y-auto max-h-[90dvh]">
 				<TaskDetails
@@ -68,8 +69,8 @@ const onOpenClick = () => {
 					@update-board="onBoardUpdate"
 				/>
 			</div>
-		</AlertDialogContent>
-	</AlertDialog>
+		</DialogContent>
+	</Dialog>
 </template>
 
 <style scoped></style>

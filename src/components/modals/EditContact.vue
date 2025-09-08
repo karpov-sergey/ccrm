@@ -227,165 +227,164 @@ const toggleEditMode = () => {
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
 		<DialogContent class="sm:max-w-[425px]" @open-auto-focus.prevent>
-			<form @submit="onSubmit">
-				<DialogHeader>
-					<DialogTitle>
-						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
-					</DialogTitle>
-					<DialogDescription>
-						Make changes to this contact here. Click save when you're done.
-					</DialogDescription>
-				</DialogHeader>
-				<div class="grid gap-4 py-4">
-					<FormField v-slot="{ value, componentField }" name="firstName">
-						<FormItem>
-							<FormLabel>
-								{{ t('first_name') }}
-							</FormLabel>
-							<FormControl>
-								<Input v-if="isEditMode" type="text" v-bind="componentField" />
-								<div v-else class="border-b pb-1">
-									{{ value }}
-								</div>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					</FormField>
+			<DialogHeader>
+				<DialogTitle>
+					{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
+				</DialogTitle>
+				<DialogDescription>
+					Make changes to this contact here. Click save when you're done.
+				</DialogDescription>
+			</DialogHeader>
+			<form id="contact-form" class="grid gap-4 py-4" @submit="onSubmit">
+				<FormField v-slot="{ value, componentField }" name="firstName">
+					<FormItem>
+						<FormLabel>
+							{{ t('first_name') }}
+						</FormLabel>
+						<FormControl>
+							<Input v-if="isEditMode" type="text" v-bind="componentField" />
+							<div v-else class="border-b pb-1">
+								{{ value }}
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 
-					<FormField
-						v-if="isEditMode || contact?.last_name"
-						v-slot="{ value, componentField }"
-						name="lastName"
-					>
-						<FormItem>
-							<FormLabel>
-								{{ t('last_name') }}
-							</FormLabel>
-							<FormControl>
-								<Input v-if="isEditMode" type="text" v-bind="componentField" />
-								<div v-else class="border-b pb-1">
-									{{ value }}
-								</div>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					</FormField>
-
-					<div
-						v-if="isEditMode || contact?.phones?.length"
-						class="flex flex-col gap-2"
-					>
-						<label
-							class="flex items-center justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-						>
-							<span>
-								{{ t('phones') }}
-							</span>
-
-							<span class="text-xs text-muted-foreground">
-								{{ form.values.phones?.length ?? 1 }}/5
-							</span>
-						</label>
-						<div
-							v-for="(_, index) in form.values.phones"
-							:key="`${index}`"
-							class="flex items-start gap-2"
-						>
-							<FormField
-								:name="`phones.${index}`"
-								v-slot="{ value, componentField }"
-							>
-								<FormItem class="flex-1">
-									<FormControl>
-										<Input
-											v-if="isEditMode"
-											type="tel"
-											placeholder="+1 234 567 890"
-											v-bind="componentField"
-										/>
-										<div v-else class="border-b pb-1">
-											<Link :href="`tel:${value}`" :text="value">
-												<PhoneOutgoing class="h-4 w-4" />
-											</Link>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							</FormField>
-							<Button
-								v-if="isEditMode && canRemovePhone(index)"
-								type="button"
-								variant="destructive"
-								size="icon"
-								@click="removePhone(index)"
-							>
-								<Trash2 class="h-4 w-4" />
-							</Button>
-						</div>
-
-						<Button
-							v-if="isEditMode"
-							class="w-full"
-							type="button"
-							variant="secondary"
-							:disabled="!phonesCanAddMore"
-							@click="addPhone"
-						>
-							<Plus class="h-4 w-4" />
-						</Button>
-					</div>
-
-					<FormField
-						v-if="isEditMode || contact?.email?.length"
-						v-slot="{ value, componentField }"
-						name="email"
-					>
-						<FormItem>
-							<FormLabel>
-								{{ t('email') }}
-							</FormLabel>
-							<FormControl>
-								<Input v-if="isEditMode" type="text" v-bind="componentField" />
-								<div v-else class="border-b pb-1">
-									<Link :href="`mailto:${value}`" :text="value">
-										<ExternalLink class="h-4 w-4" />
-									</Link>
-								</div>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					</FormField>
-				</div>
-				<DialogFooter
-					class="flex flex-row items-center justify-between gap-2 pt-6"
+				<FormField
+					v-if="isEditMode || contact?.last_name"
+					v-slot="{ value, componentField }"
+					name="lastName"
 				>
-					<Button
-						v-if="!props.isForceEdit && props.contact"
-						type="button"
-						size="icon"
-						@click="toggleEditMode"
+					<FormItem>
+						<FormLabel>
+							{{ t('last_name') }}
+						</FormLabel>
+						<FormControl>
+							<Input v-if="isEditMode" type="text" v-bind="componentField" />
+							<div v-else class="border-b pb-1">
+								{{ value }}
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<div
+					v-if="isEditMode || contact?.phones?.length"
+					class="flex flex-col gap-2"
+				>
+					<label
+						class="flex items-center justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 					>
-						<Edit class="h-4 w-4" />
-					</Button>
-					<div class="w-full flex items-center justify-end gap-2">
-						<DialogClose as-child>
-							<Button type="button" variant="outline">
-								{{ t('cancel') }}
-							</Button>
-						</DialogClose>
-						<Button
-							v-if="isEditMode"
-							type="submit"
-							:loading="isSaving"
-							:disabled="
-								isSaving || !form.meta.value.dirty || !form.meta.value.valid
-							"
+						<span>
+							{{ t('phones') }}
+						</span>
+
+						<span class="text-xs text-muted-foreground">
+							{{ form.values.phones?.length ?? 1 }}/5
+						</span>
+					</label>
+					<div
+						v-for="(_, index) in form.values.phones"
+						:key="`${index}`"
+						class="flex items-start gap-2"
+					>
+						<FormField
+							:name="`phones.${index}`"
+							v-slot="{ value, componentField }"
 						>
-							{{ t('save') }}
+							<FormItem class="flex-1">
+								<FormControl>
+									<Input
+										v-if="isEditMode"
+										type="tel"
+										placeholder="+1 234 567 890"
+										v-bind="componentField"
+									/>
+									<div v-else class="border-b pb-1">
+										<Link :href="`tel:${value}`" :text="value">
+											<PhoneOutgoing class="h-4 w-4" />
+										</Link>
+									</div>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						</FormField>
+						<Button
+							v-if="isEditMode && canRemovePhone(index)"
+							type="button"
+							variant="destructive"
+							size="icon"
+							@click="removePhone(index)"
+						>
+							<Trash2 class="h-4 w-4" />
 						</Button>
 					</div>
-				</DialogFooter>
+
+					<Button
+						v-if="isEditMode"
+						class="w-full"
+						type="button"
+						variant="secondary"
+						:disabled="!phonesCanAddMore"
+						@click="addPhone"
+					>
+						<Plus class="h-4 w-4" />
+					</Button>
+				</div>
+
+				<FormField
+					v-if="isEditMode || contact?.email?.length"
+					v-slot="{ value, componentField }"
+					name="email"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('email') }}
+						</FormLabel>
+						<FormControl>
+							<Input v-if="isEditMode" type="text" v-bind="componentField" />
+							<div v-else class="border-b pb-1">
+								<Link :href="`mailto:${value}`" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 			</form>
+			<DialogFooter
+				class="flex flex-row items-center justify-between gap-2 pt-6"
+			>
+				<Button
+					v-if="!props.isForceEdit && props.contact"
+					type="button"
+					size="icon"
+					@click="toggleEditMode"
+				>
+					<Edit class="h-4 w-4" />
+				</Button>
+				<div class="w-full flex items-center justify-end gap-2">
+					<DialogClose as-child>
+						<Button type="button" variant="outline">
+							{{ t('cancel') }}
+						</Button>
+					</DialogClose>
+					<Button
+						v-if="isEditMode"
+						type="submit"
+						form="contact-form"
+						:loading="isSaving"
+						:disabled="
+							isSaving || !form.meta.value.dirty || !form.meta.value.valid
+						"
+					>
+						{{ t('save') }}
+					</Button>
+				</div>
+			</DialogFooter>
 		</DialogContent>
 	</Dialog>
 </template>

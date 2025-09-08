@@ -473,7 +473,7 @@ watch(
 			</div>
 		</div>
 
-		<div class="px-6 pb-6 border-b-1">
+		<div class="px-6 pb-6">
 			<FormField v-slot="{ value, handleChange }" name="checklist">
 				<Checklist
 					:modelValue="value"
