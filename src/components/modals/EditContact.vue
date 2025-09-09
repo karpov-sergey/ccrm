@@ -32,8 +32,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'vue-sonner';
 import Link from '@/components/ui/link/Link.vue';
+import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
-import { createContact, updateContact } from '@/api/contacts';
+import { createContact, deleteContacts, updateContact } from '@/api/contacts';
 
 import {
 	Plus,
@@ -54,7 +55,7 @@ const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
 const { formattedDate } = useFormattedDate();
 
-const emit = defineEmits(['contact-created']);
+const emit = defineEmits(['contact-created', 'contact-removed']);
 
 const isModalOpen = ref(false);
 const isSaving = ref(false);
@@ -79,12 +80,12 @@ const formSchema = toTypedSchema(
 			.optional(),
 		email: z.union([z.literal(''), z.string().email()]),
 		birthday: z.string().optional(),
-		instagram: z.string().optional(),
-		facebook: z.string().optional(),
-		whatsapp: z.string().optional(),
-		telegram: z.string().optional(),
-		address: z.string().optional(),
-		notes: z.string().optional(),
+		instagram: z.string().max(100).optional(),
+		facebook: z.string().max(100).optional(),
+		whatsapp: z.string().max(100).optional(),
+		telegram: z.string().max(100).optional(),
+		address: z.string().max(100).optional(),
+		notes: z.string().max(500).optional(),
 	})
 );
 
@@ -265,6 +266,24 @@ const onOpenUpdate = (isOpen: boolean) => {
 const toggleEditMode = () => {
 	isEditModeSwitched.value = !isEditModeSwitched.value;
 };
+
+const onRemoveSubmit = async () => {
+	try {
+		if (!props.contact?.id) {
+			return;
+		}
+
+		await deleteContacts([props.contact?.id]);
+
+		toast.success(t('contact_removed_successfully'));
+
+		isModalOpen.value = false;
+
+		emit('contact-removed');
+	} catch (error) {
+	} finally {
+	}
+};
 </script>
 
 <template>
@@ -273,13 +292,23 @@ const toggleEditMode = () => {
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
 		<DialogContent class="md:max-w-[600px] p-2 md:p-4" @open-auto-focus.prevent>
-			<DialogHeader>
-				<DialogTitle>
-					{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
-				</DialogTitle>
-				<DialogDescription>
-					Make changes to this contact here. Click save when you're done.
-				</DialogDescription>
+			<DialogHeader class="flex flex-row items-start justify-between gap-4">
+				<div class="flex flex-col gap-1">
+					<DialogTitle>
+						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
+					</DialogTitle>
+					<DialogDescription>
+						Make changes to this contact here. Click save when you're done.
+					</DialogDescription>
+				</div>
+				<Button
+					v-if="!props.isForceEdit && props.contact"
+					type="button"
+					size="icon"
+					@click="toggleEditMode"
+				>
+					<Edit class="h-4 w-4" />
+				</Button>
 			</DialogHeader>
 			<form
 				id="contact-form"
@@ -587,14 +616,16 @@ const toggleEditMode = () => {
 			<DialogFooter
 				class="flex flex-row items-center justify-between gap-2 pt-6"
 			>
-				<Button
-					v-if="!props.isForceEdit && props.contact"
-					type="button"
-					size="icon"
-					@click="toggleEditMode"
+				<ConfirmModal
+					v-if="!isEditMode"
+					:title="t('are_you_sure_you_want_to_delete_this_contact')"
+					@confirm="onRemoveSubmit"
 				>
-					<Edit class="h-4 w-4" />
-				</Button>
+					<Button class="text-destructive" type="button" variant="link">
+						<Trash2 class="h-4 w-4" />
+						{{ t('delete') }}
+					</Button>
+				</ConfirmModal>
 				<div class="w-full flex items-center justify-end gap-2">
 					<DialogClose as-child>
 						<Button type="button" variant="outline">

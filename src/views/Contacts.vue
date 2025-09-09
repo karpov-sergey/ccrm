@@ -14,6 +14,7 @@ import { Plus, EyeIcon } from 'lucide-vue-next';
 import { Icon } from '@iconify/vue';
 
 import type { Contact } from '@/types/Contacts.ts';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 
@@ -56,6 +57,8 @@ const updateContactsList = async () => {
 const onDeleteContacts = async (ids: string[]) => {
 	try {
 		await deleteContacts(ids);
+
+		toast.success(t('contacts_removed_successfully'));
 	} catch (error) {
 	} finally {
 		await updateContactsList();
@@ -92,7 +95,11 @@ const onDeleteContacts = async (ids: string[]) => {
 			>
 				<template #row-actions-header> </template>
 				<template #row-actions="{ row }: { row: Contact }">
-					<EditContact :contact="row" @contact-created="updateContactsList">
+					<EditContact
+						:contact="row"
+						@contact-created="updateContactsList"
+						@contact-removed="updateContactsList"
+					>
 						<Button type="button" size="icon">
 							<EyeIcon class="w-4 h-4" />
 						</Button>

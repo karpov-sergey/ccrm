@@ -190,7 +190,7 @@ watch(globalFilter, (newValue) => {
 		<div class="flex items-center gap-2">
 			<slot />
 			<ConfirmModal
-				:title="t('are_you_sure_you_want_to_delete_this_contact')"
+				:title="t('are_you_sure_you_want_to_delete_this_item')"
 				@confirm="onRemoveSubmit"
 			>
 				<Button
