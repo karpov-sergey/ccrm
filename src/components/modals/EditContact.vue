@@ -64,8 +64,8 @@ const phoneRegex = /^[+0-9 ()-]{4,20}$/;
 
 const formSchema = toTypedSchema(
 	z.object({
-		firstName: z.string().nonempty().min(2).max(50),
-		lastName: z.string().min(2).max(50).optional(),
+		firstName: z.string().min(2).max(50),
+		lastName: z.string().max(50).optional(),
 		phones: z
 			.array(
 				z
@@ -77,16 +77,10 @@ const formSchema = toTypedSchema(
 			)
 			.max(5)
 			.optional(),
-		email: z.string().email().optional(),
+		email: z.union([z.literal(''), z.string().email()]),
 		birthday: z.string().optional(),
-		instagram: z
-			.string()
-			.url({ message: t('validation.string.url') })
-			.optional(),
-		facebook: z
-			.string()
-			.url({ message: t('validation.string.url') })
-			.optional(),
+		instagram: z.string().optional(),
+		facebook: z.string().optional(),
 		whatsapp: z.string().optional(),
 		telegram: z.string().optional(),
 		address: z.string().optional(),

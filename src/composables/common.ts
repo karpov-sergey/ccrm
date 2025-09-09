@@ -71,6 +71,13 @@ export const useScreenWidth = () => {
 
 export const useNameAbbreviation = () => {
 	const nameAbbreviation = (fullName: string) => {
+		const firstName = fullName.split(' ')[0];
+		const lastName = fullName.split(' ')[1];
+
+		if (!lastName?.length) {
+			return `${firstName.substring(0, 1).toUpperCase()}`;
+		}
+
 		return `${fullName.split(' ')[0].substring(0, 1).toUpperCase()} ${fullName.split(' ')[1].substring(0, 1).toUpperCase()}`;
 	};
 
