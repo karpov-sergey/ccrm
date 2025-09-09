@@ -103,7 +103,7 @@ const onNativeDateChange = (event: Event) => {
 
 <template>
 	<!-- Mobile: use native date picker when supported (iOS-safe overlay) -->
-	<div v-if="shouldUseNativeDatePicker" class="w-full relative">
+	<div v-if="shouldUseNativeDatePicker" class="w-full relative overflow-hidden">
 		<!-- Transparent overlay input to capture the tap and open native picker -->
 		<input
 			ref="nativeInputRef"

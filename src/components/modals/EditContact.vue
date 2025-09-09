@@ -416,27 +416,6 @@ const onRemoveSubmit = async () => {
 				</div>
 
 				<FormField
-					v-if="isEditMode || contact?.email?.length"
-					v-slot="{ value, componentField }"
-					name="email"
-				>
-					<FormItem>
-						<FormLabel>
-							{{ t('email') }}
-						</FormLabel>
-						<FormControl>
-							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else>
-								<Link :href="`mailto:${value}`" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				</FormField>
-
-				<FormField
 					v-if="isEditMode || contact?.instagram"
 					v-slot="{ value, componentField }"
 					name="instagram"
@@ -541,11 +520,32 @@ const onRemoveSubmit = async () => {
 				</FormField>
 
 				<FormField
+					v-if="isEditMode || contact?.email?.length"
+					v-slot="{ value, componentField }"
+					name="email"
+				>
+					<FormItem>
+						<FormLabel>
+							{{ t('email') }}
+						</FormLabel>
+						<FormControl>
+							<Input v-if="isEditMode" type="text" v-bind="componentField" />
+							<div v-else>
+								<Link :href="`mailto:${value}`" :text="value">
+									<ExternalLink class="h-4 w-4" />
+								</Link>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
+
+				<FormField
 					v-if="isEditMode || contact?.birthday"
 					v-slot="{ value, componentField }"
 					name="birthday"
 				>
-					<FormItem class="overflow-hidden">
+					<FormItem>
 						<FormLabel>
 							{{ t('date_of_birth') }}
 						</FormLabel>
