@@ -27,7 +27,7 @@ import Name from './items/Name.vue';
 import Phones from './items/Phones.vue';
 import Email from './items/Email.vue';
 
-import { Trash2 } from 'lucide-vue-next';
+import { Plus, Trash2 } from 'lucide-vue-next';
 
 import type {
 	Header,
@@ -49,7 +49,7 @@ const { t } = useI18n();
 
 const props = defineProps<DataTableProps>();
 
-const emit = defineEmits(['delete-contacts', 'row-click']);
+const emit = defineEmits(['delete-contacts', 'row-click', 'add-click']);
 
 const sorting = ref<SortingState>([]);
 const globalFilter = ref('');
@@ -171,6 +171,10 @@ const selectedRows = computed(() => {
 	return table.getSelectedRowModel().rows.length;
 });
 
+const onAddClick = () => {
+	emit('add-click');
+};
+
 watch(inputValue, (newValue) => applyGlobalFilter(newValue));
 watch(globalFilter, (newValue) => {
 	if (newValue !== inputValue.value) inputValue.value = newValue ?? '';
@@ -178,16 +182,24 @@ watch(globalFilter, (newValue) => {
 </script>
 
 <template>
-	<div v-if="props.enableSearch" class="flex items-center justify-between mb-3">
-		<Input
-			class="w-[220px]"
-			placeholder="Search..."
-			:modelValue="inputValue"
-			@update:modelValue="onInputChange"
-		/>
-
-		<div class="flex items-center gap-2">
-			<slot />
+	<div
+		class="flex flex-col items-center gap-4 mb-4 md:flex-row md:justify-between"
+	>
+		<Button
+			class="w-full flex gap-2 items-center md:w-auto"
+			@click="onAddClick"
+		>
+			<Plus class="w-4 h-4" />
+			{{ t('add_new_contact') }}
+		</Button>
+		<div class="w-full flex flex-col items-center gap-4 md:flex-row md:w-auto">
+			<Input
+				v-if="props.enableSearch"
+				class="w-full md:w-[220px]"
+				placeholder="Search..."
+				:modelValue="inputValue"
+				@update:modelValue="onInputChange"
+			/>
 			<ConfirmModal
 				:title="
 					removeConfirmTitle || t('are_you_sure_you_want_to_delete_this_item')
@@ -195,7 +207,7 @@ watch(globalFilter, (newValue) => {
 				@confirm="onRemoveSubmit"
 			>
 				<Button
-					class="text-destructive"
+					class="w-full text-destructive md:w-auto"
 					type="button"
 					variant="link"
 					:disabled="!selectedRows"

@@ -2,15 +2,12 @@
 import { ref, onBeforeMount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { Button } from '@/components/ui/button';
 import EditContact from '@/components/modals/EditContact.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
 
 import { createColumnHelper } from '@tanstack/vue-table';
 import { deleteContacts, getAllContacts } from '@/api/contacts';
-
-import { Plus } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
 import { toast } from 'vue-sonner';
@@ -94,13 +91,6 @@ const onDeleteContacts = async (ids: string[]) => {
 	>
 		<Spinner v-if="isLoading" />
 		<template v-else>
-			<div class="mb-2">
-				<Button class="flex gap-2 items-center" @click="onCreateClick">
-					<Plus class="w-4 h-4" />
-					{{ t('add_new_contact') }}
-				</Button>
-			</div>
-
 			<!-- Edit modal outside of DataTable, opened on row click -->
 			<EditContact
 				ref="editModalRef"
@@ -121,6 +111,7 @@ const onDeleteContacts = async (ids: string[]) => {
 				"
 				@delete-contacts="onDeleteContacts"
 				@row-click="onRowClick"
+				@add-click="onCreateClick"
 			/>
 		</template>
 	</section>

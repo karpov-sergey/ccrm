@@ -311,7 +311,9 @@ const onRemoveSubmit = async () => {
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
 		<DialogContent class="md:max-w-[600px] p-2 md:p-4" @open-auto-focus.prevent>
-			<DialogHeader class="flex flex-row items-start justify-between gap-4">
+			<DialogHeader
+				class="flex flex-row items-start justify-between gap-4 text-left"
+			>
 				<div class="flex flex-col gap-1">
 					<DialogTitle>
 						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
@@ -653,7 +655,7 @@ const onRemoveSubmit = async () => {
 
 				<div
 					v-if="contact?.id"
-					class="col-span-2 text-muted-foreground text-sm"
+					class="md:col-span-2 text-muted-foreground text-sm"
 				>
 					Created:
 					{{ formattedDate(contact.created_at) }}
