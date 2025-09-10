@@ -5,6 +5,11 @@ import { Icon } from '@iconify/vue';
 
 import type { Contact } from '@/types/Contacts.ts';
 
+interface SocialLink {
+	link: string;
+	icon: string;
+}
+
 const props = defineProps<{ contact: Contact }>();
 
 const ensureHttps = (url: string): string => {
@@ -68,7 +73,7 @@ const whatsAppLink = computed((): string => {
 		return '';
 	}
 
-	// If it's already a wa.me or whatsapp domain, just ensure protocol
+	// If it's already a wa.me or WhatsApp domain, just ensure protocol
 	if (/(wa\.me|whatsapp\.com)/i.test(value)) {
 		return ensureHttps(value);
 	}
@@ -104,59 +109,55 @@ const telegramLink = computed((): string => {
 
 	return `https://t.me/${username}`;
 });
+
+const socialLinks = computed((): SocialLink[] => {
+	const links: SocialLink[] = [];
+
+	if (props.contact.instagram) {
+		links.push({
+			link: instagramLink.value,
+			icon: 'instagram',
+		});
+	}
+
+	if (props.contact.facebook) {
+		links.push({
+			link: facebookLink.value,
+			icon: 'facebook',
+		});
+	}
+
+	if (props.contact.whatsapp) {
+		links.push({
+			link: whatsAppLink.value,
+			icon: 'whatsapp',
+		});
+	}
+
+	if (props.contact.telegram) {
+		links.push({
+			link: telegramLink.value,
+			icon: 'telegram',
+		});
+	}
+
+	return links;
+});
 </script>
 
 <template>
-	<div class="flex gap-2 items-center">
+	<div class="flex gap-4 items-center">
 		<a
-			v-if="instagramLink"
-			:href="instagramLink"
+			v-for="(item, index) in socialLinks"
+			:href="item.link"
+			:key="index"
 			target="_blank"
 			rel="noopener noreferrer"
 			@click.stop
 		>
 			<Icon
-				icon="simple-icons:instagram"
-				class="w-6 h-6 mb-2 text-muted-foreground/70 hover:text-muted-foreground"
-			/>
-		</a>
-
-		<a
-			v-if="whatsAppLink"
-			:href="whatsAppLink"
-			target="_blank"
-			rel="noopener noreferrer"
-			@click.stop
-		>
-			<Icon
-				icon="simple-icons:whatsapp"
-				class="w-6 h-6 mb-2 text-muted-foreground/70 hover:text-muted-foreground"
-			/>
-		</a>
-
-		<a
-			v-if="telegramLink"
-			:href="telegramLink"
-			target="_blank"
-			rel="noopener noreferrer"
-			@click.stop
-		>
-			<Icon
-				icon="simple-icons:telegram"
-				class="w-6 h-6 mb-2 text-muted-foreground/70 hover:text-muted-foreground"
-			/>
-		</a>
-
-		<a
-			v-if="facebookLink"
-			:href="facebookLink"
-			target="_blank"
-			rel="noopener noreferrer"
-			@click.stop
-		>
-			<Icon
-				icon="simple-icons:facebook"
-				class="w-6 h-6 mb-2 text-muted-foreground/70 hover:text-muted-foreground"
+				:icon="`simple-icons:${item.icon}`"
+				class="w-6 h-6 mb-2 text-primary/70 hover:text-primary transition-colors duration-200"
 			/>
 		</a>
 	</div>

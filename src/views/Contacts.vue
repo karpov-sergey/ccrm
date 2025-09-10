@@ -9,10 +9,13 @@ import DataTable from '@/components/ui/data-table/DataTable.vue';
 import { createColumnHelper } from '@tanstack/vue-table';
 import { deleteContacts, getAllContacts } from '@/api/contacts';
 
+import { useFormattedDate } from '@/composables/common.ts';
+
 import type { Contact } from '@/types/Contacts.ts';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
+const { formattedDate } = useFormattedDate();
 
 const isLoading = ref(true);
 const contacts = ref<Contact[]>([]);
@@ -56,6 +59,20 @@ const contactColumns = [
 	}),
 	columnHelper.accessor('social', {
 		header: () => 'Social',
+	}),
+	columnHelper.accessor(
+		(row) => (row.birthday ? formattedDate(row.birthday) : ''),
+		{
+			id: 'birthday',
+			header: () => 'Birthday',
+			cell: (info) => info.getValue(),
+		}
+	),
+	columnHelper.accessor('address', {
+		header: () => 'Address',
+	}),
+	columnHelper.accessor('notes', {
+		header: () => 'Notes',
 	}),
 ];
 

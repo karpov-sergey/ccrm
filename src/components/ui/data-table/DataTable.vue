@@ -290,9 +290,9 @@ watch(globalFilter, (newValue) => {
 								:contact="row.original"
 							/>
 
-							<template v-else>
+							<div v-else class="max-w-[200px] truncate text-sm">
 								{{ renderCell(cell) }}
-							</template>
+							</div>
 						</TableCell>
 						<!--						<TableCell class="p-4">-->
 						<!--							<slot name="row-actions" :row="row.original" />-->
