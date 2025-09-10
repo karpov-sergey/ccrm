@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,15 @@ const { t } = useI18n();
 
 const isLoading = ref(true);
 const contacts = ref<Contact[]>([]);
+
+const editingContact = ref<Contact | undefined>(undefined);
+const editModalRef = ref<any>(null);
+
+const onRowClick = async (contact: Contact) => {
+	editingContact.value = contact;
+	await nextTick();
+	editModalRef.value?.open?.();
+};
 
 const columnHelper = createColumnHelper<Contact>();
 
@@ -81,6 +90,14 @@ const onDeleteContacts = async (ids: string[]) => {
 				</EditContact>
 			</div>
 
+			<!-- Edit modal outside of DataTable, opened on row click -->
+			<EditContact
+				ref="editModalRef"
+				:contact="editingContact"
+				@contact-updated="updateContactsList"
+				@contact-removed="updateContactsList"
+			/>
+
 			<!--			<Icon icon="simple-icons:facebook" class="w-6 h-6 mb-2" />-->
 
 			<DataTable
@@ -88,6 +105,7 @@ const onDeleteContacts = async (ids: string[]) => {
 				:data="contacts"
 				:enable-search="true"
 				@delete-contacts="onDeleteContacts"
+				@row-click="onRowClick"
 			/>
 		</template>
 	</section>

@@ -253,6 +253,15 @@ const onOpenClick = () => {
 	isModalOpen.value = true;
 };
 
+// Expose a method so parents can open the modal programmatically
+const open = () => {
+	resetFormValuesFromContact();
+	isEditModeSwitched.value = false;
+	isModalOpen.value = true;
+};
+
+defineExpose({ open });
+
 const onOpenUpdate = (isOpen: boolean) => {
 	if (isOpen) {
 		resetFormValuesFromContact();

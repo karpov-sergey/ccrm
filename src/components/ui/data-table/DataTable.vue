@@ -50,7 +50,7 @@ const { nameAbbreviation } = useNameAbbreviation();
 
 const props = defineProps<DataTableProps>();
 
-const emit = defineEmits(['delete-contacts']);
+const emit = defineEmits(['delete-contacts', 'row-click']);
 
 const sorting = ref<SortingState>([]);
 const globalFilter = ref('');
@@ -240,10 +240,12 @@ watch(globalFilter, (newValue) => {
 				<template v-if="table.getRowModel().rows.length">
 					<TableRow
 						v-for="row in table.getRowModel().rows"
-						:key="row.id"
+						class="cursor-pointer"
 						:class="{ 'bg-muted': rowIsSelected(row) }"
+						:key="row.id"
+						@click="emit('row-click', row.original)"
 					>
-						<TableCell class="p-4">
+						<TableCell class="p-4" @click.stop>
 							<Checkbox
 								:modelValue="rowIsSelected(row)"
 								@update:modelValue="
