@@ -20,19 +20,32 @@ const { t } = useI18n();
 const isLoading = ref(true);
 const contacts = ref<Contact[]>([]);
 
+const isCreation = ref(false);
+
 const editingContact = ref<Contact | undefined>(undefined);
 const editModalRef = ref<any>(null);
 
 const onRowClick = async (contact: Contact) => {
+	isCreation.value = false;
 	editingContact.value = contact;
+
 	await nextTick();
+
+	editModalRef.value?.open?.();
+};
+
+const onCreateClick = async () => {
+	isCreation.value = true;
+	editingContact.value = undefined;
+
+	await nextTick();
+
 	editModalRef.value?.open?.();
 };
 
 const columnHelper = createColumnHelper<Contact>();
 
 const contactColumns = [
-	// Selection column will be provided by DataTable itself as the first column
 	columnHelper.accessor((row) => `${row.first_name} ${row.last_name}`.trim(), {
 		id: 'name',
 		header: () => 'Name',
@@ -82,18 +95,17 @@ const onDeleteContacts = async (ids: string[]) => {
 		<Spinner v-if="isLoading" />
 		<template v-else>
 			<div class="mb-2">
-				<EditContact :is-creation="true" @contact-updated="updateContactsList">
-					<Button class="flex gap-2 items-center">
-						<Plus class="w-4 h-4" />
-						{{ t('add_new_contact') }}
-					</Button>
-				</EditContact>
+				<Button class="flex gap-2 items-center" @click="onCreateClick">
+					<Plus class="w-4 h-4" />
+					{{ t('add_new_contact') }}
+				</Button>
 			</div>
 
 			<!-- Edit modal outside of DataTable, opened on row click -->
 			<EditContact
 				ref="editModalRef"
 				:contact="editingContact"
+				:is-creation="isCreation"
 				@contact-updated="updateContactsList"
 				@contact-removed="updateContactsList"
 			/>
@@ -104,6 +116,9 @@ const onDeleteContacts = async (ids: string[]) => {
 				:columns="contactColumns"
 				:data="contacts"
 				:enable-search="true"
+				:remove-confirm-title="
+					t('are_you_sure_you_want_to_delete_this_contact')
+				"
 				@delete-contacts="onDeleteContacts"
 				@row-click="onRowClick"
 			/>

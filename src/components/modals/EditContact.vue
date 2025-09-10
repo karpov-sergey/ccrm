@@ -42,9 +42,11 @@ import {
 	Edit,
 	PhoneOutgoing,
 	ExternalLink,
+	Heart,
 } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const props = defineProps<{
 	isCreation?: boolean;
@@ -67,6 +69,7 @@ const formSchema = toTypedSchema(
 	z.object({
 		firstName: z.string().min(2).max(50),
 		lastName: z.string().max(50).optional(),
+		favorite: z.boolean().optional(),
 		phones: z
 			.array(
 				z
@@ -94,6 +97,7 @@ const form = useForm({
 	initialValues: {
 		firstName: '',
 		lastName: '',
+		favorite: false,
 		phones: [''],
 		email: '',
 		birthday: '',
@@ -163,6 +167,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 				id: props.contact.id,
 				first_name: values.firstName,
 				last_name: values.lastName || '',
+				favorite: values.favorite || false,
 				user_id: user.value?.id,
 				phones: (values.phones || [])
 					.map((p) => p.trim())
@@ -182,6 +187,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			await createContact({
 				first_name: values.firstName,
 				last_name: values.lastName || '',
+				favorite: values.favorite || false,
 				user_id: user.value?.id,
 				phones: (values.phones || [])
 					.map((p) => p.trim())
@@ -214,6 +220,7 @@ const resetFormValuesFromContact = () => {
 			values: {
 				firstName: props.contact.first_name ?? '',
 				lastName: props.contact.last_name ?? '',
+				favorite: props.contact.favorite ?? false,
 				phones: (props.contact.phones && props.contact.phones.length > 0
 					? props.contact.phones
 					: ['']) as string[],
@@ -232,6 +239,7 @@ const resetFormValuesFromContact = () => {
 			values: {
 				firstName: '',
 				lastName: '',
+				favorite: false,
 				phones: [''],
 				email: '',
 				birthday: '',
@@ -326,6 +334,23 @@ const onRemoveSubmit = async () => {
 				class="grid lg:grid-cols-2 content-start items-start gap-4 py-4 px-2 overflow-y-auto"
 				@submit="onSubmit"
 			>
+				<FormField v-slot="{ value, componentField }" name="favourite">
+					<FormItem>
+						<FormControl>
+							<Checkbox
+								v-if="isEditMode"
+								class="data-[state=checked]:bg-transparent"
+								v-bind="componentField"
+							>
+								<Heart class="col-span-2 h-6 w-6 text-red-500" />
+							</Checkbox>
+							<div v-else>
+								{{ value }}
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				</FormField>
 				<FormField v-slot="{ value, componentField }" name="firstName">
 					<FormItem>
 						<FormLabel>
@@ -623,6 +648,14 @@ const onRemoveSubmit = async () => {
 						<FormMessage />
 					</FormItem>
 				</FormField>
+
+				<div
+					v-if="contact?.id"
+					class="col-span-2 text-muted-foreground text-sm"
+				>
+					Created:
+					{{ formattedDate(contact.created_at) }}
+				</div>
 			</form>
 			<DialogFooter
 				class="flex flex-row items-center justify-between gap-2 pt-6"

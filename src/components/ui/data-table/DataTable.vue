@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 
 import { useNameAbbreviation } from '@/composables/common.ts';
 
-import { Trash2, PhoneOutgoing, ExternalLink } from 'lucide-vue-next';
+import { Trash2, PhoneOutgoing, ExternalLink, Heart } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
 import type {
@@ -43,6 +43,7 @@ interface DataTableProps {
 	columns: ColumnDef<any, any>[];
 	data: any[];
 	enableSearch?: boolean;
+	removeConfirmTitle?: string;
 }
 
 const { t } = useI18n();
@@ -190,7 +191,9 @@ watch(globalFilter, (newValue) => {
 		<div class="flex items-center gap-2">
 			<slot />
 			<ConfirmModal
-				:title="t('are_you_sure_you_want_to_delete_this_item')"
+				:title="
+					removeConfirmTitle || t('are_you_sure_you_want_to_delete_this_item')
+				"
 				@confirm="onRemoveSubmit"
 			>
 				<Button
@@ -270,6 +273,8 @@ watch(globalFilter, (newValue) => {
 									<div class="truncate font-semibold capitalize">
 										{{ cell.getValue() }}
 									</div>
+
+									<Heart class="h-4 w-4 text-red-500" />
 								</div>
 							</template>
 							<template v-else-if="cell.column.id === 'phones'">
