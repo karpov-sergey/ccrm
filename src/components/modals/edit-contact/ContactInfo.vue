@@ -21,7 +21,7 @@ const { t } = useI18n();
 			<div class="flex flex-col gap-2">
 				<Link
 					v-for="(phone, index) in props.contact.phones"
-					:href="`tel:${123}`"
+					:href="`tel:${phone}`"
 					:text="phone"
 					:key="index"
 				>
