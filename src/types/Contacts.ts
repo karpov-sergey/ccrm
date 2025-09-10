@@ -12,7 +12,7 @@ export interface UpdateContactPayload {
 	phones?: string[] | [];
 	telegram?: string;
 	whatsapp?: string;
-	favorite?: boolean;
+	favourite?: boolean;
 }
 
 export interface Contact {
@@ -30,5 +30,5 @@ export interface Contact {
 	phones: string[] | [];
 	telegram: string;
 	whatsapp: string;
-	favorite: boolean;
+	favourite: boolean;
 }

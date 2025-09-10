@@ -317,7 +317,7 @@ const onRemoveSubmit = async () => {
 				@submit="onSubmit"
 			>
 				<DialogHeader
-					class="flex flex-row items-start justify-between gap-4 col-span-2"
+					class="flex flex-row items-start justify-between gap-4 col-span-2 mb-4"
 				>
 					<div class="flex gap-4">
 						<FormField v-slot="{ value, handleChange }" name="favourite">

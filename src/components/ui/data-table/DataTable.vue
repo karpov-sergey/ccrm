@@ -19,15 +19,15 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-
-import { useNameAbbreviation } from '@/composables/common.ts';
-
-import { Trash2, PhoneOutgoing, ExternalLink, Heart } from 'lucide-vue-next';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
+import Name from './items/Name.vue';
+import Phones from './items/Phones.vue';
+import Email from './items/Email.vue';
+
+import { Trash2 } from 'lucide-vue-next';
 
 import type {
 	Header,
@@ -37,7 +37,6 @@ import type {
 	ColumnDef,
 	Row,
 } from '@tanstack/vue-table';
-import Link from '@/components/ui/link/Link.vue';
 
 interface DataTableProps {
 	columns: ColumnDef<any, any>[];
@@ -47,7 +46,6 @@ interface DataTableProps {
 }
 
 const { t } = useI18n();
-const { nameAbbreviation } = useNameAbbreviation();
 
 const props = defineProps<DataTableProps>();
 
@@ -262,50 +260,18 @@ watch(globalFilter, (newValue) => {
 							class="p-4"
 							:key="cell.id"
 						>
-							<template v-if="cell.column.id === 'name'">
-								<div class="flex items-center gap-2">
-									<Avatar>
-										<AvatarFallback>
-											{{ nameAbbreviation(String(cell.getValue()) ?? '') }}
-										</AvatarFallback>
-									</Avatar>
+							<Name v-if="cell.column.id === 'name'" :contact="row.original" />
 
-									<div class="truncate font-semibold capitalize">
-										{{ cell.getValue() }}
-									</div>
+							<Phones
+								v-else-if="cell.column.id === 'phones'"
+								:contact="row.original"
+							/>
 
-									<Heart
-										v-if="row.original?.favourite"
-										class="h-4 w-4 text-red-500"
-										aria-label="Favorite contact"
-									/>
-								</div>
-							</template>
-							<template v-else-if="cell.column.id === 'phones'">
-								<div
-									v-for="(phone, index) in cell.getValue()"
-									:key="`${phone}_${index}`"
-									class="mb-1 last-of-type:mb-0"
-								>
-									<Link
-										:key="`${phone}_${index}`"
-										:href="`tel:${phone}`"
-										:text="phone"
-									>
-										<PhoneOutgoing class="h-4 w-4" />
-									</Link>
-								</div>
-							</template>
+							<Email
+								v-else-if="cell.column.id === 'email'"
+								:contact="row.original"
+							/>
 
-							<template v-else-if="cell.column.id === 'email'">
-								<Link
-									v-if="String(cell.getValue() ?? '').length > 0"
-									:href="`mailto:${String(cell.getValue() ?? '')}`"
-									:text="String(cell.getValue() ?? '')"
-								>
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</template>
 							<template v-else>
 								{{ renderCell(cell) }}
 							</template>
