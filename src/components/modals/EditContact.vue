@@ -42,11 +42,9 @@ import {
 	Edit,
 	PhoneOutgoing,
 	ExternalLink,
-	Heart,
 } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const props = defineProps<{
 	isCreation?: boolean;

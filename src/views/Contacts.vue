@@ -54,6 +54,9 @@ const contactColumns = [
 	columnHelper.accessor('email', {
 		header: () => 'Email',
 	}),
+	columnHelper.accessor('social', {
+		header: () => 'Social',
+	}),
 ];
 
 onBeforeMount(async () => {

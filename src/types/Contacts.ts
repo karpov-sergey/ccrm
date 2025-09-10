@@ -31,4 +31,5 @@ export interface Contact {
 	telegram: string;
 	whatsapp: string;
 	favourite: boolean;
+	social: string[];
 }
