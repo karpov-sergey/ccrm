@@ -311,58 +311,48 @@ const onRemoveSubmit = async () => {
 			<slot @click="onOpenClick" />
 		</DialogTrigger>
 		<DialogContent class="md:max-w-[600px] p-2 md:p-4" @open-auto-focus.prevent>
+			<DialogHeader class="flex flex-row items-start justify-between gap-4">
+				<div class="flex flex-col gap-1">
+					<DialogTitle>
+						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
+					</DialogTitle>
+					<DialogDescription>
+						Make changes to this contact here. Click save when you're done.
+					</DialogDescription>
+				</div>
+				<Button
+					v-if="!props.isCreation && props.contact"
+					type="button"
+					size="icon"
+					@click="toggleEditMode"
+				>
+					<Edit class="h-4 w-4" />
+				</Button>
+			</DialogHeader>
 			<form
 				id="contact-form"
-				class="grid lg:grid-cols-2 content-start items-start gap-4 px-2 overflow-y-auto"
+				class="grid lg:grid-cols-2 content-start items-start gap-4 py-4 px-2 overflow-y-auto"
 				@submit="onSubmit"
 			>
-				<DialogHeader
-					class="flex flex-row items-start justify-between gap-4 col-span-2 mb-4"
-				>
-					<div class="flex gap-4">
-						<FormField v-slot="{ value, handleChange }" name="favourite">
-							<FormItem class="flex items-center gap-2 col-span-2">
-								<FormControl>
-									<Checkbox
-										v-if="isEditMode"
-										class="data-[state=checked]:bg-transparent data-[state=checked]:border-transparent border-transparent shadow-none text-muted-foreground data-[state=checked]:text-red-500 transition-colors duration-200 size-6"
-										:model-value="value"
-										:is-icon="true"
-										@update:model-value="handleChange"
-									>
-										<Heart
-											class="col-span-2 h-6 w-6 focus-visible:ring-[0px]"
-										/>
-									</Checkbox>
-									<div v-else>
-										<Heart
-											class="col-span-2 h-6 w-6 focus-visible:ring-[0px] text-muted-foreground"
-											:class="{ 'text-red-500': !!value }"
-										/>
-									</div>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						</FormField>
-						<div class="flex flex-col gap-1">
-							<DialogTitle>
-								{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
-							</DialogTitle>
-							<DialogDescription>
-								Make changes to this contact here. Click save when you're done.
-							</DialogDescription>
-						</div>
-					</div>
-					<Button
-						v-if="!props.isCreation && props.contact"
-						type="button"
-						size="icon"
-						@click="toggleEditMode"
-					>
-						<Edit class="h-4 w-4" />
-					</Button>
-				</DialogHeader>
-
+				<!--				<FormField v-slot="{ value, handleChange }" name="favourite">-->
+				<!--					<FormItem class="flex items-center gap-2 col-span-2">-->
+				<!--						<FormControl>-->
+				<!--							<Checkbox-->
+				<!--								v-if="isEditMode"-->
+				<!--								class="data-[state=checked]:bg-transparent data-[state=checked]:border-transparent border-transparent shadow-none text-muted-foreground data-[state=checked]:text-red-500 transition-colors duration-200 size-6"-->
+				<!--								:model-value="value"-->
+				<!--								:is-icon="true"-->
+				<!--								@update:model-value="handleChange"-->
+				<!--							>-->
+				<!--								<Heart class="col-span-2 h-6 w-6 focus-visible:ring-[0px]" />-->
+				<!--							</Checkbox>-->
+				<!--							<div v-else>-->
+				<!--								{{ value }}-->
+				<!--							</div>-->
+				<!--						</FormControl>-->
+				<!--						<FormMessage />-->
+				<!--					</FormItem>-->
+				<!--				</FormField>-->
 				<FormField v-slot="{ value, componentField }" name="firstName">
 					<FormItem>
 						<FormLabel>
@@ -660,6 +650,7 @@ const onRemoveSubmit = async () => {
 						<FormMessage />
 					</FormItem>
 				</FormField>
+
 				<div
 					v-if="contact?.id"
 					class="col-span-2 text-muted-foreground text-sm"
