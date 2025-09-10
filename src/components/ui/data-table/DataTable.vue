@@ -231,9 +231,9 @@ watch(globalFilter, (newValue) => {
 					</TableHead>
 
 					<!-- Extra actions column header (non-sortable) -->
-					<TableHead>
-						<slot name="row-actions-header" />
-					</TableHead>
+					<!--					<TableHead>-->
+					<!--						<slot name="row-actions-header" />-->
+					<!--					</TableHead>-->
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -299,9 +299,9 @@ watch(globalFilter, (newValue) => {
 								{{ renderCell(cell) }}
 							</template>
 						</TableCell>
-						<TableCell class="p-4">
-							<slot name="row-actions" :row="row.original" />
-						</TableCell>
+						<!--						<TableCell class="p-4">-->
+						<!--							<slot name="row-actions" :row="row.original" />-->
+						<!--						</TableCell>-->
 					</TableRow>
 				</template>
 				<TableEmpty

@@ -47,7 +47,7 @@ import {
 import type { Contact } from '@/types/Contacts.ts';
 
 const props = defineProps<{
-	isForceEdit?: boolean;
+	isCreation?: boolean;
 	contact?: Contact;
 }>();
 
@@ -55,7 +55,7 @@ const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
 const { formattedDate } = useFormattedDate();
 
-const emit = defineEmits(['contact-created', 'contact-removed']);
+const emit = defineEmits(['contact-updated', 'contact-removed']);
 
 const isModalOpen = ref(false);
 const isSaving = ref(false);
@@ -107,7 +107,7 @@ const form = useForm({
 });
 
 const isEditMode = computed((): boolean => {
-	return props.isForceEdit || isEditModeSwitched.value;
+	return props.isCreation || isEditModeSwitched.value;
 });
 
 const phonesCanAddMore = computed(() => {
@@ -201,7 +201,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 		isModalOpen.value = false;
 
-		emit('contact-created');
+		emit('contact-updated');
 	} catch (error) {
 	} finally {
 		isSaving.value = false;
@@ -248,6 +248,7 @@ const resetFormValuesFromContact = () => {
 
 const onOpenClick = () => {
 	resetFormValuesFromContact();
+
 	isEditModeSwitched.value = false;
 	isModalOpen.value = true;
 };
@@ -255,6 +256,7 @@ const onOpenClick = () => {
 const onOpenUpdate = (isOpen: boolean) => {
 	if (isOpen) {
 		resetFormValuesFromContact();
+
 		isEditModeSwitched.value = false;
 		isModalOpen.value = true;
 	} else {
@@ -302,7 +304,7 @@ const onRemoveSubmit = async () => {
 					</DialogDescription>
 				</div>
 				<Button
-					v-if="!props.isForceEdit && props.contact"
+					v-if="!props.isCreation && props.contact"
 					type="button"
 					size="icon"
 					@click="toggleEditMode"
