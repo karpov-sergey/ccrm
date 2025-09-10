@@ -2,7 +2,7 @@
 import { ref, onBeforeMount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import EditContact from '@/components/modals/EditContact.vue';
+import EditContact from '@/components/modals/edit-contact/EditContact.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
 

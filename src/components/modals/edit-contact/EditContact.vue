@@ -45,6 +45,7 @@ import {
 } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
+import ContactInfo from '@/components/modals/edit-contact/ContactInfo.vue';
 
 const props = defineProps<{
 	isCreation?: boolean;
@@ -262,6 +263,7 @@ const onOpenClick = () => {
 // Expose a method so parents can open the modal programmatically
 const open = () => {
 	resetFormValuesFromContact();
+
 	isEditModeSwitched.value = false;
 	isModalOpen.value = true;
 };
@@ -282,6 +284,8 @@ const onOpenUpdate = (isOpen: boolean) => {
 
 const toggleEditMode = () => {
 	isEditModeSwitched.value = !isEditModeSwitched.value;
+
+	resetFormValuesFromContact();
 };
 
 const onRemoveSubmit = async () => {
@@ -310,13 +314,18 @@ const onRemoveSubmit = async () => {
 		</DialogTrigger>
 		<DialogContent class="md:max-w-[600px] p-2 md:p-4" @open-auto-focus.prevent>
 			<DialogHeader
-				class="flex flex-row items-start justify-between gap-4 text-left"
+				class="flex flex-row items-center justify-between gap-4 text-left"
 			>
 				<div class="flex flex-col gap-1">
 					<DialogTitle>
-						{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
+						<template v-if="isEditMode">
+							{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
+						</template>
+						<template v-else>
+							{{ contact?.first_name }} {{ contact?.last_name }}
+						</template>
 					</DialogTitle>
-					<DialogDescription>
+					<DialogDescription v-show="isEditMode">
 						Make changes to this contact here. Click save when you're done.
 					</DialogDescription>
 				</div>
@@ -330,6 +339,7 @@ const onRemoveSubmit = async () => {
 				</Button>
 			</DialogHeader>
 			<form
+				v-if="isEditMode"
 				id="contact-form"
 				class="grid lg:grid-cols-2 content-start items-start gap-4 py-4 px-2 overflow-y-auto"
 				@submit="onSubmit"
@@ -353,16 +363,13 @@ const onRemoveSubmit = async () => {
 				<!--						<FormMessage />-->
 				<!--					</FormItem>-->
 				<!--				</FormField>-->
-				<FormField v-slot="{ value, componentField }" name="firstName">
+				<FormField v-slot="{ componentField }" name="firstName">
 					<FormItem>
 						<FormLabel>
 							{{ t('first_name') }}
 						</FormLabel>
 						<FormControl>
-							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else>
-								{{ value }}
-							</div>
+							<Input type="text" v-bind="componentField" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -370,7 +377,7 @@ const onRemoveSubmit = async () => {
 
 				<FormField
 					v-if="isEditMode || contact?.last_name"
-					v-slot="{ value, componentField }"
+					v-slot="{ componentField }"
 					name="lastName"
 				>
 					<FormItem>
@@ -378,10 +385,7 @@ const onRemoveSubmit = async () => {
 							{{ t('last_name') }}
 						</FormLabel>
 						<FormControl>
-							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else>
-								{{ value }}
-							</div>
+							<Input type="text" v-bind="componentField" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -407,29 +411,20 @@ const onRemoveSubmit = async () => {
 						:key="`${index}`"
 						class="flex items-start gap-2"
 					>
-						<FormField
-							:name="`phones.${index}`"
-							v-slot="{ value, componentField }"
-						>
+						<FormField :name="`phones.${index}`" v-slot="{ componentField }">
 							<FormItem class="flex-1">
 								<FormControl>
 									<Input
-										v-if="isEditMode"
 										type="tel"
 										placeholder="+1 234 567 890"
 										v-bind="componentField"
 									/>
-									<div v-else>
-										<Link :href="`tel:${value}`" :text="value">
-											<PhoneOutgoing class="h-4 w-4" />
-										</Link>
-									</div>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
 						</FormField>
 						<Button
-							v-if="isEditMode && canRemovePhone(index)"
+							v-if="canRemovePhone(index)"
 							type="button"
 							variant="destructive"
 							size="icon"
@@ -441,7 +436,6 @@ const onRemoveSubmit = async () => {
 
 					<div class="px-2">
 						<Button
-							v-if="isEditMode"
 							class="w-full"
 							type="button"
 							variant="secondary"
@@ -453,136 +447,83 @@ const onRemoveSubmit = async () => {
 					</div>
 				</div>
 
-				<FormField
-					v-if="isEditMode || contact?.instagram"
-					v-slot="{ value, componentField }"
-					name="instagram"
-				>
+				<FormField v-slot="{ componentField }" name="instagram">
 					<FormItem>
 						<FormLabel>
 							{{ t('instagram') }}
 						</FormLabel>
 						<FormControl>
 							<Input
-								v-if="isEditMode"
 								type="text"
 								placeholder="https://instagram.com/username"
 								v-bind="componentField"
 							/>
-							<div v-else>
-								<Link :href="value" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.facebook"
-					v-slot="{ value, componentField }"
-					name="facebook"
-				>
+				<FormField v-slot="{ componentField }" name="facebook">
 					<FormItem>
 						<FormLabel>
 							{{ t('facebook') }}
 						</FormLabel>
 						<FormControl>
 							<Input
-								v-if="isEditMode"
 								type="text"
 								placeholder="https://facebook.com/profile"
 								v-bind="componentField"
 							/>
-							<div v-else>
-								<Link :href="value" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.whatsapp"
-					v-slot="{ value, componentField }"
-					name="whatsapp"
-				>
+				<FormField v-slot="{ componentField }" name="whatsapp">
 					<FormItem>
 						<FormLabel>
 							{{ t('whatsapp') }}
 						</FormLabel>
 						<FormControl>
 							<Input
-								v-if="isEditMode"
 								type="text"
 								placeholder="https://wa.me/1234567890"
 								v-bind="componentField"
 							/>
-							<div v-else>
-								<Link :href="value" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.telegram"
-					v-slot="{ value, componentField }"
-					name="telegram"
-				>
+				<FormField v-slot="{ componentField }" name="telegram">
 					<FormItem>
 						<FormLabel>
 							{{ t('telegram') }}
 						</FormLabel>
 						<FormControl>
 							<Input
-								v-if="isEditMode"
 								type="text"
 								placeholder="https://t.me/username"
 								v-bind="componentField"
 							/>
-							<div v-else>
-								<Link :href="value" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.email?.length"
-					v-slot="{ value, componentField }"
-					name="email"
-				>
+				<FormField v-slot="{ componentField }" name="email">
 					<FormItem>
 						<FormLabel>
 							{{ t('email') }}
 						</FormLabel>
 						<FormControl>
-							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else>
-								<Link :href="`mailto:${value}`" :text="value">
-									<ExternalLink class="h-4 w-4" />
-								</Link>
-							</div>
+							<Input type="text" v-bind="componentField" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.birthday"
-					v-slot="{ value, componentField }"
-					name="birthday"
-				>
+				<FormField v-slot="{ value, componentField }" name="birthday">
 					<FormItem>
 						<FormLabel>
 							{{ t('date_of_birth') }}
@@ -600,52 +541,34 @@ const onRemoveSubmit = async () => {
 									{{ value ? formattedDate(value) : t('birthday') }}
 								</Button>
 							</DatePicker>
-							<div v-else>
-								{{ formattedDate(value) }}
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.address"
-					v-slot="{ value, componentField }"
-					name="address"
-				>
+				<FormField v-slot="{ componentField }" name="address">
 					<FormItem class="md:col-span-2">
 						<FormLabel>
 							{{ t('address') }}
 						</FormLabel>
 						<FormControl>
-							<Input v-if="isEditMode" type="text" v-bind="componentField" />
-							<div v-else>
-								{{ value }}
-							</div>
+							<Input type="text" v-bind="componentField" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				</FormField>
 
-				<FormField
-					v-if="isEditMode || contact?.notes"
-					v-slot="{ value, componentField }"
-					name="notes"
-				>
+				<FormField v-slot="{ value, componentField }" name="notes">
 					<FormItem class="md:col-span-2">
 						<FormLabel>
 							{{ t('notes') }}
 						</FormLabel>
 						<FormControl>
 							<Textarea
-								v-if="isEditMode"
 								v-bind="componentField"
 								class="max-h-[200px]"
 								rows="4"
 							/>
-							<div v-else>
-								{{ value }}
-							</div>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -659,11 +582,11 @@ const onRemoveSubmit = async () => {
 					{{ formattedDate(contact.created_at) }}
 				</div>
 			</form>
+			<ContactInfo v-else :contact="contact!" />
 			<DialogFooter
 				class="flex flex-row items-center justify-between gap-2 pt-6"
 			>
 				<ConfirmModal
-					v-if="!isEditMode"
 					:title="t('are_you_sure_you_want_to_delete_this_contact')"
 					@confirm="onRemoveSubmit"
 				>

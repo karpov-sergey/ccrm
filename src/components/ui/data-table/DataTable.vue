@@ -26,7 +26,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 import Name from './items/Name.vue';
 import Phones from './items/Phones.vue';
 import Email from './items/Email.vue';
-import Social from './items/Social.vue';
+import SocialLinksList from '@/components/social-links-list/SocialLinksList.vue';
 
 import { Plus, Trash2 } from 'lucide-vue-next';
 
@@ -285,7 +285,7 @@ watch(globalFilter, (newValue) => {
 								:contact="row.original"
 							/>
 
-							<Social
+							<SocialLinksList
 								v-else-if="cell.column.id === 'social'"
 								:contact="row.original"
 							/>

@@ -157,7 +157,7 @@ const socialLinks = computed((): SocialLink[] => {
 		>
 			<Icon
 				:icon="`simple-icons:${item.icon}`"
-				class="w-6 h-6 mb-2 text-primary/70 hover:text-primary transition-colors duration-200"
+				class="w-6 h-6 text-primary/70 hover:text-primary transition-colors duration-200"
 			/>
 		</a>
 	</div>
