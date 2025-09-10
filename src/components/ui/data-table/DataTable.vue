@@ -274,7 +274,11 @@ watch(globalFilter, (newValue) => {
 										{{ cell.getValue() }}
 									</div>
 
-									<Heart class="h-4 w-4 text-red-500" />
+									<Heart
+										v-if="row.original?.favourite"
+										class="h-4 w-4 text-red-500"
+										aria-label="Favorite contact"
+									/>
 								</div>
 							</template>
 							<template v-else-if="cell.column.id === 'phones'">
