@@ -27,6 +27,7 @@ import Checklist from '@/components/checklist/Checklist.vue';
 import { toast } from 'vue-sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 import DatePicker from '@/components/date-picker/DatePicker.vue';
+import ContactSelect from '@/components/contact-select/ContactSelect.vue';
 
 import {
 	CornerDownLeft,
@@ -38,6 +39,7 @@ import {
 	Flag,
 	NotebookPen,
 	TimerReset,
+	Contact as ContactIcon,
 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
@@ -360,6 +362,11 @@ watch(
 					<FormMessage />
 				</FormItem>
 			</FormField>
+		</div>
+
+		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
+			<ContactIcon class="h-4 w-4" />
+			<ContactSelect />
 		</div>
 
 		<div class="px-4 md:px-6 pb-6 border-b-1">
