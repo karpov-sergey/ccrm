@@ -1,29 +1,56 @@
 <script setup lang="ts">
+import { ref, onBeforeMount } from 'vue';
+import { storeToRefs } from 'pinia';
+
+import { useContactsStore } from '@/stores/contacts.ts';
+
 import {
 	Select,
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import Spinner from '@/components/ui/spinner/Spinner.vue';
+
+const contactsStore = useContactsStore();
+
+const isLoading = ref(true);
+const { contactsList } = storeToRefs(contactsStore);
+
+onBeforeMount(async () => {
+	await fetchContactsList();
+});
+
+const fetchContactsList = async () => {
+	isLoading.value = true;
+	try {
+		await contactsStore.fetchContactsList();
+	} catch (error) {
+	} finally {
+		isLoading.value = false;
+	}
+};
 </script>
 
 <template>
 	<Select>
-		<SelectTrigger class="w-[280px]">
-			<SelectValue placeholder="Select a timezone" />
+		<SelectTrigger class="w-[280px]" :disabled="isLoading">
+			<Spinner v-if="isLoading" />
+			<SelectValue placeholder="Select a contact" />
 		</SelectTrigger>
-		<SelectContent>
+		<SelectContent v-if="!isLoading" class="max-h-[300px] overflow-auto">
 			<SelectGroup>
-				<SelectLabel>North America</SelectLabel>
-				<SelectItem value="est"> Eastern Standard Time (EST) </SelectItem>
-				<SelectItem value="cst"> Central Standard Time (CST) </SelectItem>
-				<SelectItem value="mst"> Mountain Standard Time (MST) </SelectItem>
-				<SelectItem value="pst"> Pacific Standard Time (PST) </SelectItem>
-				<SelectItem value="akst"> Alaska Standard Time (AKST) </SelectItem>
-				<SelectItem value="hst"> Hawaii Standard Time (HST) </SelectItem>
+				<SelectItem
+					v-for="contact in contactsList"
+					:key="contact.id"
+					:value="contact.id"
+				>
+					<div class="text-sm font-medium">
+						{{ contact.first_name }} {{ contact.last_name }}
+					</div>
+				</SelectItem>
 			</SelectGroup>
 		</SelectContent>
 	</Select>

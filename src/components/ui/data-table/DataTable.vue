@@ -39,9 +39,11 @@ import type {
 	Row,
 } from '@tanstack/vue-table';
 
+import type { Contact } from '@/types/Contacts.ts';
+
 interface DataTableProps {
 	columns: ColumnDef<any, any>[];
-	data: any[];
+	data: Contact[];
 	enableSearch?: boolean;
 	removeConfirmTitle?: string;
 }

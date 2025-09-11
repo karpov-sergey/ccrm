@@ -1,4 +1,5 @@
-import type { ChecklistItem } from './Checklist.ts';
+import type { ChecklistItem } from '@/types/Checklist.ts';
+import type { Contact } from '@/types/Contacts.ts';
 
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 
@@ -12,6 +13,7 @@ export interface Task {
 	date?: string | null;
 	sort_index?: number | null;
 	checklist?: ChecklistItem[] | null;
+	associated_contact: Contact | null;
 }
 
 export interface BoardColumn {
@@ -31,6 +33,7 @@ export interface UpdateTaskPayload {
 	sort_index?: number | null;
 	checklist?: ChecklistItem[] | null;
 	id?: string;
+	associated_contact?: Contact | null;
 }
 
 export interface BoardModel {

@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
+import { useContactsStore } from '@/stores/contacts.ts';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
@@ -33,8 +34,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'vue-sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
-import { createContact, deleteContacts, updateContact } from '@/api/contacts';
-
 import { Plus, Trash2, Edit } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
@@ -48,6 +47,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
 const { formattedDate } = useFormattedDate();
+const contactsStore = useContactsStore();
 
 const emit = defineEmits(['contact-updated', 'contact-removed']);
 
@@ -155,7 +155,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 	try {
 		if (props.contact?.id) {
-			await updateContact({
+			await contactsStore.updateContact({
 				id: props.contact.id,
 				first_name: values.firstName,
 				last_name: values.lastName || '',
@@ -176,7 +176,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 			toast.success(t('contact_updated_successfully'));
 		} else {
-			await createContact({
+			await contactsStore.createContact({
 				first_name: values.firstName,
 				last_name: values.lastName || '',
 				favourite: values.favourite || false,
@@ -287,7 +287,7 @@ const onRemoveSubmit = async () => {
 			return;
 		}
 
-		await deleteContacts([props.contact?.id]);
+		await contactsStore.removeContactsByIds([props.contact?.id]);
 
 		toast.success(t('contact_removed_successfully'));
 

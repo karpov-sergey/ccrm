@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
+
 import KanbanBoard from '@/components/board/KanbanBoard.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 
@@ -50,7 +51,6 @@ const updateBoard = async () => {
 		tasks.value = await getAllTasks();
 		fillColumns();
 	} catch (error) {
-		console.error(error);
 	} finally {
 		isLoading.value = false;
 	}

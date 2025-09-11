@@ -9,7 +9,7 @@ export const createContact = async (data: UpdateContactPayload) => {
 	return handleResponse<typeof response.data>(response);
 };
 
-export const updateContact = async (data: UpdateContactPayload & { id: string }) => {
+export const updateContact = async (data: UpdateContactPayload) => {
 	const { id, ...rest } = data;
 	const response = await supabase
 		.from('contacts')

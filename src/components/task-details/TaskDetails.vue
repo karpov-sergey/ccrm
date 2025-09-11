@@ -11,6 +11,7 @@ import DOMPurify from 'dompurify';
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
 import { useDueDateVariant } from '@/composables/dateStatus.ts';
+import { useFormattedDate } from '@/composables/common.ts';
 
 import { createTask, deleteTask, updateTask } from '@/api/tasks';
 
@@ -55,6 +56,7 @@ const emit = defineEmits(['close', 'updateBoard']);
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
 const { dueDateBadgeVariant, dueDateText } = useDueDateVariant();
+const { formattedDate } = useFormattedDate();
 
 const toolbarOptions = [
 	['bold', 'italic', 'underline'], // toggled buttons
@@ -427,15 +429,7 @@ watch(
 			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
 				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
 					<Button variant="outline">
-						{{
-							dueDateDraft
-								? new Date(dueDateDraft).toLocaleDateString(undefined, {
-										year: 'numeric',
-										month: 'long',
-										day: 'numeric',
-									})
-								: 'Pick a date'
-						}}
+						{{ dueDateDraft ? formattedDate(dueDateDraft) : 'Pick a date' }}
 						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 					</Button>
 				</DatePicker>
@@ -471,11 +465,7 @@ watch(
 
 				{{
 					form.values?.date
-						? new Date(form.values.date).toLocaleDateString(undefined, {
-								year: 'numeric',
-								month: 'long',
-								day: 'numeric',
-							})
+						? formattedDate(form.values?.date)
 						: t('add_due_date')
 				}}
 			</div>

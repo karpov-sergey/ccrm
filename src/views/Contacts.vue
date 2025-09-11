@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, nextTick } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { useContactsStore } from '@/stores/contacts.ts';
 
 import EditContact from '@/components/modals/edit-contact/EditContact.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 import DataTable from '@/components/ui/data-table/DataTable.vue';
 
 import { createColumnHelper } from '@tanstack/vue-table';
-import { deleteContacts, getAllContacts } from '@/api/contacts';
 
 import { useFormattedDate } from '@/composables/common.ts';
 
@@ -16,9 +17,10 @@ import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const { formattedDate } = useFormattedDate();
+const contactsStore = useContactsStore();
+const { contactsList } = storeToRefs(contactsStore);
 
 const isLoading = ref(true);
-const contacts = ref<Contact[]>([]);
 
 const isCreation = ref(false);
 
@@ -77,16 +79,15 @@ const contactColumns = [
 ];
 
 onBeforeMount(async () => {
-	await updateContactsList();
+	await fetchContactsList();
 });
 
-const updateContactsList = async () => {
+const fetchContactsList = async () => {
 	isLoading.value = true;
 
 	try {
-		contacts.value = await getAllContacts();
+		await contactsStore.fetchContactsList();
 	} catch (error) {
-		console.error(error);
 	} finally {
 		isLoading.value = false;
 	}
@@ -94,12 +95,12 @@ const updateContactsList = async () => {
 
 const onDeleteContacts = async (ids: string[]) => {
 	try {
-		await deleteContacts(ids);
+		await contactsStore.removeContactsByIds(ids);
 
 		toast.success(t('contacts_removed_successfully'));
 	} catch (error) {
 	} finally {
-		await updateContactsList();
+		await fetchContactsList();
 	}
 };
 </script>
@@ -116,15 +117,13 @@ const onDeleteContacts = async (ids: string[]) => {
 				ref="editModalRef"
 				:contact="editingContact"
 				:is-creation="isCreation"
-				@contact-updated="updateContactsList"
-				@contact-removed="updateContactsList"
+				@contact-updated="fetchContactsList"
+				@contact-removed="fetchContactsList"
 			/>
-
-			<!--			<Icon icon="simple-icons:facebook" class="w-6 h-6 mb-2" />-->
 
 			<DataTable
 				:columns="contactColumns"
-				:data="contacts"
+				:data="contactsList"
 				:enable-search="true"
 				:remove-confirm-title="
 					t('are_you_sure_you_want_to_delete_this_contact')
