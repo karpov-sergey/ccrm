@@ -31,18 +31,11 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'vue-sonner';
-import Link from '@/components/ui/link/Link.vue';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 
 import { createContact, deleteContacts, updateContact } from '@/api/contacts';
 
-import {
-	Plus,
-	Trash2,
-	Edit,
-	PhoneOutgoing,
-	ExternalLink,
-} from 'lucide-vue-next';
+import { Plus, Trash2, Edit } from 'lucide-vue-next';
 
 import type { Contact } from '@/types/Contacts.ts';
 import ContactInfo from '@/components/modals/edit-contact/ContactInfo.vue';
@@ -321,9 +314,9 @@ const onRemoveSubmit = async () => {
 						<template v-if="isEditMode">
 							{{ t(props.contact ? 'edit_contact' : 'add_new_contact') }}
 						</template>
-						<template v-else>
+						<div class="text-xl" v-else>
 							{{ contact?.first_name }} {{ contact?.last_name }}
-						</template>
+						</div>
 					</DialogTitle>
 					<DialogDescription v-show="isEditMode">
 						Make changes to this contact here. Click save when you're done.
@@ -558,7 +551,7 @@ const onRemoveSubmit = async () => {
 					</FormItem>
 				</FormField>
 
-				<FormField v-slot="{ value, componentField }" name="notes">
+				<FormField v-slot="{ componentField }" name="notes">
 					<FormItem class="md:col-span-2">
 						<FormLabel>
 							{{ t('notes') }}
