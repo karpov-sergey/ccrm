@@ -85,6 +85,7 @@ const formSchema = toTypedSchema(
 				})
 			)
 			.optional(),
+		associated_contact: z.any().nullable().optional(),
 	})
 );
 
@@ -100,6 +101,7 @@ const form = useForm({
 		description: props.task?.description || null,
 		date: props.task?.date || null,
 		checklist: props.task?.checklist || [],
+		associated_contact: props.task?.associated_contact || null,
 	},
 });
 
@@ -209,6 +211,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			: null,
 		date: values.date ?? null,
 		checklist: values.checklist ?? [],
+		associated_contact: values.associated_contact ?? null,
 	};
 
 	try {
@@ -307,6 +310,7 @@ watch(
 				description: task.description || null,
 				date: task.date || null,
 				checklist: task.checklist || [],
+				associated_contact: task.associated_contact || null,
 			},
 		});
 	},
@@ -368,7 +372,12 @@ watch(
 
 		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
 			<ContactIcon class="h-4 w-4" />
-			<ContactSelect />
+			<FormField v-slot="{ value, handleChange }" name="associated_contact">
+				<ContactSelect
+					:model-value="value"
+					@update:model-value="(v) => handleChange(v)"
+				/>
+			</FormField>
 		</div>
 
 		<div class="px-4 md:px-6 pb-6 border-b-1">
