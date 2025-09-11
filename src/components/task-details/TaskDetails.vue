@@ -320,9 +320,9 @@ watch(
 		<div class="text-xl pb-4 px-4 md:px-6 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
-					<FormItem class="relative">
+					<FormItem class="relative pt-1">
 						<CornerDownLeft
-							class="h-4 w-4 absolute top-2.5 right-2 text-primary"
+							class="h-4 w-4 absolute top-3.5 right-2 text-primary"
 						/>
 						<FormControl>
 							<Input
