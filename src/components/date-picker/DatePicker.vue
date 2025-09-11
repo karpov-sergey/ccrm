@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useScreenWidth } from '@/composables/common';
 
 import type { DateValue } from '@internationalized/date';
-import { getLocalTimeZone, today, parseDate } from '@internationalized/date';
+import { parseDate } from '@internationalized/date';
 
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -26,6 +26,7 @@ const { t } = useI18n();
 const props = defineProps<{
 	modelValue?: string | null;
 	isPreselectVisible?: boolean;
+	isWithYearAndMonth?: boolean;
 }>();
 const emit = defineEmits<{
 	(event: 'update:modelValue', value: string | null): void;
@@ -84,7 +85,6 @@ const closePopover = () => (isPopoverOpen.value = false);
 
 const onCalendarUpdate = (nextDateValue?: DateValue) => {
 	emit('update:modelValue', nextDateValue ? nextDateValue.toString() : null);
-	closePopover();
 };
 
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
@@ -150,7 +150,9 @@ const onNativeDateChange = (event: Event) => {
 			</Select>
 			<Calendar
 				v-model="selectedDateValue"
+				:is-with-year-and-month="props.isWithYearAndMonth"
 				@update:modelValue="onCalendarUpdate"
+				@date-click="closePopover"
 			/>
 		</PopoverContent>
 	</Popover>

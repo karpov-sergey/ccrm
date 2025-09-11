@@ -525,6 +525,7 @@ const onRemoveSubmit = async () => {
 							<DatePicker
 								v-if="isEditMode"
 								:model-value="value"
+								:is-with-year-and-month="true"
 								@update:model-value="componentField['onUpdate:modelValue']"
 							>
 								<Button
@@ -610,5 +611,3 @@ const onRemoveSubmit = async () => {
 		</DialogContent>
 	</Dialog>
 </template>
-
-<style scoped></style>
