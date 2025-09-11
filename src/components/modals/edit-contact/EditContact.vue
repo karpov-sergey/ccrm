@@ -571,7 +571,7 @@ const onRemoveSubmit = async () => {
 					v-if="contact?.id"
 					class="md:col-span-2 text-muted-foreground text-sm"
 				>
-					Created:
+					{{ t('created') }}:
 					{{ formattedDate(contact.created_at) }}
 				</div>
 			</form>

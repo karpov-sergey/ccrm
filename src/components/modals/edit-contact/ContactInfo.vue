@@ -33,10 +33,6 @@ const isSocialLinksVisible = computed(() => {
 				{{ formattedDate(contact.birthday) }}
 			</div>
 			<SocialLinksList v-if="isSocialLinksVisible" :contact="props.contact" />
-
-			<!--			<div class="text-sm font-medium mb-2">-->
-			<!--				{{ t('phones') }}-->
-			<!--			</div>-->
 			<div v-if="!!props.contact.phones.length" class="flex flex-col gap-3">
 				<div v-for="(phone, index) in props.contact.phones">
 					<Link :href="`tel:${phone}`" :text="phone" :key="index">
@@ -70,7 +66,7 @@ const isSocialLinksVisible = computed(() => {
 			</div>
 
 			<div class="md:col-span-2 text-muted-foreground text-sm">
-				Created:
+				{{ t('created') }}:
 				{{ formattedDate(contact.created_at) }}
 			</div>
 		</div>
