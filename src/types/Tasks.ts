@@ -16,7 +16,7 @@ export interface Task {
 	associated_contact: Contact | null;
 	price: number | null;
 	paid: number | null;
-	left_to_pay: number | null;
+	to_be_paid: number | null;
 }
 
 export interface BoardColumn {
@@ -39,7 +39,7 @@ export interface UpdateTaskPayload {
 	associated_contact?: Contact | null;
 	price?: number | null;
 	paid?: number | null;
-	left_to_pay?: number | null;
+	to_be_paid?: number | null;
 }
 
 export interface BoardModel {

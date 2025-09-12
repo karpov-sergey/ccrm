@@ -5,17 +5,20 @@ import DOMPurify from 'dompurify';
 
 import { useDueDateVariant } from '@/composables/dateStatus.ts';
 import { useNameAbbreviation } from '@/composables/common.ts';
+import { useAuthStore } from '@/stores/auth.ts';
 
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-import { TimerReset, CheckCheck } from 'lucide-vue-next';
+import { TimerReset, CheckCheck, Check, TriangleAlert } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
 
 const props = defineProps<{
 	task: Task;
 }>();
+
+const { user } = useAuthStore();
 
 const { dueDateBadgeVariant } = useDueDateVariant();
 const { nameAbbreviation } = useNameAbbreviation();
@@ -37,14 +40,6 @@ const purifiedDescription = computed(() => {
 	});
 });
 
-const isAdditionalInfoVisible = computed(() => {
-	return (
-		purifiedDescription.value.length ||
-		taskChecklistProgress.value.total ||
-		props.task.date
-	);
-});
-
 const contactName = computed(() => {
 	if (!props.task.associated_contact) {
 		return '';
@@ -52,11 +47,15 @@ const contactName = computed(() => {
 
 	return `${props.task.associated_contact?.first_name} ${props.task.associated_contact?.last_name}`;
 });
+
+const isLeftToBePaid = computed(() => {
+	return props.task.to_be_paid > 0;
+});
 </script>
 
 <template>
 	<div class="p-2 text-sm rounded-lg border border-transparent bg-white shadow">
-		<div class="flex items-center justify-between mb-2 last-of-type:mb-0">
+		<div class="flex items-center justify-between mb-2">
 			<div
 				class="mb-2 font-semibold font-sans tracking-wide text-sm last-of-type:mb-0"
 			>
@@ -69,36 +68,46 @@ const contactName = computed(() => {
 				</AvatarFallback>
 			</Avatar>
 		</div>
+
 		<div
 			v-if="purifiedDescription.length"
 			class="text-xs text-muted-foreground mb-2 line-clamp-2"
 		>
 			{{ purifiedDescription }}
 		</div>
-		<div v-if="isAdditionalInfoVisible" class="flex gap-2 justify-between">
-			<div class="flex gap-2 items-center">
-				<Badge
-					v-if="task.checklist?.length"
-					variant="outline"
-					class="flex gap-1 items-center text-xs"
-				>
-					<CheckCheck
-						class="size-4"
-						:class="{
-							'text-primary': isAllTaskCheckboxItemsChecked,
-						}"
-					/>
-					{{ taskChecklistProgress.done }} / {{ taskChecklistProgress.total }}
-				</Badge>
-				<Badge
-					v-if="task.date"
-					:variant="dueDateBadgeVariant(task.date)"
-					class="flex gap-1 text-xs"
-				>
-					<TimerReset class="size-4" />
-					{{ dayjs(task.date).format('MMM DD') }}
-				</Badge>
-			</div>
+
+		<div class="flex flex-wrap gap-2 items-center">
+			<Badge
+				:variant="isLeftToBePaid ? 'warning' : 'success'"
+				class="flex gap-1 items-center text-xs"
+			>
+				<TriangleAlert v-if="isLeftToBePaid" class="w-4 h-4 mr-1" />
+				<Check v-else class="w-4 h-4 mr-1" />
+				{{ user.user_metadata.currency }} {{ task.price }}
+			</Badge>
+
+			<Badge
+				v-if="task.checklist?.length"
+				variant="outline"
+				class="flex gap-1 items-center text-xs"
+			>
+				<CheckCheck
+					class="w-4 h-4"
+					:class="{
+						'text-primary': isAllTaskCheckboxItemsChecked,
+					}"
+				/>
+				{{ taskChecklistProgress.done }} / {{ taskChecklistProgress.total }}
+			</Badge>
+
+			<Badge
+				v-if="task.date"
+				:variant="dueDateBadgeVariant(task.date)"
+				class="flex gap-1 text-xs"
+			>
+				<TimerReset class="size-4" />
+				{{ dayjs(task.date).format('MMM DD') }}
+			</Badge>
 		</div>
 	</div>
 </template>
