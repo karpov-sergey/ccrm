@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import KanbanBoard from '@/components/board/KanbanBoard.vue';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
@@ -8,30 +9,32 @@ import { getAllTasks } from '@/api/tasks';
 
 import type { Task, BoardColumn } from '@/types/Tasks.ts';
 
+const { t } = useI18n();
+
 const isLoading = ref(true);
 const tasks = ref<Task[]>([]);
 
 const columnsInitial: BoardColumn[] = [
 	{
-		title: 'Todo',
+		title: t('todo'),
 		id: 1,
 		tasks: [],
 		status: 'todo',
 	},
 	{
-		title: 'In Progress',
+		title: t('in_progress'),
 		id: 2,
 		tasks: [],
 		status: 'in_progress',
 	},
 	{
-		title: 'Review',
+		title: t('review'),
 		id: 3,
 		tasks: [],
 		status: 'review',
 	},
 	{
-		title: 'Done',
+		title: t('done'),
 		id: 4,
 		tasks: [],
 		status: 'done',

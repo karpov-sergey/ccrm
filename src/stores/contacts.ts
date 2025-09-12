@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { toast } from 'vue-sonner';
 
+// i18n helper for stores (outside components)
+import { t as $t } from '@/plugins/i18n-helper';
+
 import {
 	createContact,
 	deleteContacts,
@@ -30,7 +33,7 @@ export const useContactsStore = defineStore('contacts', {
 			try {
 				this.contacts = await getAllContacts();
 			} catch (error) {
-				toast.error('Failed to fetch contacts');
+				toast.error($t('failed_to_fetch_contacts'));
 			}
 		},
 
@@ -38,7 +41,7 @@ export const useContactsStore = defineStore('contacts', {
 			try {
 				await deleteContacts(ids);
 			} catch (error) {
-				toast.error('Failed to delete contacts');
+				toast.error($t('failed_to_delete_contacts'));
 			}
 		},
 
@@ -46,7 +49,7 @@ export const useContactsStore = defineStore('contacts', {
 			try {
 				await updateContact(data);
 			} catch (error) {
-				toast.error('Failed to update contact');
+				toast.error($t('failed_to_update_contact'));
 			}
 		},
 
@@ -54,7 +57,7 @@ export const useContactsStore = defineStore('contacts', {
 			try {
 				await createContact(data);
 			} catch (error) {
-				toast.error('Failed to create contact');
+				toast.error($t('failed_to_create_contact'));
 			}
 		},
 	},

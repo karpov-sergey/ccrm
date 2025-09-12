@@ -40,6 +40,8 @@
 	"review": "Review",
 	"done": "Done",
 	"select": "Select",
+  "status": "Status",
+  "card_title": "Card Title",
 	"USD": "US Dollar ($)",
 	"EUR": "Euro (€)",
 	"GBP": "British Pound (£)",
@@ -133,5 +135,9 @@
     "default": "Invalid input.",
 		"passwords_must_be_same": "Passwords must be same",
 		"new_password_should_be_different_from_old": "New password should be different from the old password."
-  }
+  },
+  "failed_to_fetch_contacts": "Failed to fetch contacts",
+  "failed_to_delete_contacts": "Failed to delete contacts",
+  "failed_to_update_contact": "Failed to update contact",
+  "failed_to_create_contact": "Failed to create contact"
 }

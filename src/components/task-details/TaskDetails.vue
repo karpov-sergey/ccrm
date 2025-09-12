@@ -104,7 +104,7 @@ const formSchema = toTypedSchema(
 const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		title: props.task?.title || 'Card Title',
+		title: props.task?.title || t('card_title'),
 		//@ts-ignore
 		status:
 			props.task?.status ||
@@ -169,10 +169,10 @@ const formattedToBePaid = computed(() => {
 });
 
 const taskStatusOptions: Option[] = [
-	{ value: 'todo', label: 'To Do' },
-	{ value: 'in_progress', label: 'In Progress' },
-	{ value: 'review', label: 'Review' },
-	{ value: 'done', label: 'Done' },
+	{ value: 'todo', label: t('todo') },
+	{ value: 'in_progress', label: t('in_progress') },
+	{ value: 'review', label: t('review') },
+	{ value: 'done', label: t('done') },
 ];
 
 // Focus title input via the Input.vue exposed helpers
@@ -358,7 +358,7 @@ watch(
 		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
-				title: task.title || 'Card Title',
+  		title: task.title || t('card_title'),
 				status: task.status || 'todo',
 				description: task.description || null,
 				date: task.date || null,
