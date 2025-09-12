@@ -1,8 +1,4 @@
 {
-  "language": {
-    "en": "English",
-    "pl": "Polish"
-  },
   "en": "English",
   "pl": "Polish",
 	"yes": "Yes",
@@ -64,6 +60,7 @@
 	"price": "Price",
 	"paid": "Paid",
 	"to_be_paid": "To be paid",
+	"language": "Language",
  	"task_deleted_successfully": "Task deleted successfully",
 	"task_created_successfully": "Task created successfully",
 	"task_updated_successfully": "Task updated successfully",
