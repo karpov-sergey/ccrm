@@ -264,6 +264,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 		price: values.price ?? null,
 		paid: values.paid ?? null,
 		associated_contact: values.associated_contact ?? null,
+		to_be_paid: amountToBePaid.value,
 	};
 
 	try {
