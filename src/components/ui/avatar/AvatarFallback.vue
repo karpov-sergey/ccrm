@@ -22,13 +22,31 @@ const PALETTE = [
 ];
 
 const props = defineProps<
-	AvatarFallbackProps & { class?: HTMLAttributes['class'] }
+	AvatarFallbackProps & { class?: HTMLAttributes['class']; seed?: string }
 >();
 
-const delegatedProps = reactiveOmit(props, 'class');
+const delegatedProps = reactiveOmit(props, 'class', 'seed');
 
-// Pick a random color once per component instance
-const randomClass = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+function hashString(str: string): number {
+	// Simple deterministic 32-bit hash (djb2 variant)
+	let hash = 5381;
+	for (let i = 0; i < str.length; i++) {
+		hash = ((hash << 5) + hash) + str.charCodeAt(i);
+		hash = hash | 0; // force 32-bit
+	}
+	return Math.abs(hash);
+}
+
+function pickClass(seed: string | undefined): string {
+	const base = (seed ?? '').trim();
+	// Fallback to a stable default string to keep color consistent when no seed
+	const s = base.length ? base : 'default-avatar';
+	const idx = hashString(s) % PALETTE.length;
+	return PALETTE[idx];
+}
+
+// Choose a deterministic class based on provided seed or slot text (passed via prop by parent)
+const colorClass = pickClass(props.seed);
 </script>
 
 <template>
@@ -37,7 +55,7 @@ const randomClass = PALETTE[Math.floor(Math.random() * PALETTE.length)];
 		v-bind="delegatedProps"
 		:class="
 			cn(
-				randomClass,
+				colorClass,
 				'flex size-full items-center justify-center rounded-full font-light [word-spacing:-0.2rem]',
 				props.class
 			)

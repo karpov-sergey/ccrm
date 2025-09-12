@@ -17,7 +17,7 @@ const contactName = `${props.contact.first_name} ${props.contact.last_name}`;
 <template>
 	<div class="flex items-center gap-2">
 		<Avatar>
-			<AvatarFallback>
+			<AvatarFallback :seed="contactName">
 				{{ nameAbbreviation(contactName) }}
 			</AvatarFallback>
 		</Avatar>

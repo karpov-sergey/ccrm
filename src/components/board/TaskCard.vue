@@ -63,7 +63,7 @@ const isLeftToBePaid = computed(() => {
 			</div>
 
 			<Avatar v-if="!!props.task.associated_contact">
-				<AvatarFallback>
+				<AvatarFallback :seed="contactName">
 					{{ nameAbbreviation(contactName) }}
 				</AvatarFallback>
 			</Avatar>

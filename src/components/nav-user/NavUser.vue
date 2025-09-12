@@ -60,7 +60,8 @@ const onLogoutClick = async () => {
 								:alt="`${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`"
 							/>
 							<AvatarFallback
-								class="rounded-lg uppercase bg-primary text-white"
+        :seed="avatarFallbackText"
+								class="rounded-lg uppercase text-white"
 							>
 								{{ avatarFallbackText }}
 							</AvatarFallback>
