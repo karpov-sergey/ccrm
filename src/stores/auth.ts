@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { toast } from 'vue-sonner';
 
 // Use global i18n helper to translate outside of components
-import { t as $t } from '@/plugins/i18n-helper';
+import { t as $t, setAppLocale } from '@/plugins/i18n-helper';
 
 import {
 	signUp,
@@ -43,6 +43,7 @@ export const useAuthStore = defineStore('auth', {
 
 				this.user = data.user ?? null;
 				this.token = data.session?.access_token ?? null;
+				setAppLocale(this.user?.user_metadata?.language || this.user?.language);
 			} catch (error: any) {
 				toast.error(error.message);
 			}
@@ -55,11 +56,13 @@ export const useAuthStore = defineStore('auth', {
 
 				this.user = session?.user ?? null;
 				this.token = session?.access_token ?? null;
+				setAppLocale(this.user?.user_metadata?.language || this.user?.language);
 			} catch (error) {}
 		},
 
 		async logout() {
 			this.token = null;
+			this.user = null;
 
 			await logout();
 		},
@@ -71,6 +74,8 @@ export const useAuthStore = defineStore('auth', {
 
 				this.user = session?.user ?? null;
 				this.token = session?.access_token ?? null;
+
+				setAppLocale(this.user?.user_metadata?.language || this.user?.language);
 			} catch (error: any) {
 				const code: string | undefined = error?.code;
 
@@ -91,6 +96,8 @@ export const useAuthStore = defineStore('auth', {
 				const data = await updateUser(userData);
 
 				this.user = data.user;
+
+				setAppLocale(this.user?.user_metadata?.language || this.user?.language);
 			} catch (error: any) {
 				toast.error(error.message);
 			}
@@ -101,6 +108,8 @@ export const useAuthStore = defineStore('auth', {
 				const data = await getUser();
 
 				this.user = data.user ?? null;
+
+				setAppLocale(this.user?.user_metadata?.language || this.user?.language);
 			} catch (error: any) {
 				toast.error(error.message);
 			}
