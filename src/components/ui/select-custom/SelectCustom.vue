@@ -16,25 +16,17 @@ const props = withDefaults(
 	defineProps<{
 		options?: Option[];
 		placeholder?: string;
+		triggerClass?: string;
 	}>(),
 	{
 		options: undefined,
 		placeholder: undefined,
+		triggerClass: undefined,
 	}
 );
 
 const { t } = useI18n();
 
-const defaultOptions: Option[] = [
-	{ value: 'todo', label: 'To Do' },
-	{ value: 'in_progress', label: 'In Progress' },
-	{ value: 'review', label: 'Review' },
-	{ value: 'done', label: 'Done' },
-];
-
-const resolvedOptions = computed<Option[]>(() =>
-	props.options && props.options.length ? props.options : defaultOptions
-);
 const resolvedPlaceholder = computed<string>(
 	() => props.placeholder ?? t('select')
 );
@@ -42,17 +34,17 @@ const resolvedPlaceholder = computed<string>(
 
 <template>
 	<Select v-bind="$attrs">
-		<SelectTrigger>
+		<SelectTrigger :class="props.triggerClass">
 			<SelectValue :placeholder="resolvedPlaceholder" />
 		</SelectTrigger>
 		<SelectContent>
 			<SelectGroup>
 				<SelectItem
-					v-for="option in resolvedOptions"
+					v-for="option in props.options"
 					:key="option.value"
 					:value="option.value"
 				>
-					{{ t(option.value) }}
+					{{ option.label }}
 				</SelectItem>
 			</SelectGroup>
 		</SelectContent>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -20,6 +20,9 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 
 import type { UserPayload } from '@/types/User.ts';
+import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
+import { currencies } from '@/constants/common.ts';
+import { locales } from '@/localization/languages.ts';
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(useAuthStore());
@@ -29,6 +32,8 @@ const formSchema = toTypedSchema(
 	z.object({
 		firstName: z.string().min(2).max(50),
 		lastName: z.string().min(2).max(50),
+		currency: z.enum(currencies.map((c) => c.code) as [string, ...string[]]),
+		language: z.enum(Object.keys(locales) as [string, ...string[]]),
 	})
 );
 
@@ -37,10 +42,23 @@ const form = useForm({
 	initialValues: {
 		firstName: user.value?.user_metadata?.firstName ?? '',
 		lastName: user.value?.user_metadata?.lastName ?? '',
+		currency: user.value?.user_metadata?.currency ?? 'USD',
+		language: user.value?.user_metadata?.language ?? 'en',
 	},
 });
 
 const isSaving = ref(false);
+
+const currencyOptions = computed(() => {
+	return currencies.map((currency) => ({
+		value: currency.code,
+		label: `${currency.code} — ${currency.name} (${currency.symbol})`,
+	}));
+});
+
+const languageOptions = computed(() =>
+	Object.entries(locales).map(([code, name]) => ({ value: code, label: name }))
+);
 
 watch(
 	user,
@@ -50,6 +68,8 @@ watch(
 			values: {
 				firstName: value.user_metadata?.firstName ?? '',
 				lastName: value.user_metadata?.lastName ?? '',
+				currency: value.user_metadata?.currency ?? 'USD',
+				language: value.user_metadata?.language ?? 'en',
 			},
 		});
 	},
@@ -77,10 +97,7 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 			{{ t('change_personal_information') }}
 		</div>
 	</div>
-	<form
-		class="flex flex-col gap-6 col-span-2 lg:max-w-[600px]"
-		@submit="onSubmit"
-	>
+	<form class="grid gap-6 col-span-2 lg:max-w-[600px]" @submit="onSubmit">
 		<div class="flex items-center gap-4">
 			<Avatar class="h-24 w-24 rounded-lg">
 				<AvatarImage
@@ -122,14 +139,48 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 				</FormItem>
 			</FormField>
 
-			<Button
-				class="w-full md:w-auto justify-self-start"
-				type="submit"
-				:loading="isSaving"
-				:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
-			>
-				{{ t('save') }}
-			</Button>
+			<FormField v-slot="{ componentField }" name="language">
+				<FormItem>
+					<FormLabel>
+						{{ t('language') }}
+					</FormLabel>
+					<FormControl>
+						<SelectCustom
+							type="text"
+							v-bind="componentField"
+							:options="languageOptions"
+							trigger-class="w-full"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+
+			<FormField v-slot="{ componentField }" name="currency">
+				<FormItem>
+					<FormLabel>
+						{{ t('default_currency') }}
+					</FormLabel>
+					<FormControl>
+						<SelectCustom
+							type="text"
+							v-bind="componentField"
+							:options="currencyOptions"
+							trigger-class="w-full"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
 		</div>
+
+		<Button
+			class="w-full md:w-auto justify-self-start"
+			type="submit"
+			:loading="isSaving"
+			:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
+		>
+			{{ t('save') }}
+		</Button>
 	</form>
 </template>

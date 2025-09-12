@@ -85,7 +85,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 			{{ t('update_your_password_associated_with_your_account') }}
 		</div>
 	</div>
-	<form class="col-span-2 lg:max-w-[600px]" @submit="onSubmit">
+	<form class="grid gap-6 col-span-2 lg:max-w-[600px]" @submit="onSubmit">
 		<div class="grid grid-cols-1 items-start gap-6 content-start">
 			<FormField v-slot="{ componentField }" name="newPassword">
 				<FormItem>
@@ -110,15 +110,15 @@ const onSubmit = form.handleSubmit(async (values) => {
 					<FormMessage />
 				</FormItem>
 			</FormField>
-
-			<Button
-				class="w-full md:w-auto justify-self-start"
-				type="submit"
-				:loading="isSaving"
-				:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
-			>
-				{{ t('save') }}
-			</Button>
 		</div>
+
+		<Button
+			class="w-full md:w-auto justify-self-start"
+			type="submit"
+			:loading="isSaving"
+			:disabled="isSaving || !form.meta.value.dirty || !form.meta.value.valid"
+		>
+			{{ t('save') }}
+		</Button>
 	</form>
 </template>

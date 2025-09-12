@@ -29,6 +29,7 @@ import { toast } from 'vue-sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 import DatePicker from '@/components/date-picker/DatePicker.vue';
 import ContactSelect from '@/components/contact-select/ContactSelect.vue';
+import { Badge } from '@/components/ui/badge';
 
 import {
 	CornerDownLeft,
@@ -44,7 +45,7 @@ import {
 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
-import { Badge } from '@/components/ui/badge';
+import type { Option } from '@/types/common.ts';
 
 const props = defineProps<{
 	task?: Task;
@@ -124,6 +125,13 @@ const titleInputRef = ref<{
 	focusEnd?: () => void;
 	element?: HTMLInputElement | null;
 } | null>(null);
+
+const taskStatusOptions: Option[] = [
+	{ value: 'todo', label: 'To Do' },
+	{ value: 'in_progress', label: 'In Progress' },
+	{ value: 'review', label: 'Review' },
+	{ value: 'done', label: 'Done' },
+];
 
 // Focus title input via the Input.vue exposed helpers
 const focusTitleInput = () => {
@@ -363,7 +371,11 @@ watch(
 			<FormField v-slot="{ componentField }" name="status">
 				<FormItem>
 					<FormControl>
-						<SelectCustom v-bind="componentField" :placeholder="t('status')" />
+						<SelectCustom
+							v-bind="componentField"
+							:placeholder="t('status')"
+							:options="taskStatusOptions"
+						/>
 					</FormControl>
 					<FormMessage />
 				</FormItem>
