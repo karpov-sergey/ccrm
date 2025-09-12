@@ -14,6 +14,9 @@ export interface Task {
 	sort_index?: number | null;
 	checklist?: ChecklistItem[] | null;
 	associated_contact: Contact | null;
+	price: number | null;
+	paid: number | null;
+	left_to_pay: number | null;
 }
 
 export interface BoardColumn {
@@ -34,6 +37,9 @@ export interface UpdateTaskPayload {
 	checklist?: ChecklistItem[] | null;
 	id?: string;
 	associated_contact?: Contact | null;
+	price?: number | null;
+	paid?: number | null;
+	left_to_pay?: number | null;
 }
 
 export interface BoardModel {

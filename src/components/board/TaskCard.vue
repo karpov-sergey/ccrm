@@ -63,7 +63,7 @@ const contactName = computed(() => {
 				{{ task.title }}
 			</div>
 
-			<Avatar>
+			<Avatar v-if="!!props.task.associated_contact">
 				<AvatarFallback>
 					{{ nameAbbreviation(contactName) }}
 				</AvatarFallback>

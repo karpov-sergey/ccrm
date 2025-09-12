@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -21,8 +21,16 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
+	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
+import {
+	NumberField,
+	NumberFieldContent,
+	NumberFieldDecrement,
+	NumberFieldIncrement,
+	NumberFieldInput,
+} from '@/components/ui/number-field';
 import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
 import Checklist from '@/components/checklist/Checklist.vue';
 import { toast } from 'vue-sonner';
@@ -42,6 +50,7 @@ import {
 	NotebookPen,
 	TimerReset,
 	Contact as ContactIcon,
+	Coins,
 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
@@ -86,6 +95,8 @@ const formSchema = toTypedSchema(
 				})
 			)
 			.optional(),
+		price: z.number().min(0).nullable().optional(),
+		paid: z.number().min(0).nullable().optional(),
 		associated_contact: z.any().nullable().optional(),
 	})
 );
@@ -102,6 +113,8 @@ const form = useForm({
 		description: props.task?.description || null,
 		date: props.task?.date || null,
 		checklist: props.task?.checklist || [],
+		price: props.task?.price ?? 0,
+		paid: props.task?.paid ?? 0,
 		associated_contact: props.task?.associated_contact || null,
 	},
 });
@@ -125,6 +138,35 @@ const titleInputRef = ref<{
 	focusEnd?: () => void;
 	element?: HTMLInputElement | null;
 } | null>(null);
+
+const currencyCode = computed(
+	() => user.value?.user_metadata?.currency || 'USD'
+);
+
+const amountToBePaid = computed(() => {
+	const price = Number(form.values?.price ?? 0);
+	const paid = Number(form.values?.paid ?? 0);
+	if (!Number.isFinite(price) || !Number.isFinite(paid)) return 0;
+	// Work in cents to avoid floating point precision issues
+	const priceCents = Math.round(price * 100);
+	const paidCents = Math.round(paid * 100);
+	const remainingCents = Math.max(priceCents - paidCents, 0);
+	return remainingCents / 100;
+});
+
+const formattedToBePaid = computed(() => {
+	try {
+		return new Intl.NumberFormat(undefined, {
+			style: 'currency',
+			currency: currencyCode.value,
+			currencyDisplay: 'code',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		}).format(amountToBePaid.value);
+	} catch (e) {
+		return `${currencyCode.value} ${amountToBePaid.value.toFixed(2)}`;
+	}
+});
 
 const taskStatusOptions: Option[] = [
 	{ value: 'todo', label: 'To Do' },
@@ -219,6 +261,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 			: null,
 		date: values.date ?? null,
 		checklist: values.checklist ?? [],
+		price: values.price ?? null,
+		paid: values.paid ?? null,
 		associated_contact: values.associated_contact ?? null,
 	};
 
@@ -318,6 +362,8 @@ watch(
 				description: task.description || null,
 				date: task.date || null,
 				checklist: task.checklist || [],
+				price: task.price ?? null,
+				paid: task.paid ?? null,
 				associated_contact: task.associated_contact || null,
 			},
 		});
@@ -333,7 +379,7 @@ watch(
 		@submit="onSubmit"
 		@keyup.enter.prevent.stop="onFormEnterKeyUp"
 	>
-		<div class="text-xl pb-4 px-4 md:px-6 border-b-1">
+		<div class="text-xl pb-4 px-4 border-b-1">
 			<FormField v-slot="{ componentField, value }" name="title">
 				<div v-if="isTitleEditMode">
 					<FormItem class="relative pt-1">
@@ -366,7 +412,7 @@ watch(
 				</div>
 			</FormField>
 		</div>
-		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
 			<Flag class="h-4 w-4" />
 			<FormField v-slot="{ componentField }" name="status">
 				<FormItem>
@@ -382,7 +428,7 @@ watch(
 			</FormField>
 		</div>
 
-		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
 			<ContactIcon class="h-4 w-4" />
 			<FormField v-slot="{ value, handleChange }" name="associated_contact">
 				<ContactSelect
@@ -392,7 +438,93 @@ watch(
 			</FormField>
 		</div>
 
-		<div class="px-4 md:px-6 pb-6 border-b-1">
+		<div class="flex items-start gap-2 px-4 pb-2 border-b-1">
+			<div class="w-full flex gap-2 justify-between items-center">
+				<div class="flex gap-2">
+					<Coins class="h-4 w-4" />
+
+					<FormField v-slot="{ value, handleChange }" name="price">
+						<FormItem>
+							<FormLabel>
+								{{ t('price') }}
+							</FormLabel>
+							<FormControl>
+								<NumberField
+									class="gap-2"
+									:min="0"
+									:step="1"
+									:step-snapping="false"
+									:format-options="{
+										style: 'currency',
+										currency: user?.user_metadata.currency,
+										currencyDisplay: 'code',
+										currencySign: 'accounting',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+									}"
+									:model-value="value"
+									@update:model-value="(v) => handleChange(v ?? null)"
+								>
+									<NumberFieldContent>
+										<NumberFieldDecrement />
+										<FormControl>
+											<NumberFieldInput />
+										</FormControl>
+										<NumberFieldIncrement />
+									</NumberFieldContent>
+								</NumberField>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					</FormField>
+
+					<FormField v-slot="{ value, handleChange }" name="paid">
+						<FormItem>
+							<FormLabel>
+								{{ t('paid') }}
+							</FormLabel>
+							<FormControl>
+								<NumberField
+									class="gap-2"
+									:min="0"
+									:step="1"
+									:step-snapping="false"
+									:format-options="{
+										style: 'currency',
+										currency: user?.user_metadata.currency,
+										currencyDisplay: 'code',
+										currencySign: 'accounting',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+									}"
+									:model-value="value"
+									@update:model-value="(v) => handleChange(v ?? null)"
+								>
+									<NumberFieldContent>
+										<NumberFieldDecrement />
+										<FormControl>
+											<NumberFieldInput />
+										</FormControl>
+										<NumberFieldIncrement />
+									</NumberFieldContent>
+								</NumberField>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					</FormField>
+				</div>
+				<div class="flex flex-col gap-2">
+					<div class="text-sm font-medium">
+						{{ t('to_be_paid') }}
+					</div>
+					<div class="font-semibold text-primary">
+						{{ formattedToBePaid }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="px-4 pb-6 border-b-1">
 			<div class="flex items-center gap-2 mb-2">
 				<NotebookPen class="h-4 w-4" />
 				<div class="font-medium">
@@ -432,7 +564,7 @@ watch(
 			>
 				<div
 					v-if="form.values?.description"
-					class="ql-editor font-normal p-2!"
+					class="ql-editor font-normal p-6!"
 					v-html="
 						DOMPurify.sanitize(form.values?.description as any, {
 							USE_PROFILES: { html: true },
@@ -445,7 +577,7 @@ watch(
 			</div>
 		</div>
 
-		<div class="flex items-center gap-2 px-4 md:px-6 pb-2 border-b-1">
+		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
 			<TimerReset class="h-4 w-4" />
 			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
 				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
@@ -492,7 +624,7 @@ watch(
 			</div>
 		</div>
 
-		<div class="px-4 md:px-6 pb-6">
+		<div class="px-4 pb-6">
 			<FormField v-slot="{ value, handleChange }" name="checklist">
 				<Checklist
 					:modelValue="value"
@@ -502,15 +634,14 @@ watch(
 		</div>
 	</form>
 
-	<div class="flex gap-4 justify-between px-6 pt-4">
+	<div class="flex gap-4 justify-between items-end px-6 pt-4">
 		<ConfirmModal
 			v-if="!isCreateMode"
 			:title="t('are_you_sure_you_want_to_delete_this_item')"
 			@confirm="onRemoveSubmit"
 		>
-			<Button class="text-destructive" type="button" variant="link">
+			<Button type="button" variant="destructive" size="icon">
 				<Trash2 class="h-4 w-4" />
-				{{ t('delete') }}
 			</Button>
 		</ConfirmModal>
 		<div class="w-full flex justify-end items-end gap-4">

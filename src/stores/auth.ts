@@ -14,8 +14,7 @@ import {
 	changePassword,
 } from '@/api/auth';
 
-import type { User } from '@supabase/supabase-js';
-import type { SignupPayload, UserPayload } from '@/types/User.ts';
+import type { User, SignupPayload, UserPayload } from '@/types/User.ts';
 
 interface AuthState {
 	token: string | null;

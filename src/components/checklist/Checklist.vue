@@ -90,7 +90,7 @@ const removeItem = (id: string) => {
 		<div class="overflow-hidden">
 			<div
 				v-for="item in items"
-				class="flex items-center gap-3 px-4 py-2"
+				class="flex items-center gap-3 px-6 py-2"
 				:key="item.id"
 			>
 				<Checkbox

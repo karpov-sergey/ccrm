@@ -71,6 +71,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 				data: {
 					firstName: values.firstName,
 					lastName: values.lastName,
+					currency: 'USD',
 				},
 			},
 		});

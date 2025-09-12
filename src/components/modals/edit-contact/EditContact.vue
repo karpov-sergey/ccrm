@@ -584,9 +584,8 @@ const onRemoveSubmit = async () => {
 					:title="t('are_you_sure_you_want_to_delete_this_contact')"
 					@confirm="onRemoveSubmit"
 				>
-					<Button class="text-destructive" type="button" variant="link">
+					<Button type="button" variant="destructive" size="icon">
 						<Trash2 class="h-4 w-4" />
-						{{ t('delete') }}
 					</Button>
 				</ConfirmModal>
 				<div class="w-full flex items-center justify-end gap-2">
