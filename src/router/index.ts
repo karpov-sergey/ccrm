@@ -57,6 +57,14 @@ const routes: RouteRecordRaw[] = [
 			await guestOnlyHook();
 		},
 	},
+	{
+		path: '/forgot-password',
+		name: ExternalNavItems.FORGOT_PASSWORD,
+		component: () => import('../views/ForgotPassword.vue'),
+		beforeEnter: async () => {
+			await guestOnlyHook();
+		},
+	},
 ];
 
 const ensureSessionLoaded = async () => {

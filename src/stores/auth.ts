@@ -12,6 +12,7 @@ import {
 	updateUser,
 	getUser,
 	changePassword,
+	resetPassword,
 } from '@/api/auth';
 
 import type { User, SignupPayload, UserPayload } from '@/types/User.ts';
@@ -118,6 +119,14 @@ export const useAuthStore = defineStore('auth', {
 				}
 
 				throw error;
+			}
+		},
+
+		async resetPassword(email: string) {
+			try {
+				await resetPassword(email);
+			} catch (error: any) {
+				toast.error(error.message);
 			}
 		},
 	},

@@ -119,7 +119,15 @@ const onSubmit = form.handleSubmit(async (values) => {
 				</FormField>
 				<FormField v-slot="{ componentField }" name="password">
 					<FormItem class="relative">
-						<FormLabel>{{ t('password') }}</FormLabel>
+						<FormLabel class="flex justify-between">
+							{{ t('password') }}
+							<RouterLink
+								class="text-sm underline font-normal"
+								to="/forgot-password"
+							>
+								{{ t('forgot_password') }}
+							</RouterLink>
+						</FormLabel>
 						<FormControl>
 							<Input
 								class="pr-10"

@@ -49,3 +49,11 @@ export const changePassword = async (password: string) => {
 
 	return handleResponse<typeof response.data>(response);
 };
+
+export const resetPassword = async (email: string) => {
+	const response = await supabase.auth.resetPasswordForEmail(email, {
+		redirectTo: `${window.location.origin}/reset-password`,
+	});
+
+	return handleResponse<typeof response.data>(response);
+};
