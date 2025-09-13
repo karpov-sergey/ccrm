@@ -123,7 +123,6 @@ const calendarApp = createCalendar({
 }
 
 /* Date picker and popups themed to app colors */
-:deep(.sx__date-picker-wrapper),
 :deep(.sx__date-picker-popup) {
 	--sx-color-primary: var(--primary);
 	--sx-color-on-primary: var(--primary-foreground);
