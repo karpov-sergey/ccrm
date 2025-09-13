@@ -11,6 +11,7 @@
 	"enter_your_email_and_password": "Enter your email and password below to login to your account",
 	"enter_your_email_to_reset_password": "Enter your email to reset your password",
 	"reset_password": "Reset password",
+	"over_email_send_rate_limit": "For security purposes, you can only request this after a minute has passed since the last request. Please try again in a minute.",
 	"go_to_login": "Go to login",
 	"if_email_exists_password_reset_link_sent": "If email exists, password reset link sent.",
 	"please_check_your_inbox": "Please check your inbox.",

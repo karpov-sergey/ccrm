@@ -126,7 +126,9 @@ export const useAuthStore = defineStore('auth', {
 			try {
 				await resetPassword(email);
 			} catch (error: any) {
-				toast.error(error.message);
+				toast.error($t(error.code));
+
+				throw error;
 			}
 		},
 	},

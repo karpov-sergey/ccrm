@@ -55,9 +55,9 @@ const onSubmit = form.handleSubmit(async (values) => {
 	try {
 		await authStore.resetPassword(values.email);
 		toast.success(t('if_email_exists_password_reset_link_sent'));
+		isEmailSent.value = true;
 	} catch (error: any) {
 	} finally {
-		isEmailSent.value = true;
 		isLoading.value = false;
 	}
 });
