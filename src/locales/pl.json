@@ -17,6 +17,12 @@
 	"already_have_an_account": "Masz już konto?",
 	"first_name": "Imię",
 	"last_name": "Nazwisko",
+	"greeting": {
+		"morning": "Dzień dobry, {name}!",
+		"afternoon": "Dzień dobry, {name}!",
+		"evening": "Dobry wieczór, {name}!",
+		"night": "Dobranoc, {name}!"
+	},
   "auth": {
     "invalid_credentials": "Nieprawidłowy e-mail lub hasło.",
     "user_not_found": "Użytkownik nie został znaleziony.",

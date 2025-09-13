@@ -4,8 +4,8 @@ import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import { useContactsStore } from '@/stores/contacts.ts';
 
+import { useContactsStore } from '@/stores/contacts.ts';
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
 import { useFormattedDate } from '@/composables/common.ts';

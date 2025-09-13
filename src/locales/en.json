@@ -102,6 +102,7 @@
 	"created": "Created",
 	"default_currency": "Default currency",
 	"default_language": "Default language",
+	"total_income": "Total Income",
 	"calendar": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",
@@ -110,6 +111,12 @@
 		"outdated": "Outdated",
 		"select_date": "Select date"
 	},
+  "greeting": {
+    "morning": "Good morning, {name}!",
+    "afternoon": "Good afternoon, {name}!",
+    "evening": "Good evening, {name}!",
+    "night": "Good night, {name}!"
+  },
   "auth": {
     "invalid_credentials": "Invalid email or password.",
     "user_not_found": "User not found.",
