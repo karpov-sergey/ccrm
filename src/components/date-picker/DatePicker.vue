@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useScreenWidth } from '@/composables/common';
 
 import type { DateValue } from '@internationalized/date';
-import { parseDate } from '@internationalized/date';
+import { parseDate, getLocalTimeZone, today } from '@internationalized/date';
 
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -37,10 +37,10 @@ interface QuickSelectItem {
 	label: string;
 }
 const quickSelectItems: QuickSelectItem[] = [
-	{ value: 0, label: t('calendar.today') },
-	{ value: 1, label: t('calendar.tomorrow') },
-	{ value: 3, label: t('calendar.in_3_days') },
-	{ value: 7, label: t('calendar.in_a_week') },
+	{ value: 0, label: t('calendar_days.today') },
+	{ value: 1, label: t('calendar_days.tomorrow') },
+	{ value: 3, label: t('calendar_days.in_3_days') },
+	{ value: 7, label: t('calendar_days.in_a_week') },
 ];
 
 const selectedDateValue = ref<DateValue>();
@@ -109,7 +109,7 @@ const onNativeDateChange = (event: Event) => {
 			ref="nativeInputRef"
 			class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
 			type="date"
-			:aria-label="t('calendar.select_date') || 'Select date'"
+			:aria-label="t('calendar_days.select_date') || 'Select date'"
 			:value="nativeInputStringValue"
 			@change="onNativeDateChange"
 			@input="onNativeDateChange"

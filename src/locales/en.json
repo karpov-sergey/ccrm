@@ -110,7 +110,8 @@
 	"due_soon": "Due soon",
 	"clients_overview": "Clients Overview",
 	"your_top_clients": "Your top clients",
-	"calendar": {
+	"calendar": "Calendar",
+	"calendar_days": {
 		"today": "Today",
 		"tomorrow": "Tomorrow",
 		"in_3_days": "In 3 days",

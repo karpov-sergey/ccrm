@@ -40,13 +40,13 @@ export const useDueDateVariant = () => {
 		const diffDays = due.diff(today, 'day');
 
 		if (diffDays < 0) {
-			return t('calendar.outdated');
+			return t('calendar_days.outdated');
 		}
 		if (diffDays === 0) {
-			return t('calendar.today');
+			return t('calendar_days.today');
 		}
 		if (diffDays === 1) {
-			return t('calendar.tomorrow');
+			return t('calendar_days.tomorrow');
 		}
 
 		return due.format('MMM DD');

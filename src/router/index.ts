@@ -42,6 +42,15 @@ const routes: RouteRecordRaw[] = [
 	},
 
 	{
+		path: '/calendar',
+		name: UserNavItems.CALENDAR,
+		component: () => import('../views/Calendar.vue'),
+		beforeEnter: async () => {
+			await loggedInHook();
+		},
+	},
+
+	{
 		path: '/login',
 		name: ExternalNavItems.LOGIN,
 		component: () => import('../views/auth/Login.vue'),
@@ -49,6 +58,7 @@ const routes: RouteRecordRaw[] = [
 			await guestOnlyHook();
 		},
 	},
+
 	{
 		path: '/signup',
 		name: ExternalNavItems.SIGNUP,
@@ -57,6 +67,7 @@ const routes: RouteRecordRaw[] = [
 			await guestOnlyHook();
 		},
 	},
+
 	{
 		path: '/forgot-password',
 		name: ExternalNavItems.FORGOT_PASSWORD,
@@ -65,6 +76,7 @@ const routes: RouteRecordRaw[] = [
 			await guestOnlyHook();
 		},
 	},
+
 	{
 		path: '/reset-password',
 		name: ExternalNavItems.RESET_PASSWORD,

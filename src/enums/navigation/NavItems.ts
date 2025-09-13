@@ -3,6 +3,7 @@ export enum UserNavItems {
 	BOARD = 'board',
 	ACCOUNT = 'account',
 	CONTACTS = 'contacts',
+	CALENDAR = 'calendar',
 }
 
 export enum ExternalNavItems {
