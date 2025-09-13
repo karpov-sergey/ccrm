@@ -49,7 +49,7 @@ const contactName = computed(() => {
 });
 
 const isLeftToBePaid = computed(() => {
-	return props.task.to_be_paid > 0;
+	return Number(props.task.to_be_paid) > 0;
 });
 </script>
 

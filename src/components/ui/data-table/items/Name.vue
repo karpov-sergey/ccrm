@@ -22,7 +22,7 @@ const contactName = `${props.contact.first_name} ${props.contact.last_name}`;
 			</AvatarFallback>
 		</Avatar>
 
-		<div class="truncate font-semibold capitalize">
+		<div class="truncate font-medium capitalize">
 			{{ contactName }}
 		</div>
 

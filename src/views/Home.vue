@@ -51,7 +51,7 @@ const fetchTasks = async () => {
 			<div class="text-muted-foreground mb-6">
 				Welcome to the CCRM, your personal task management tool.
 			</div>
-			<div class="grid grid-cols-3">
+			<div class="grid grid-cols-3 gap-4">
 				<TotalIncome :tasks="tasks" />
 			</div>
 		</template>
