@@ -50,14 +50,110 @@ const calendarApp = createCalendar({
 </template>
 
 <style scoped>
-.sx-vue-calendar-wrapper {
+:deep(.sx__calendar-wrapper) {
 	width: 100%;
 	max-width: 100vw;
 	height: 800px;
 	max-height: 90vh;
 }
 
+/* Schedule X theme overrides to match app primary colors */
+:deep(.sx__calendar-wrapper) {
+	/* Core palette */
+	--sx-color-primary: var(--primary);
+	--sx-color-on-primary: var(--primary-foreground);
+	--sx-color-primary-container: var(--primary);
+	--sx-color-on-primary-container: var(--primary-foreground);
+
+	--sx-color-secondary: var(--secondary);
+	--sx-color-on-secondary: var(--secondary-foreground);
+	--sx-color-secondary-container: var(--secondary);
+	--sx-color-on-secondary-container: var(--secondary-foreground);
+
+	--sx-color-tertiary: var(--accent);
+	--sx-color-on-tertiary: var(--accent-foreground);
+	--sx-color-tertiary-container: var(--accent);
+	--sx-color-on-tertiary-container: var(--accent-foreground);
+
+	/* Surfaces and backgrounds */
+	--sx-color-surface: var(--card);
+	--sx-color-on-surface: var(--card-foreground);
+	--sx-color-surface-dim: var(--card);
+	--sx-color-surface-bright: var(--background);
+	--sx-color-surface-container: var(--card);
+	--sx-color-surface-container-low: var(--card);
+	--sx-color-surface-container-high: var(--card);
+
+	--sx-color-background: var(--background);
+	--sx-color-on-background: var(--foreground);
+
+	/* Borders/outline */
+	--sx-color-outline: var(--border);
+	--sx-color-outline-variant: var(--input);
+}
+
+/* Dark mode overrides (scoped to .dark root) */
+:deep(.dark .sx__calendar-wrapper) {
+	--sx-color-primary: var(--primary);
+	--sx-color-on-primary: var(--primary-foreground);
+	--sx-color-primary-container: var(--primary);
+	--sx-color-on-primary-container: var(--primary-foreground);
+
+	--sx-color-secondary: var(--secondary);
+	--sx-color-on-secondary: var(--secondary-foreground);
+	--sx-color-secondary-container: var(--secondary);
+	--sx-color-on-secondary-container: var(--secondary-foreground);
+
+	--sx-color-tertiary: var(--accent);
+	--sx-color-on-tertiary: var(--accent-foreground);
+	--sx-color-tertiary-container: var(--accent);
+	--sx-color-on-tertiary-container: var(--accent-foreground);
+
+	--sx-color-surface: var(--card);
+	--sx-color-on-surface: var(--card-foreground);
+	--sx-color-surface-dim: var(--card);
+	--sx-color-surface-bright: var(--background);
+	--sx-color-surface-container: var(--card);
+	--sx-color-surface-container-low: var(--card);
+	--sx-color-surface-container-high: var(--card);
+
+	--sx-color-background: var(--background);
+	--sx-color-on-background: var(--foreground);
+
+	--sx-color-outline: var(--border);
+	--sx-color-outline-variant: var(--input);
+}
+
+/* Date picker and popups themed to app colors */
+:deep(.sx__date-picker-wrapper),
 :deep(.sx__date-picker-popup) {
-	max-height: 200px;
+	--sx-color-primary: var(--primary);
+	--sx-color-on-primary: var(--primary-foreground);
+	--sx-color-primary-container: var(--primary);
+	--sx-color-on-primary-container: var(--primary-foreground);
+
+	--sx-color-secondary: var(--secondary);
+	--sx-color-on-secondary: var(--secondary-foreground);
+	--sx-color-secondary-container: var(--secondary);
+	--sx-color-on-secondary-container: var(--secondary-foreground);
+
+	--sx-color-tertiary: var(--accent);
+	--sx-color-on-tertiary: var(--accent-foreground);
+	--sx-color-tertiary-container: var(--accent);
+	--sx-color-on-tertiary-container: var(--accent-foreground);
+
+	--sx-color-surface: var(--card);
+	--sx-color-on-surface: var(--card-foreground);
+	--sx-color-surface-dim: var(--card);
+	--sx-color-surface-bright: var(--background);
+	--sx-color-surface-container: var(--card);
+	--sx-color-surface-container-low: var(--card);
+	--sx-color-surface-container-high: var(--card);
+
+	--sx-color-background: var(--background);
+	--sx-color-on-background: var(--foreground);
+
+	--sx-color-outline: var(--border);
+	--sx-color-outline-variant: var(--input);
 }
 </style>
