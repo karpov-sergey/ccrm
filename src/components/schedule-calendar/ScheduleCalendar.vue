@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { watch, toRef } from 'vue';
+
 import { ScheduleXCalendar } from '@schedule-x/vue';
 import {
 	createCalendar,
@@ -6,9 +8,11 @@ import {
 	createViewMonthAgenda,
 	createViewMonthGrid,
 	createViewWeek,
+	type CalendarEvent,
 } from '@schedule-x/calendar';
 import '@schedule-x/theme-default/dist/index.css';
 import 'temporal-polyfill/global';
+import { createEventModalPlugin } from '@schedule-x/event-modal';
 
 import type { Task } from '@/types/Tasks.ts';
 
@@ -16,35 +20,89 @@ const props = defineProps<{
 	tasks: Task[];
 }>();
 
+const eventModal = createEventModalPlugin();
+
 const calendarApp = createCalendar({
-	selectedDate: Temporal.PlainDate.from('2023-12-19'),
+	selectedDate: Temporal.Now.plainDateISO(),
+	plugins: [eventModal],
 	views: [
 		createViewDay(),
 		createViewWeek(),
 		createViewMonthGrid(),
 		createViewMonthAgenda(),
 	],
-	events: [
-		{
-			id: 1,
-			title: 'Event 1',
-			start: Temporal.PlainDate.from('2023-12-19'),
-			end: Temporal.PlainDate.from('2023-12-19'),
-		},
-		{
-			id: 2,
-			title: 'Event 2',
-			start: Temporal.ZonedDateTime.from(
-				'2023-12-20T12:00:00+09:00[Asia/Tokyo]'
-			),
-			end: Temporal.ZonedDateTime.from('2023-12-20T13:00:00+09:00[Asia/Tokyo]'),
-		},
-	],
+	events: [],
+	timezone: 'UTC',
 });
+
+const FIXED_TIMEZONE_ID = 'UTC';
+const tasksRef = toRef(props, 'tasks');
+
+const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
+	const events: CalendarEvent[] = [];
+	for (const task of tasks) {
+		if (!task?.date) continue;
+		try {
+			const plainDate = Temporal.PlainDate.from(task.date);
+			const startPlain = plainDate.toPlainDateTime(
+				Temporal.PlainTime.from('10:00')
+			);
+			const endPlain = plainDate.toPlainDateTime(
+				Temporal.PlainTime.from('12:00')
+			);
+			const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+			const end = endPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+			events.push({
+				id: task.id,
+				title: task.title,
+				start,
+				end,
+			});
+		} catch (e) {
+			// skip invalid date
+		}
+	}
+	return events;
+};
+
+watch(
+	() => tasksRef.value,
+	(newTasks) => {
+		const events = mapTasksToEvents(newTasks || []);
+		calendarApp.events.set(events);
+	},
+	{ immediate: true, deep: true }
+);
 </script>
 
 <template>
-	<ScheduleXCalendar :calendar-app="calendarApp" />
+	<ScheduleXCalendar :calendar-app="calendarApp">
+		<template #dateGridEvent="{ calendarEvent }">
+			<div>{{ calendarEvent.title }}!!</div>
+		</template>
+
+		<template #timeGridEvent="{ calendarEvent }">
+			<div
+				class="p-2 bg-primary/60 h-full border-l-4 border-primary text-primary-foreground"
+			>
+				{{ calendarEvent.title }}
+			</div>
+		</template>
+
+		<template #monthGridEvent="{ calendarEvent }">
+			<div>{{ calendarEvent.title }}###</div>
+		</template>
+
+		<template #eventModal="{ calendarEvent }">
+			<div
+				class="shadow-lg rounded-lg p-4 bg-background border overflow-hidden"
+			>
+				{{ calendarEvent.title }}
+
+				<button>btn</button>
+			</div>
+		</template>
+	</ScheduleXCalendar>
 </template>
 
 <style scoped>
@@ -53,6 +111,10 @@ const calendarApp = createCalendar({
 	max-width: 100vw;
 	height: 800px;
 	max-height: 90vh;
+}
+
+:deep(.sx__event-modal) {
+	border-radius: 0.65rem;
 }
 
 /* Schedule X theme overrides to match app primary colors */
