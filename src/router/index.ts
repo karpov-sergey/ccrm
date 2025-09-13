@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import type { RouteRecordRaw } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth.ts';
 
+import type { RouteRecordRaw } from 'vue-router';
 import { UserNavItems, ExternalNavItems } from '@/enums/navigation/NavItems.ts';
 
 const routes: RouteRecordRaw[] = [
@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: '/login',
 		name: ExternalNavItems.LOGIN,
-		component: () => import('../views/Login.vue'),
+		component: () => import('../views/auth/Login.vue'),
 		beforeEnter: async () => {
 			await guestOnlyHook();
 		},
@@ -52,7 +52,7 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: '/signup',
 		name: ExternalNavItems.SIGNUP,
-		component: () => import('../views/SignUp.vue'),
+		component: () => import('../views/auth/SignUp.vue'),
 		beforeEnter: async () => {
 			await guestOnlyHook();
 		},
@@ -60,7 +60,15 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: '/forgot-password',
 		name: ExternalNavItems.FORGOT_PASSWORD,
-		component: () => import('../views/ForgotPassword.vue'),
+		component: () => import('../views/auth/ForgotPassword.vue'),
+		beforeEnter: async () => {
+			await guestOnlyHook();
+		},
+	},
+	{
+		path: '/reset-password',
+		name: ExternalNavItems.RESET_PASSWORD,
+		component: () => import('../views/auth/ResetPassword.vue'),
 		beforeEnter: async () => {
 			await guestOnlyHook();
 		},
@@ -92,7 +100,7 @@ const guestOnlyHook = async () => {
 
 	const { isAuthorized } = storeToRefs(useAuthStore());
 
-	if (isAuthorized.value) {
+	if (window.location.pathname !== '/reset-password' && isAuthorized.value) {
 		await router.push({ path: '/' });
 	}
 };

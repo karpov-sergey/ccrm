@@ -68,7 +68,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 		class="grid grid-rows-[auto_1fr_auto] w-full h-dvh rounded-none border-0 shadow-none md:h-auto md:w-[500px] md:rounded-xl md:border md:shadow-md"
 	>
 		<CardHeader class="block">
-			<CardTitle class="flex items-center justify-between text-2xl mb-4">
+			<CardTitle class="flex items-center justify-between text-2xl mb-2">
 				{{ t('reset_password') }}
 				<LanguageSwitcher />
 			</CardTitle>
@@ -79,7 +79,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 		<CardContent>
 			<form
 				v-if="!isEmailSent"
-				id="login-form"
+				id="forgot-password-form"
 				class="grid gap-4 mb-6"
 				@submit="onSubmit"
 			>
@@ -108,7 +108,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 		<CardFooter v-if="!isEmailSent" class="flex flex-col">
 			<Button
 				type="submit"
-				form="login-form"
+				form="forgot-password-form"
 				class="w-full mb-6"
 				:loading="isLoading"
 				:disabled="isLoading || !form.meta.value.valid"

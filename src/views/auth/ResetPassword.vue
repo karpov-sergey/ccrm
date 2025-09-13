@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
+import { useRoute, useRouter } from 'vue-router';
 
-import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
 
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,6 @@ import {
 	CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useAuthStore } from '@/stores/auth.ts';
 import LanguageSwitcher from '@/components/language-switcher/LanguageSwitcher.vue';
 import {
 	FormControl,
@@ -28,20 +28,19 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 
-import { Eye, EyeClosed } from 'lucide-vue-next';
+import { Eye, EyeClosed, AlertTriangle } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
-const router = useRouter();
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
 const isLoading = ref(false);
 const isPasswordVisible = ref(false);
+const isResetTokenExpired = ref(false);
 
 const formSchema = toTypedSchema(
 	z.object({
-		firstName: z.string().min(2).max(50),
-		lastName: z.string().min(2).max(50),
-		email: z.string().email(),
 		password: z.string().min(6).max(50),
 	})
 );
@@ -49,12 +48,27 @@ const formSchema = toTypedSchema(
 const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		firstName: '',
-		lastName: '',
-		email: '',
 		password: '',
 	},
 });
+
+onBeforeMount(async () => {
+	checkTokenExpired();
+});
+
+const checkTokenExpired = () => {
+	const hash = route.hash;
+
+	if (hash) {
+		const params = new URLSearchParams(hash.slice(1));
+
+		const errorDescription = params.get('error_description');
+
+		if (!!errorDescription) {
+			isResetTokenExpired.value = true;
+		}
+	}
+};
 
 const onSetPasswordVisibilityClick = () => {
 	isPasswordVisible.value = !isPasswordVisible.value;
@@ -64,20 +78,20 @@ const onSubmit = form.handleSubmit(async (values) => {
 	isLoading.value = true;
 
 	try {
-		await authStore.signUp({
-			email: values.email,
-			password: values.password,
-			options: {
-				data: {
-					firstName: values.firstName,
-					lastName: values.lastName,
-					currency: 'USD',
-				},
-			},
-		});
+		await authStore.changePassword(values.password);
 
 		await router.push('/');
-	} catch (error) {
+	} catch (error: any) {
+		const code: string | undefined = error?.code;
+
+		form.setFieldTouched('password', true);
+
+		if (code === 'same_password') {
+			form.setFieldError(
+				'password',
+				t('validation.new_password_should_be_different_from_old')
+			);
+		}
 	} finally {
 		isLoading.value = false;
 	}
@@ -88,52 +102,21 @@ const onSubmit = form.handleSubmit(async (values) => {
 	<Card
 		class="grid grid-rows-[auto_1fr_auto] w-full h-dvh rounded-none border-0 shadow-none md:h-auto md:w-[500px] md:rounded-xl md:border md:shadow-md"
 	>
-		<CardHeader class="gap-4">
-			<CardTitle class="flex items-center justify-between text-2xl">
-				{{ t('signup') }}
+		<CardHeader class="block">
+			<CardTitle class="flex items-center justify-between text-2xl mb-2">
+				{{ t('set_new_password') }}
 				<LanguageSwitcher />
 			</CardTitle>
-			<CardDescription>
-				{{ t('enter_your_information_to_create_account') }}
+			<CardDescription v-if="!isResetTokenExpired">
+				{{ t('enter_your_new_password') }}
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form id="signup-form" class="grid gap-4" @submit="onSubmit">
-				<div class="grid gap-4 items-start lg:grid-cols-2">
-					<FormField v-slot="{ componentField }" name="firstName">
-						<FormItem>
-							<FormLabel>{{ t('first_name') }}</FormLabel>
-							<FormControl>
-								<Input type="text" v-bind="componentField" />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					</FormField>
-
-					<FormField v-slot="{ componentField }" name="lastName">
-						<FormItem>
-							<FormLabel>{{ t('last_name') }}</FormLabel>
-							<FormControl>
-								<Input type="text" v-bind="componentField" />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					</FormField>
-				</div>
-
-				<FormField v-slot="{ componentField }" name="email">
-					<FormItem>
-						<FormLabel>{{ t('email') }}</FormLabel>
-						<FormControl>
-							<Input
-								type="text"
-								v-bind="componentField"
-								placeholder="m@example.com"
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				</FormField>
+			<form
+				v-if="!isResetTokenExpired"
+				id="reset-password-form"
+				@submit="onSubmit"
+			>
 				<FormField v-slot="{ componentField }" name="password">
 					<FormItem class="relative mb-6">
 						<FormLabel>{{ t('password') }}</FormLabel>
@@ -161,22 +144,27 @@ const onSubmit = form.handleSubmit(async (values) => {
 					</FormItem>
 				</FormField>
 			</form>
+			<div v-else class="flex flex-col items-center justify-center gap-4">
+				<AlertTriangle class="w-10 h-10 text-primary" />
+				<div class="text-muted-foreground text-center">
+					{{ t('reset_password_token_expired') }}
+				</div>
+			</div>
 		</CardContent>
-
 		<CardFooter class="flex flex-col">
 			<Button
+				v-if="!isResetTokenExpired"
 				type="submit"
-				form="signup-form"
+				form="reset-password-form"
 				class="w-full mb-6"
 				:loading="isLoading"
 				:disabled="isLoading || !form.meta.value.valid"
 			>
-				{{ t('create_an_account') }}
+				{{ t('set_new_password') }}
 			</Button>
 			<div class="w-full text-sm text-right">
-				{{ t('already_have_an_account') }}
 				<RouterLink class="underline" to="/login">
-					{{ t('login') }}
+					{{ t('go_to_login') }}
 				</RouterLink>
 			</div>
 		</CardFooter>
