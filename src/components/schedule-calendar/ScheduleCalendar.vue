@@ -9,7 +9,6 @@ import {
 } from '@schedule-x/calendar';
 import '@schedule-x/theme-default/dist/index.css';
 import 'temporal-polyfill/global';
-// import '@schedule-x/theme-shadcn/dist/index.css';
 
 import type { Task } from '@/types/Tasks.ts';
 
@@ -18,7 +17,6 @@ const props = defineProps<{
 }>();
 
 const calendarApp = createCalendar({
-	// theme: 'shadcn',
 	selectedDate: Temporal.PlainDate.from('2023-12-19'),
 	views: [
 		createViewDay(),

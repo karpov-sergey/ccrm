@@ -16,7 +16,6 @@
     "@iconify/vue": "^5.0.0",
     "@schedule-x/calendar": "^3.1.2",
     "@schedule-x/theme-default": "^3.1.2",
-    "@schedule-x/theme-shadcn": "^3.1.2",
     "@schedule-x/vue": "^3.1.1",
     "@supabase/supabase-js": "^2.56.1",
     "@tailwindcss/vite": "^4.1.12",
