@@ -10,6 +10,8 @@ import { useAuthStore } from '@/stores/auth.ts';
 
 import Spinner from '@/components/ui/spinner/Spinner.vue';
 import TotalIncome from '@/components/widgets/TotalIncome.vue';
+import OrdersOverview from '@/components/widgets/OrdersOverview.vue';
+import ClientsOverview from '@/components/widgets/ClientsOverview.vue';
 
 import type { Task } from '@/types/Tasks.ts';
 
@@ -51,8 +53,10 @@ const fetchTasks = async () => {
 			<div class="text-muted-foreground mb-6">
 				Welcome to the CCRM, your personal task management tool.
 			</div>
-			<div class="grid grid-cols-3 gap-4">
+			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<TotalIncome :tasks="tasks" />
+				<OrdersOverview :tasks="tasks" />
+				<ClientsOverview :tasks="tasks" />
 			</div>
 		</template>
 	</section>
