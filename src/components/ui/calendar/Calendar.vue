@@ -79,8 +79,8 @@ const onCellClick = () => {
 		v-bind="forwarded"
 	>
 		<CalendarHeader>
-			<CalendarHeading class="w-full flex items-center justify-between gap-2">
-				<template v-if="props.isWithYearAndMonth">
+			<CalendarHeading :class="{ 'w-full': props.isWithYearAndMonth }">
+				<div v-if="props.isWithYearAndMonth" class="flex items-center gap-2">
 					<Select
 						:default-value="placeholder.month.toString()"
 						@update:model-value="
@@ -134,7 +134,7 @@ const onCellClick = () => {
 							</SelectItem>
 						</SelectContent>
 					</Select>
-				</template>
+				</div>
 			</CalendarHeading>
 
 			<div v-if="!props.isWithYearAndMonth" class="flex items-center gap-1">
