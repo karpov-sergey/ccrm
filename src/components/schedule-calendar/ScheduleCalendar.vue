@@ -41,7 +41,10 @@ const tasksRef = toRef(props, 'tasks');
 const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
 	const events: CalendarEvent[] = [];
 	for (const task of tasks) {
-		if (!task?.date) continue;
+		if (!task?.date) {
+			continue;
+		}
+
 		try {
 			const plainDate = Temporal.PlainDate.from(task.date);
 			const startPlain = plainDate.toPlainDateTime(
@@ -52,13 +55,14 @@ const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
 			);
 			const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
 			const end = endPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+
 			events.push({
 				id: task.id,
 				title: task.title,
 				start,
 				end,
 			});
-		} catch (e) {
+		} catch (error) {
 			// skip invalid date
 		}
 	}
@@ -78,12 +82,12 @@ watch(
 <template>
 	<ScheduleXCalendar :calendar-app="calendarApp">
 		<template #dateGridEvent="{ calendarEvent }">
-			<div>{{ calendarEvent.title }}!!</div>
+			<div>{{ calendarEvent.title }}</div>
 		</template>
 
 		<template #timeGridEvent="{ calendarEvent }">
 			<div
-				class="p-2 bg-primary/60 h-full border-l-4 border-primary text-primary-foreground"
+				class="p-2 bg-primary/60 h-full border-none! border-primary text-sm text-primary-foreground cursor-pointer"
 			>
 				{{ calendarEvent.title }}
 			</div>

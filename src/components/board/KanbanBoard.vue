@@ -134,7 +134,7 @@ const onListChange = async (column: BoardColumn, event: any) => {
 				v-for="(column, colIndex) in props.columns"
 				:key="column.title"
 				:class="[
-					'w-[200px] lg:w-[300px] flex-none px-3 py-3 mr-4 rounded-lg bg-sidebar border-sidebar-border h-full flex flex-col min-h-0',
+					'w-[200px] lg:w-[300px] flex-none px-3 py-3 mr-4 rounded-lg bg-sidebar border h-full flex flex-col min-h-0',
 					isDragging && hoverColumnIndex === colIndex && 'drop-target',
 				]"
 				:data-col-index="colIndex"
