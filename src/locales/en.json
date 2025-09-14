@@ -38,6 +38,8 @@
 	"change_avatar": "Change avatar",
 	"change_password": "Change password",
 	"update_your_password_associated_with_your_account": "Update your password associated with your account.",
+	"application_settings": "Application Settings",
+	"set_application_settings_according_to_your_preferences": "Set application settings according to your preferences.",
 	"new_password": "New password",
 	"verify_new_password": "Verify new password",
 	"delete": "Delete",

@@ -2,8 +2,8 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Allow flexible metadata updates while keeping known keys typed
 export interface UserPayload {
-	firstName: string;
-	lastName: string;
+	firstName?: string;
+	lastName?: string;
 	currency?: string;
 	language?: string;
 	// Additional custom metadata fields
