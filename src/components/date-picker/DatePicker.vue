@@ -28,6 +28,7 @@ const props = defineProps<{
 	isPreselectVisible?: boolean;
 	isWithYearAndMonth?: boolean;
 }>();
+
 const emit = defineEmits<{
 	(event: 'update:modelValue', value: string | null): void;
 }>();

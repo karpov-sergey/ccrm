@@ -42,6 +42,8 @@
 	"set_application_settings_according_to_your_preferences": "Set application settings according to your preferences.",
 	"new_password": "New password",
 	"verify_new_password": "Verify new password",
+	"pick_date": "Pick date",
+	"pick_time": "Pick time",
 	"delete": "Delete",
 	"are_you_absolutely_sure": "Are you absolutely sure?",
 	"are_you_sure_you_want_to_delete_this_item": "Are you sure you want to delete this item?",

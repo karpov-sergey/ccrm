@@ -38,6 +38,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal.vue';
 import DatePicker from '@/components/date-picker/DatePicker.vue';
 import ContactSelect from '@/components/contact-select/ContactSelect.vue';
 import { Badge } from '@/components/ui/badge';
+import TimePicker from '@/components/ui/time-picker/TimePicker.vue';
 
 import {
 	CornerDownLeft,
@@ -529,13 +530,21 @@ watch(
 		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
 			<TimerReset class="h-4 w-4" />
 			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
-					<Button variant="outline">
-						{{ dueDateDraft ? formattedDate(dueDateDraft) : 'Pick a date' }}
-						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
-					</Button>
-				</DatePicker>
+				<div class="flex gap-2">
+					<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
+						<Button variant="outline">
+							{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_date') }}
+							<CalendarIcon class="h-4 w-4 text-muted-foreground" />
+						</Button>
+					</DatePicker>
 
+					<TimePicker>
+						<Button variant="outline">
+							{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_time') }}
+							<CalendarIcon class="h-4 w-4 text-muted-foreground" />
+						</Button>
+					</TimePicker>
+				</div>
 				<div class="flex gap-2">
 					<Button
 						type="button"
