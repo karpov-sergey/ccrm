@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import DOMPurify from 'dompurify';
 
 import { useI18n } from 'vue-i18n';
-import { useForm } from 'vee-validate';
+import { useFormContext } from 'vee-validate';
 
 import { FormField } from '@/components/ui/form';
 import { QuillEditor } from '@vueup/vue-quill';
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Check, NotebookPen, X } from 'lucide-vue-next';
 
 const { t } = useI18n();
-const form = useForm();
+const form = useFormContext();
 
 const isDescriptionEditMode = ref(false);
 

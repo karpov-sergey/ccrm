@@ -22,6 +22,7 @@ import Status from '@/components/task-details/parts/Status.vue';
 import Contact from '@/components/task-details/parts/Contact.vue';
 import Price from '@/components/task-details/parts/Price.vue';
 import DueDate from '@/components/task-details/parts/DueDate.vue';
+import Description from '@/components/task-details/parts/Description.vue';
 
 import { Trash2 } from 'lucide-vue-next';
 
@@ -245,7 +246,9 @@ watch(
 			<DueDate />
 		</div>
 
-		<div class="px-4 pb-6 border-b-1"></div>
+		<div class="px-4 pb-6 border-b-1">
+			<Description />
+		</div>
 
 		<div class="px-4 pb-6">
 			<FormField v-slot="{ value, handleChange }" name="checklist">

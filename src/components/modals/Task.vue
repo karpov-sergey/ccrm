@@ -59,6 +59,7 @@ const onOpenClick = () => {
 				<DialogDescription />
 			</template>
 			<TaskDetails
+				:key="props.task?.id || 'new'"
 				:task="props.task"
 				:originalStatus="props.originalStatus"
 				@close="onDialogToggle"
