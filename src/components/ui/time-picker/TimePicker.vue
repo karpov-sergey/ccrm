@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useScreenWidth } from '@/composables/common';
+import { ref } from 'vue';
 
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
-
-const { t } = useI18n();
-
-const emit = defineEmits<{
-	(event: 'update:modelValue', value: string | null): void;
-}>();
 
 const isPopoverOpen = ref(false);
 
@@ -34,7 +26,14 @@ const closePopover = () => {
 			<slot />
 		</PopoverTrigger>
 		<PopoverContent class="flex w-auto flex-col gap-y-2 p-2">
-			TIME
+			<input
+				type="datetime-local"
+				id="meeting-time"
+				name="meeting-time"
+				value="2018-06-12T19:30"
+				min="2018-06-07T00:00"
+				max="2018-06-14T00:00"
+			/>
 			<!--			<Select-->
 			<!--				v-if="isPreselectVisible"-->
 			<!--				@update:model-value="-->

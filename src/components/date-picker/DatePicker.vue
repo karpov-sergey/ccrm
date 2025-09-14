@@ -4,8 +4,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useScreenWidth } from '@/composables/common';
 
+import dayjs from 'dayjs';
+
 import type { DateValue } from '@internationalized/date';
-import { parseDate, getLocalTimeZone, today } from '@internationalized/date';
+import { parseDate } from '@internationalized/date';
 
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -68,12 +70,18 @@ onMounted(() => {
 const nativeInputStringValue = ref<string | undefined>(undefined);
 const nativeInputRef = ref<HTMLInputElement | null>(null);
 
+// We assume modelValue is a timestamp (no timezone). For Calendar we need a YYYY-MM-DD string for UI only.
+// Use dayjs to derive YYYY-MM-DD.
+
 watch(
 	() => props.modelValue,
 	(nextModel) => {
 		try {
-			selectedDateValue.value = nextModel ? parseDate(nextModel) : undefined;
-			nativeInputStringValue.value = nextModel ?? undefined;
+			const ymd = nextModel && dayjs(nextModel).isValid()
+				? dayjs(nextModel).format('YYYY-MM-DD')
+				: undefined;
+			selectedDateValue.value = ymd ? parseDate(ymd) : undefined;
+			nativeInputStringValue.value = ymd ?? undefined;
 		} catch {
 			selectedDateValue.value = undefined;
 			nativeInputStringValue.value = undefined;
@@ -85,7 +93,11 @@ watch(
 const closePopover = () => (isPopoverOpen.value = false);
 
 const onCalendarUpdate = (nextDateValue?: DateValue) => {
-	emit('update:modelValue', nextDateValue ? nextDateValue.toString() : null);
+	const ymd = nextDateValue ? nextDateValue.toString() : undefined;
+	const ts = ymd
+		? dayjs(ymd, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS')
+		: null;
+	emit('update:modelValue', ts);
 };
 
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
@@ -97,8 +109,10 @@ const onPopoverOpenUpdate = (nextOpen: boolean) => {
 const onNativeDateChange = (event: Event) => {
 	const target = event.target as HTMLInputElement;
 	const value = target.value || '';
-	// Native date input returns YYYY-MM-DD; emit the same format
-	emit('update:modelValue', value ? value : null);
+	const ts = value
+		? dayjs(value, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS')
+		: null;
+	emit('update:modelValue', ts);
 };
 </script>
 
@@ -130,8 +144,9 @@ const onNativeDateChange = (event: Event) => {
 				@update:model-value="
 					(value) => {
 						if (!value) return;
-						const date = today(getLocalTimeZone()).add({ days: Number(value) });
-						emit('update:modelValue', date.toString());
+						const ymd = dayjs().add(Number(value), 'day').format('YYYY-MM-DD');
+						const ts = dayjs(ymd, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS');
+						emit('update:modelValue', ts);
 						closePopover();
 					}
 				"

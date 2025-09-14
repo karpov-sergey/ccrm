@@ -246,7 +246,7 @@ watch(
 			<DueDate />
 		</div>
 
-		<div class="px-4 pb-6 border-b-1">
+		<div class="px-4 pb-4 border-b-1">
 			<Description />
 		</div>
 

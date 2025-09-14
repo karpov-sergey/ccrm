@@ -107,7 +107,7 @@ const onDescriptionEditCancel = () => {
 	>
 		<div
 			v-if="form.values?.description"
-			class="ql-editor font-normal p-6!"
+			class="ql-editor font-normal px-6! py-0!"
 			v-html="
 				DOMPurify.sanitize(form.values?.description as any, {
 					USE_PROFILES: { html: true },
