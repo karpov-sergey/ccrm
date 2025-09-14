@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useI18n } from 'vue-i18n';
+import { useForm } from 'vee-validate';
 
 import { useDueDateVariant } from '@/composables/dateStatus.ts';
 import { useFormattedDate } from '@/composables/common.ts';
@@ -17,6 +18,8 @@ import {
 	X,
 	Calendar as CalendarIcon,
 } from 'lucide-vue-next';
+
+const form = useForm();
 
 const { dueDateBadgeVariant, dueDateText } = useDueDateVariant();
 const { formattedDate } = useFormattedDate();
