@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -10,52 +10,23 @@ import DOMPurify from 'dompurify';
 
 import { useAuthStore } from '@/stores/auth.ts';
 import { useI18n } from 'vue-i18n';
-import { useDueDateVariant } from '@/composables/dateStatus.ts';
-import { useFormattedDate } from '@/composables/common.ts';
 
 import { createTask, deleteTask, updateTask } from '@/api/tasks';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form';
-import {
-	NumberField,
-	NumberFieldContent,
-	NumberFieldDecrement,
-	NumberFieldIncrement,
-	NumberFieldInput,
-} from '@/components/ui/number-field';
-import SelectCustom from '@/components/ui/select-custom/SelectCustom.vue';
+import { FormField } from '@/components/ui/form';
 import Checklist from '@/components/checklist/Checklist.vue';
 import { toast } from 'vue-sonner';
 import ConfirmModal from '@/components/modals/ConfirmModal.vue';
-import DatePicker from '@/components/date-picker/DatePicker.vue';
-import ContactSelect from '@/components/contact-select/ContactSelect.vue';
-import { Badge } from '@/components/ui/badge';
-import TimePicker from '@/components/ui/time-picker/TimePicker.vue';
+import Title from '@/components/task-details/parts/Title.vue';
+import Status from '@/components/task-details/parts/Status.vue';
+import Contact from '@/components/task-details/parts/Contact.vue';
+import Price from '@/components/task-details/parts/Price.vue';
+import DueDate from '@/components/task-details/parts/DueDate.vue';
 
-import {
-	CornerDownLeft,
-	Check,
-	X,
-	Edit,
-	Trash2,
-	Calendar as CalendarIcon,
-	Flag,
-	NotebookPen,
-	TimerReset,
-	Contact as ContactIcon,
-	Coins,
-} from 'lucide-vue-next';
+import { Check, X, Trash2, NotebookPen } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
-import type { Option } from '@/types/common.ts';
 
 const props = defineProps<{
 	task?: Task;
@@ -66,8 +37,6 @@ const emit = defineEmits(['close', 'updateBoard']);
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
-const { dueDateBadgeVariant, dueDateText } = useDueDateVariant();
-const { formattedDate } = useFormattedDate();
 
 const toolbarOptions = [
 	['bold', 'italic', 'underline'], // toggled buttons
@@ -134,12 +103,6 @@ const descriptionOriginal = ref<string | null>(null);
 const dueDateDraft = ref<string | null>(null);
 const dueDateOriginal = ref<string | null>(null);
 
-const titleInputRef = ref<{
-	focus: () => void;
-	focusEnd?: () => void;
-	element?: HTMLInputElement | null;
-} | null>(null);
-
 const currencyCode = computed(
 	() => user.value?.user_metadata?.currency || 'USD'
 );
@@ -152,6 +115,7 @@ const amountToBePaid = computed(() => {
 	const priceCents = Math.round(price * 100);
 	const paidCents = Math.round(paid * 100);
 	const remainingCents = Math.max(priceCents - paidCents, 0);
+
 	return remainingCents / 100;
 });
 
@@ -169,37 +133,6 @@ const formattedToBePaid = computed(() => {
 	}
 });
 
-const taskStatusOptions: Option[] = [
-	{ value: 'todo', label: t('todo') },
-	{ value: 'in_progress', label: t('in_progress') },
-	{ value: 'review', label: t('review') },
-	{ value: 'done', label: t('done') },
-];
-
-// Focus title input via the Input.vue exposed helpers
-const focusTitleInput = () => {
-	const api = titleInputRef.value;
-
-	if (!api) {
-		return;
-	}
-
-	// Prefer placing the caret at the end
-	api.focusEnd?.();
-	// Fallback to simple focus if focusEnd is not available
-	api.focus?.();
-};
-
-const titleEditModeToggle = () => {
-	isTitleEditMode.value = !isTitleEditMode.value;
-
-	if (isTitleEditMode.value) {
-		nextTick(() => {
-			focusTitleInput();
-		});
-	}
-};
-
 const descriptionEditModeToggle = () => {
 	// toggling into edit mode: snapshot original and prepare draft
 	if (!isDescriptionEditMode.value) {
@@ -212,17 +145,6 @@ const descriptionEditModeToggle = () => {
 	}
 
 	isDescriptionEditMode.value = !isDescriptionEditMode.value;
-};
-
-const dueDateEditModeToggle = () => {
-	if (!isDueDateEditMode.value) {
-		dueDateOriginal.value = form.values?.date ?? null;
-		dueDateDraft.value = dueDateOriginal.value;
-	} else {
-		dueDateDraft.value = null;
-		dueDateOriginal.value = null;
-	}
-	isDueDateEditMode.value = !isDueDateEditMode.value;
 };
 
 //temporary hardcoded column id, remove after columns set by user
@@ -327,20 +249,6 @@ const onDescriptionEditCancel = () => {
 	descriptionOriginal.value = null;
 };
 
-const onDueDateEditSave = () => {
-	form.setFieldValue('date', dueDateDraft.value ?? null);
-	isDueDateEditMode.value = false;
-	dueDateDraft.value = null;
-	dueDateOriginal.value = null;
-};
-
-const onDueDateEditCancel = () => {
-	form.setFieldValue('date', dueDateOriginal.value ?? null);
-	isDueDateEditMode.value = false;
-	dueDateDraft.value = null;
-	dueDateOriginal.value = null;
-};
-
 watch(
 	() => props.task,
 	(task) => {
@@ -382,204 +290,25 @@ watch(
 		@keyup.enter.prevent.stop="onFormEnterKeyUp"
 	>
 		<div class="text-xl pb-4 px-4 border-b-1">
-			<FormField v-slot="{ componentField, value }" name="title">
-				<div v-if="isTitleEditMode">
-					<FormItem class="relative pt-1">
-						<CornerDownLeft
-							class="h-4 w-4 absolute top-3.5 right-2 text-primary"
-						/>
-						<FormControl>
-							<Input
-								v-bind="componentField"
-								ref="titleInputRef"
-								class="pr-10"
-								type="text"
-								@blur="titleEditModeToggle"
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				</div>
-
-				<div
-					v-else
-					class="flex justify-between items-center"
-					@click="titleEditModeToggle"
-				>
-					{{ value }}
-					<Edit
-						class="h-4 w-4 text-primary cursor-pointer"
-						@click="titleEditModeToggle"
-					/>
-				</div>
-			</FormField>
+			<Title />
 		</div>
 		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
-			<Flag class="h-4 w-4" />
-			<FormField v-slot="{ componentField }" name="status">
-				<FormItem>
-					<FormControl>
-						<SelectCustom
-							v-bind="componentField"
-							:placeholder="t('status')"
-							:options="taskStatusOptions"
-						/>
-					</FormControl>
-					<FormMessage />
-				</FormItem>
-			</FormField>
+			<Status />
 		</div>
 
 		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
-			<ContactIcon class="h-4 w-4" />
-			<FormField v-slot="{ value, handleChange }" name="associated_contact">
-				<ContactSelect
-					:model-value="value"
-					@update:model-value="(v) => handleChange(v)"
-				/>
-			</FormField>
+			<Contact />
 		</div>
 
 		<div class="flex items-start gap-2 px-4 pb-2 border-b-1">
-			<div class="w-full flex gap-2 items-center">
-				<Coins class="h-4 w-4" />
-
-				<FormField v-slot="{ value, handleChange }" name="price">
-					<FormItem>
-						<FormLabel>
-							{{ t('price') }}
-						</FormLabel>
-						<FormControl>
-							<NumberField
-								class="gap-2"
-								:min="0"
-								:step="1"
-								:step-snapping="false"
-								:format-options="{
-									style: 'currency',
-									currency: user?.user_metadata.currency,
-									currencyDisplay: 'code',
-									currencySign: 'accounting',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-								}"
-								:model-value="value"
-								@update:model-value="(v) => handleChange(v ?? null)"
-							>
-								<NumberFieldContent>
-									<NumberFieldDecrement />
-									<FormControl>
-										<NumberFieldInput />
-									</FormControl>
-									<NumberFieldIncrement />
-								</NumberFieldContent>
-							</NumberField>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				</FormField>
-
-				<FormField v-slot="{ value, handleChange }" name="paid">
-					<FormItem>
-						<FormLabel>
-							{{ t('paid') }}
-						</FormLabel>
-						<FormControl>
-							<NumberField
-								class="gap-2"
-								:min="0"
-								:step="1"
-								:step-snapping="false"
-								:format-options="{
-									style: 'currency',
-									currency: user?.user_metadata.currency,
-									currencyDisplay: 'code',
-									currencySign: 'accounting',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-								}"
-								:model-value="value"
-								@update:model-value="(v) => handleChange(v ?? null)"
-							>
-								<NumberFieldContent>
-									<NumberFieldDecrement />
-									<FormControl>
-										<NumberFieldInput />
-									</FormControl>
-									<NumberFieldIncrement />
-								</NumberFieldContent>
-							</NumberField>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				</FormField>
-				<div class="flex flex-col gap-2">
-					<div class="text-sm font-medium leading-none">
-						{{ t('to_be_paid') }}
-					</div>
-					<Badge
-						class="text-sm py-1.5"
-						:variant="amountToBePaid > 0 ? 'warning' : 'success'"
-					>
-						{{ formattedToBePaid }}
-					</Badge>
-				</div>
-			</div>
+			<Price
+				:amount-to-be-paid="amountToBePaid"
+				:formatted-to-be-paid="formattedToBePaid"
+			/>
 		</div>
 
 		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
-			<TimerReset class="h-4 w-4" />
-			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-				<div class="flex gap-2">
-					<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
-						<Button variant="outline">
-							{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_date') }}
-							<CalendarIcon class="h-4 w-4 text-muted-foreground" />
-						</Button>
-					</DatePicker>
-
-					<TimePicker>
-						<Button variant="outline">
-							{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_time') }}
-							<CalendarIcon class="h-4 w-4 text-muted-foreground" />
-						</Button>
-					</TimePicker>
-				</div>
-				<div class="flex gap-2">
-					<Button
-						type="button"
-						variant="outline"
-						size="icon"
-						@click="onDueDateEditCancel"
-					>
-						<X class="h-4 w-4" />
-					</Button>
-
-					<Button type="button" size="icon" @click="onDueDateEditSave">
-						<Check class="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
-			<div
-				v-else
-				class="flex gap-2 cursor-pointer py-1.5"
-				:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
-				@click="dueDateEditModeToggle"
-			>
-				<Badge
-					v-if="form.values?.date"
-					:variant="dueDateBadgeVariant(form.values?.date)"
-					class="flex gap-2 text-sm"
-				>
-					{{ dueDateText(form.values?.date) }}
-				</Badge>
-
-				{{
-					form.values?.date
-						? formattedDate(form.values?.date)
-						: t('add_due_date')
-				}}
-			</div>
+			<DueDate />
 		</div>
 
 		<div class="px-4 pb-6 border-b-1">
