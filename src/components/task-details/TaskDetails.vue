@@ -358,7 +358,7 @@ watch(
 		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
-  		title: task.title || t('card_title'),
+				title: task.title || t('card_title'),
 				status: task.status || 'todo',
 				description: task.description || null,
 				date: task.date || null,
@@ -526,6 +526,53 @@ watch(
 			</div>
 		</div>
 
+		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
+			<TimerReset class="h-4 w-4" />
+			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
+				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
+					<Button variant="outline">
+						{{ dueDateDraft ? formattedDate(dueDateDraft) : 'Pick a date' }}
+						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
+					</Button>
+				</DatePicker>
+
+				<div class="flex gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="icon"
+						@click="onDueDateEditCancel"
+					>
+						<X class="h-4 w-4" />
+					</Button>
+
+					<Button type="button" size="icon" @click="onDueDateEditSave">
+						<Check class="h-4 w-4" />
+					</Button>
+				</div>
+			</div>
+			<div
+				v-else
+				class="flex gap-2 cursor-pointer py-1.5"
+				:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
+				@click="dueDateEditModeToggle"
+			>
+				<Badge
+					v-if="form.values?.date"
+					:variant="dueDateBadgeVariant(form.values?.date)"
+					class="flex gap-2 text-sm"
+				>
+					{{ dueDateText(form.values?.date) }}
+				</Badge>
+
+				{{
+					form.values?.date
+						? formattedDate(form.values?.date)
+						: t('add_due_date')
+				}}
+			</div>
+		</div>
+
 		<div class="px-4 pb-6 border-b-1">
 			<div class="flex items-center gap-2 mb-2">
 				<NotebookPen class="h-4 w-4" />
@@ -576,53 +623,6 @@ watch(
 				<div v-else class="text-sm text-muted-foreground cursor-pointer">
 					{{ t('add_description') }}
 				</div>
-			</div>
-		</div>
-
-		<div class="flex items-center gap-2 px-4 pb-2 border-b-1">
-			<TimerReset class="h-4 w-4" />
-			<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-				<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
-					<Button variant="outline">
-						{{ dueDateDraft ? formattedDate(dueDateDraft) : 'Pick a date' }}
-						<CalendarIcon class="h-4 w-4 text-muted-foreground" />
-					</Button>
-				</DatePicker>
-
-				<div class="flex gap-2">
-					<Button
-						type="button"
-						variant="outline"
-						size="icon"
-						@click="onDueDateEditCancel"
-					>
-						<X class="h-4 w-4" />
-					</Button>
-
-					<Button type="button" size="icon" @click="onDueDateEditSave">
-						<Check class="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
-			<div
-				v-else
-				class="flex gap-2 cursor-pointer py-1.5"
-				:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
-				@click="dueDateEditModeToggle"
-			>
-				<Badge
-					v-if="form.values?.date"
-					:variant="dueDateBadgeVariant(form.values?.date)"
-					class="flex gap-2 text-sm"
-				>
-					{{ dueDateText(form.values?.date) }}
-				</Badge>
-
-				{{
-					form.values?.date
-						? formattedDate(form.values?.date)
-						: t('add_due_date')
-				}}
 			</div>
 		</div>
 
