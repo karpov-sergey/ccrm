@@ -72,6 +72,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					firstName: values.firstName,
 					lastName: values.lastName,
 					currency: 'USD',
+					timeFormat: '12h',
 				},
 			},
 		});

@@ -6,6 +6,7 @@ export interface UserPayload {
 	lastName?: string;
 	currency?: string;
 	language?: string;
+	timeFormat?: '12h' | '24h';
 	// Additional custom metadata fields
 	[key: string]: unknown;
 }
@@ -25,6 +26,7 @@ export interface UserMetadata {
 	firstName?: string;
 	language?: string;
 	lastName?: string;
+	timeFormat?: '12h' | '24h';
 	phone_verified?: boolean;
 	position?: string;
 	sub?: string;
@@ -34,5 +36,6 @@ export interface UserMetadata {
 export interface User extends SupabaseUser {
 	currency?: string;
 	language?: string;
+	timeFormat?: '12h' | '24h';
 	user_metadata: UserMetadata;
 }

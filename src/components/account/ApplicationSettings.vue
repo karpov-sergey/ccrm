@@ -33,6 +33,7 @@ const formSchema = toTypedSchema(
 	z.object({
 		currency: z.enum(currencies.map((c) => c.code) as [string, ...string[]]),
 		language: z.enum(Object.keys(locales) as [string, ...string[]]),
+		timeFormat: z.enum(['12h', '24h']),
 	})
 );
 
@@ -41,6 +42,7 @@ const form = useForm({
 	initialValues: {
 		currency: user.value?.user_metadata?.currency ?? 'USD',
 		language: user.value?.user_metadata?.language ?? 'en',
+		timeFormat: user.value?.user_metadata?.timeFormat ?? '24h',
 	},
 });
 
@@ -54,6 +56,7 @@ watch(
 			values: {
 				currency: value.user_metadata?.currency ?? 'USD',
 				language: value.user_metadata?.language ?? 'en',
+				timeFormat: value.user_metadata?.timeFormat ?? '24h',
 			},
 		});
 	},
@@ -70,6 +73,11 @@ const currencyOptions = computed(() => {
 const languageOptions = computed(() =>
 	Object.entries(locales).map(([code, name]) => ({ value: code, label: name }))
 );
+
+const timeFormatOptions = computed(() => [
+	{ value: '12h', label: `${t('time_format_12h')}` },
+	{ value: '24h', label: `${t('time_format_24h')}` },
+]);
 
 const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 	isSaving.value = true;
@@ -120,6 +128,23 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 							type="text"
 							v-bind="componentField"
 							:options="currencyOptions"
+							trigger-class="w-full"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+
+			<FormField v-slot="{ componentField }" name="timeFormat">
+				<FormItem>
+					<FormLabel>
+						{{ t('time_format') }}
+					</FormLabel>
+					<FormControl>
+						<SelectCustom
+							type="text"
+							v-bind="componentField"
+							:options="timeFormatOptions"
 							trigger-class="w-full"
 						/>
 					</FormControl>
