@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import DOMPurify from 'dompurify';
 
@@ -24,7 +23,7 @@ import Contact from '@/components/task-details/parts/Contact.vue';
 import Price from '@/components/task-details/parts/Price.vue';
 import DueDate from '@/components/task-details/parts/DueDate.vue';
 
-import { Check, X, Trash2, NotebookPen } from 'lucide-vue-next';
+import { Trash2 } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
 
@@ -37,18 +36,6 @@ const emit = defineEmits(['close', 'updateBoard']);
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
-
-const toolbarOptions = [
-	['bold', 'italic', 'underline'], // toggled buttons
-	['image'],
-	[{ color: [] }, { background: [] }], // dropdown with defaults from theme
-
-	[{ list: 'ordered' }, { list: 'bullet' }],
-
-	[{ align: [] }],
-
-	['clean'], // remove formatting button
-];
 
 const formSchema = toTypedSchema(
 	z.object({
@@ -91,17 +78,7 @@ const form = useForm({
 
 const isSaving = ref(false);
 const isTitleEditMode = ref(false);
-const isDescriptionEditMode = ref(false);
-const isDueDateEditMode = ref(false);
 const isCreateMode = !props.task?.id;
-
-// Draft/original buffers for description editing
-const descriptionDraft = ref<string | null>(null);
-const descriptionOriginal = ref<string | null>(null);
-
-// Draft/original buffers for due date editing (stored as YYYY-MM-DD string)
-const dueDateDraft = ref<string | null>(null);
-const dueDateOriginal = ref<string | null>(null);
 
 const currencyCode = computed(
 	() => user.value?.user_metadata?.currency || 'USD'
@@ -132,20 +109,6 @@ const formattedToBePaid = computed(() => {
 		return `${currencyCode.value} ${amountToBePaid.value.toFixed(2)}`;
 	}
 });
-
-const descriptionEditModeToggle = () => {
-	// toggling into edit mode: snapshot original and prepare draft
-	if (!isDescriptionEditMode.value) {
-		descriptionOriginal.value = form.values?.description ?? null;
-		descriptionDraft.value = descriptionOriginal.value;
-	} else {
-		// leaving edit mode without explicit save: discard draft
-		descriptionDraft.value = null;
-		descriptionOriginal.value = null;
-	}
-
-	isDescriptionEditMode.value = !isDescriptionEditMode.value;
-};
 
 //temporary hardcoded column id, remove after columns set by user
 const getColumnId = (status: string) => {
@@ -229,41 +192,12 @@ const onCancelClick = () => {
 	emit('close');
 };
 
-const onDescriptionEditSave = () => {
-	// commit draft into form value, sanitize, exit edit mode
-	const raw = descriptionDraft.value;
-	const sanitized = raw
-		? DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } })
-		: null;
-	form.setFieldValue('description', sanitized);
-	isDescriptionEditMode.value = false;
-	descriptionDraft.value = null;
-	descriptionOriginal.value = null;
-};
-
-const onDescriptionEditCancel = () => {
-	// revert to original form value, exit edit mode
-	form.setFieldValue('description', descriptionOriginal.value ?? null);
-	isDescriptionEditMode.value = false;
-	descriptionDraft.value = null;
-	descriptionOriginal.value = null;
-};
-
 watch(
 	() => props.task,
 	(task) => {
 		if (!task) {
 			return;
 		}
-
-		// If task prop changes, exit description edit and clear buffers
-		isDescriptionEditMode.value = false;
-		descriptionDraft.value = null;
-		descriptionOriginal.value = null;
-		// Exit due date edit and clear buffers
-		isDueDateEditMode.value = false;
-		dueDateDraft.value = null;
-		dueDateOriginal.value = null;
 		// Keep form in sync with incoming task props
 		form.resetForm({
 			values: {
@@ -311,58 +245,7 @@ watch(
 			<DueDate />
 		</div>
 
-		<div class="px-4 pb-6 border-b-1">
-			<div class="flex items-center gap-2 mb-2">
-				<NotebookPen class="h-4 w-4" />
-				<div class="font-medium">
-					{{ t('description') }}
-				</div>
-			</div>
-			<div v-show="isDescriptionEditMode" class="">
-				<FormField v-slot name="description">
-					<QuillEditor
-						theme="snow"
-						contentType="html"
-						:content="descriptionDraft ?? ''"
-						:toolbar="toolbarOptions"
-						@update:content="(val) => (descriptionDraft = val as any)"
-						@keyup.enter.stop.prevent
-					/>
-				</FormField>
-				<div class="flex justify-end gap-2 mt-2">
-					<Button
-						type="button"
-						variant="outline"
-						size="icon"
-						@click="onDescriptionEditCancel"
-					>
-						<X class="h-4 w-4" />
-					</Button>
-
-					<Button type="button" size="icon" @click="onDescriptionEditSave">
-						<Check class="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
-			<div
-				v-show="!isDescriptionEditMode"
-				class="ql-snow max-w-none text-sm cursor-text"
-				@click="descriptionEditModeToggle"
-			>
-				<div
-					v-if="form.values?.description"
-					class="ql-editor font-normal p-6!"
-					v-html="
-						DOMPurify.sanitize(form.values?.description as any, {
-							USE_PROFILES: { html: true },
-						})
-					"
-				></div>
-				<div v-else class="text-sm text-muted-foreground cursor-pointer">
-					{{ t('add_description') }}
-				</div>
-			</div>
-		</div>
+		<div class="px-4 pb-6 border-b-1"></div>
 
 		<div class="px-4 pb-6">
 			<FormField v-slot="{ value, handleChange }" name="checklist">
@@ -399,20 +282,3 @@ watch(
 		</div>
 	</div>
 </template>
-
-<style scoped>
-/* Ensure Quill editor uses the same default font as the app */
-/*noinspection CssUnusedSymbol*/
-:global(.ql-toolbar),
-:global(.ql-snow .ql-editor),
-:global(.ql-editor) {
-	font-family: inherit;
-	font-size: inherit;
-	line-height: inherit;
-	color: inherit;
-}
-/* Prevent Quill content from overflowing the modal horizontally */
-:global(.ql-editor) {
-	overflow-wrap: anywhere;
-}
-</style>
