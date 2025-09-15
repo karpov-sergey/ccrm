@@ -22,6 +22,7 @@ import {
 	TimerReset,
 	X,
 	Calendar as CalendarIcon,
+	Clock,
 } from 'lucide-vue-next';
 
 const form = useFormContext();
@@ -95,9 +96,9 @@ const resetDrafts = () => {
 			</DatePicker>
 
 			<TimePicker v-model="dueTimeDraft">
-				<Button variant="outline">
+				<Button class="min-w-32" variant="outline">
 					{{ dueTimeDraft ? formattedTime(dueTimeDraft) : t('pick_time') }}
-					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
+					<Clock class="h-4 w-4 text-muted-foreground" />
 				</Button>
 			</TimePicker>
 		</div>
