@@ -29,30 +29,49 @@ const isDueDateEditMode = ref(false);
 // Draft/original buffers for due date editing (stored as ISO 8601 timestamp string)
 const dueDateDraft = ref<string | null>(null);
 const dueDateOriginal = ref<string | null>(null);
+const dueTimeDraft = ref<string | null>(null);
+const dueTimeOriginal = ref<string | null>(null);
 
 const onDueDateEditSave = () => {
+	if (!dueTimeDraft) {
+		console.error('dueTimeDraft is null');
+
+		return;
+	}
+
 	form.setFieldValue('date', dueDateDraft.value ?? null);
 	isDueDateEditMode.value = false;
-	dueDateDraft.value = null;
-	dueDateOriginal.value = null;
+	resetDrafts();
 };
 
 const onDueDateEditCancel = () => {
 	form.setFieldValue('date', dueDateOriginal.value ?? null);
 	isDueDateEditMode.value = false;
-	dueDateDraft.value = null;
-	dueDateOriginal.value = null;
+	resetDrafts();
 };
 
 const dueDateEditModeToggle = () => {
 	if (!isDueDateEditMode.value) {
 		dueDateOriginal.value = form.values?.date ?? null;
-		dueDateDraft.value = dueDateOriginal.value;
+		dueDateDraft.value = form.values?.date
+			? dayjs(dueDateOriginal.value).format('YYYY-MM-DD')
+			: null;
+
+		dueTimeOriginal.value = form.values?.date ?? null;
+		dueTimeDraft.value = form.values?.date
+			? dayjs(dueTimeOriginal.value).format('HH:mm')
+			: null;
 	} else {
-		dueDateDraft.value = null;
-		dueDateOriginal.value = null;
+		resetDrafts();
 	}
 	isDueDateEditMode.value = !isDueDateEditMode.value;
+};
+
+const resetDrafts = () => {
+	dueDateDraft.value = null;
+	dueDateOriginal.value = null;
+	dueTimeDraft.value = null;
+	dueTimeOriginal.value = null;
 };
 </script>
 
@@ -73,9 +92,7 @@ const dueDateEditModeToggle = () => {
 
 			<TimePicker>
 				<Button variant="outline">
-					{{
-						dueDateDraft ? dayjs(dueDateDraft).format('HH mm') : t('pick_time')
-					}}
+					{{ dueTimeDraft ? dueTimeDraft : t('pick_time') }}
 					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 				</Button>
 			</TimePicker>

@@ -77,11 +77,8 @@ watch(
 	() => props.modelValue,
 	(nextModel) => {
 		try {
-			const ymd = nextModel && dayjs(nextModel).isValid()
-				? dayjs(nextModel).format('YYYY-MM-DD')
-				: undefined;
-			selectedDateValue.value = ymd ? parseDate(ymd) : undefined;
-			nativeInputStringValue.value = ymd ?? undefined;
+			selectedDateValue.value = nextModel ? parseDate(nextModel) : undefined;
+			nativeInputStringValue.value = nextModel ?? undefined;
 		} catch {
 			selectedDateValue.value = undefined;
 			nativeInputStringValue.value = undefined;
@@ -93,11 +90,7 @@ watch(
 const closePopover = () => (isPopoverOpen.value = false);
 
 const onCalendarUpdate = (nextDateValue?: DateValue) => {
-	const ymd = nextDateValue ? nextDateValue.toString() : undefined;
-	const ts = ymd
-		? dayjs(ymd, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS')
-		: null;
-	emit('update:modelValue', ts);
+	emit('update:modelValue', nextDateValue ? nextDateValue.toString() : null);
 };
 
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
@@ -109,10 +102,8 @@ const onPopoverOpenUpdate = (nextOpen: boolean) => {
 const onNativeDateChange = (event: Event) => {
 	const target = event.target as HTMLInputElement;
 	const value = target.value || '';
-	const ts = value
-		? dayjs(value, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS')
-		: null;
-	emit('update:modelValue', ts);
+	// Native date input returns YYYY-MM-DD; emit the same format
+	emit('update:modelValue', value ? value : null);
 };
 </script>
 
@@ -144,9 +135,8 @@ const onNativeDateChange = (event: Event) => {
 				@update:model-value="
 					(value) => {
 						if (!value) return;
-						const ymd = dayjs().add(Number(value), 'day').format('YYYY-MM-DD');
-						const ts = dayjs(ymd, 'YYYY-MM-DD', true).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS');
-						emit('update:modelValue', ts);
+						const date = today(getLocalTimeZone()).add({ days: Number(value) });
+						emit('update:modelValue', date.toString());
 						closePopover();
 					}
 				"
