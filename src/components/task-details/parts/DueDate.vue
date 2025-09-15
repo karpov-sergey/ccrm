@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import dayjs from 'dayjs';
 
 import { useI18n } from 'vue-i18n';
