@@ -35,6 +35,20 @@ const hoursToDisplay = computed(() => {
 	return is12HourFormat.value ? 12 : 24;
 });
 
+const to24Hour = (hour: number, period: 'AM' | 'PM', use12h: boolean) => {
+	if (!use12h) {
+		return hour;
+	}
+
+	const base12 = Math.abs(hour) % 12;
+
+	return period === 'AM' ? base12 : base12 + 12;
+};
+
+const toDisplayHour = (hour: number, use12h: boolean) => {
+	return use12h ? Math.abs(hour) % 12 : hour;
+};
+
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
 	if (!nextOpen) {
 		closePopover();
@@ -52,14 +66,36 @@ const handleTimeChange = (type: 'hour' | 'minute', value: number) => {
 		selectedMinute.value = value;
 	}
 
+	// Emit respecting 12h/24h format; always emit in 24h up to parent
+	const hourToEmit = to24Hour(
+		selectedHour.value,
+		selectedPeriod.value as 'AM' | 'PM',
+		is12HourFormat.value
+	);
+
 	emit(
 		'update:modelValue',
-		`${selectedHour.value.toString().padStart(2, '0')}:${selectedMinute.value.toString().padStart(2, '0')}`
+		`${hourToEmit.toString().padStart(2, '0')}:${selectedMinute.value
+			.toString()
+			.padStart(2, '0')}`
 	);
 };
 
 const handlePeriodChange = (value: 'AM' | 'PM') => {
 	selectedPeriod.value = value;
+	const hour24 = to24Hour(selectedHour.value, value, is12HourFormat.value);
+	emit(
+		'update:modelValue',
+		`${hour24.toString().padStart(2, '0')}:${selectedMinute.value
+			.toString()
+			.padStart(2, '0')}`
+	);
+};
+
+const isHourSelected = (hour: number) => {
+	const displayHour = toDisplayHour(selectedHour.value, is12HourFormat.value);
+
+	return hour === displayHour;
 };
 
 watch(
@@ -106,7 +142,7 @@ watch(
 								.map((_, i) => i)
 								.reverse()"
 							:key="hour"
-							:variant="hour === selectedHour ? 'default' : 'ghost'"
+							:variant="isHourSelected(hour) ? 'default' : 'ghost'"
 							size="icon"
 							class="sm:w-full shrink-0 aspect-square"
 							@click="handleTimeChange('hour', hour)"
@@ -135,7 +171,7 @@ watch(
 				<ScrollArea v-if="is12HourFormat" class="w-64 sm:w-auto">
 					<div class="flex sm:flex-col p-2">
 						<Button
-							v-for="period in ['AM', 'PM']"
+							v-for="period in ['AM', 'PM'] as const"
 							:key="period"
 							:variant="period === selectedPeriod ? 'default' : 'ghost'"
 							size="icon"

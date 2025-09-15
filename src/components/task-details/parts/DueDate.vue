@@ -96,7 +96,10 @@ const resetDrafts = () => {
 			</DatePicker>
 
 			<TimePicker v-model="dueTimeDraft">
-				<Button class="min-w-32" variant="outline">
+				<Button
+					class="flex justify-between items-center min-w-32"
+					variant="outline"
+				>
 					{{ dueTimeDraft ? formattedTime(dueTimeDraft) : t('pick_time') }}
 					<Clock class="h-4 w-4 text-muted-foreground" />
 				</Button>
@@ -134,5 +137,9 @@ const resetDrafts = () => {
 					: t('add_due_date')
 			}}
 		</Badge>
+
+		<div v-else class="pt-0.5">
+			{{ t('add_due_date') }}
+		</div>
 	</div>
 </template>
