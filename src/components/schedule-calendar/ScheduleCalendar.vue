@@ -4,11 +4,11 @@ import { watch, toRef } from 'vue';
 import { ScheduleXCalendar } from '@schedule-x/vue';
 import {
 	createCalendar,
-	createViewDay,
-	createViewMonthAgenda,
 	createViewMonthGrid,
-	createViewWeek,
+	createViewMonthAgenda,
+	createViewList,
 	type CalendarEvent,
+	viewMonthGrid,
 } from '@schedule-x/calendar';
 import '@schedule-x/theme-default/dist/index.css';
 import 'temporal-polyfill/global';
@@ -25,14 +25,15 @@ const eventModal = createEventModalPlugin();
 const calendarApp = createCalendar({
 	selectedDate: Temporal.Now.plainDateISO(),
 	plugins: [eventModal],
-	views: [
-		createViewDay(),
-		createViewWeek(),
-		createViewMonthGrid(),
-		createViewMonthAgenda(),
-	],
+	views: [createViewMonthGrid(), createViewMonthAgenda(), createViewList()],
 	events: [],
 	timezone: 'UTC',
+	defaultView: viewMonthGrid.name,
+	callbacks: {
+		onClickPlusEvents(date: Temporal.PlainDate, e?: UIEvent) {
+			console.log('onClickPlusEvents', date); // e.g. 2024-01-01
+		},
+	},
 });
 
 const FIXED_TIMEZONE_ID = 'UTC';
@@ -46,15 +47,9 @@ const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
 		}
 
 		try {
-			const plainDate = Temporal.PlainDate.from(task.date);
-			const startPlain = plainDate.toPlainDateTime(
-				Temporal.PlainTime.from('10:00')
-			);
-			const endPlain = plainDate.toPlainDateTime(
-				Temporal.PlainTime.from('12:00')
-			);
+			const startPlain = Temporal.PlainDateTime.from(task.date);
 			const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
-			const end = endPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+			const end = start.add({ minutes: 15 });
 
 			events.push({
 				id: task.id,
@@ -69,10 +64,38 @@ const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
 	return events;
 };
 
+// Generate mock events for today when there are no tasks
+const generateMockEventsForToday = (count = 10): CalendarEvent[] => {
+	const today = Temporal.Now.plainDateISO();
+	const baseTime = Temporal.PlainTime.from('09:00');
+	const events: CalendarEvent[] = [];
+
+	for (let i = 0; i < count; i++) {
+		const startPlain = today.toPlainDateTime(baseTime).add({ hours: i });
+		const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+		const end = start.add({ minutes: 15 });
+
+		events.push({
+			id: `mock-${i + 1}`,
+			title: `Test ${i + 1}`,
+			start,
+			end,
+		});
+	}
+
+	return events;
+};
+
 watch(
 	() => tasksRef.value,
 	(newTasks) => {
-		const events = mapTasksToEvents(newTasks || []);
+		let events = mapTasksToEvents(newTasks || []);
+
+		// Always include 10 mock events for today to make testing visible
+		// (kept simple per request; remove or guard with a prop/flag when no longer needed)
+		const mockToday = generateMockEventsForToday(10);
+		events = [...mockToday, ...events];
+
 		calendarApp.events.set(events);
 	},
 	{ immediate: true, deep: true }
@@ -85,16 +108,15 @@ watch(
 			<div>{{ calendarEvent.title }}</div>
 		</template>
 
-		<template #timeGridEvent="{ calendarEvent }">
+		<template #monthGridEvent="{ calendarEvent }">
 			<div
-				class="p-2 bg-primary/60 h-full border-none! border-primary text-sm text-primary-foreground cursor-pointer"
+				class="w-full p-2 bg-primary text-background rounded-md cursor-pointer"
 			>
+				{{
+					calendarEvent.start.toPlainTime().toString({ smallestUnit: 'minute' })
+				}}
 				{{ calendarEvent.title }}
 			</div>
-		</template>
-
-		<template #monthGridEvent="{ calendarEvent }">
-			<div>{{ calendarEvent.title }}###</div>
 		</template>
 
 		<template #eventModal="{ calendarEvent }">
@@ -119,6 +141,14 @@ watch(
 
 :deep(.sx__event-modal) {
 	border-radius: 0.65rem;
+}
+
+:deep(.sx__month-grid-event) {
+	width: 100% !important;
+}
+
+:deep(.sx__date-picker-wrapper) {
+	display: none;
 }
 
 /* Schedule X theme overrides to match app primary colors */
