@@ -1,12 +1,9 @@
+import { storeToRefs } from 'pinia';
+import dayjs from 'dayjs';
 import { useMediaQuery, useBreakpoints } from '@vueuse/core';
 
-// Tailwind CSS default breakpoints (v3/v4)
-// xs: <640px (implicit)
-// sm: 640px
-// md: 768px
-// lg: 1024px
-// xl: 1280px
-// 2xl: 1536px
+import { useAuthStore } from '@/stores/auth.ts';
+
 export const useScreenWidth = () => {
 	// Up queries (>=)
 	const isSmUp = useMediaQuery('(min-width: 640px)');
@@ -85,13 +82,44 @@ export const useNameAbbreviation = () => {
 };
 
 export const useFormattedDate = () => {
+	const { user } = storeToRefs(useAuthStore());
+
 	const formattedDate = (date: Date | string) => {
-		return new Date(date).toLocaleDateString(undefined, {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-		});
+		if (user.value?.user_metadata.timeFormat === '12h') {
+			return dayjs(date).format('MMMM DD, YYYY');
+		}
+
+		return dayjs(date).format('DD MMMM, YYYY');
 	};
 
 	return { formattedDate };
+};
+
+export const useFormattedTime = () => {
+	const { user } = storeToRefs(useAuthStore());
+
+	const formattedTime = (time: string) => {
+		const parsed = dayjs(`1970-01-01T${time}`);
+
+		if (user.value?.user_metadata.timeFormat === '12h') {
+			return parsed.format('hh:mm A');
+		}
+		return parsed.format('HH:mm');
+	};
+
+	return { formattedTime };
+};
+
+export const useFormattedDateTime = () => {
+	const { user } = storeToRefs(useAuthStore());
+
+	const formattedDateTime = (date: Date | string) => {
+		if (user.value?.user_metadata.timeFormat === '12h') {
+			return dayjs(date).format('hh:mm A MMMM DD, YYYY');
+		}
+
+		return dayjs(date).format('HH:mm DD MMMM, YYYY');
+	};
+
+	return { formattedDateTime };
 };

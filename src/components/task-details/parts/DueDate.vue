@@ -6,6 +6,11 @@ import { useI18n } from 'vue-i18n';
 import { useFormContext } from 'vee-validate';
 
 import { useDueDateVariant } from '@/composables/dateStatus.ts';
+import {
+	useFormattedDateTime,
+	useFormattedDate,
+	useFormattedTime,
+} from '@/composables/common.ts';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +28,9 @@ const form = useFormContext();
 
 const { dueDateBadgeVariant } = useDueDateVariant();
 const { t } = useI18n();
+const { formattedDateTime } = useFormattedDateTime();
+const { formattedDate } = useFormattedDate();
+const { formattedTime } = useFormattedTime();
 
 const isDueDateEditMode = ref(false);
 
@@ -81,18 +89,14 @@ const resetDrafts = () => {
 		<div class="flex gap-2 pt-0.5">
 			<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
 				<Button variant="outline">
-					{{
-						dueDateDraft
-							? dayjs(dueDateDraft).format('MMMM DD, YYYY')
-							: t('pick_date')
-					}}
+					{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_date') }}
 					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 				</Button>
 			</DatePicker>
 
 			<TimePicker v-model="dueTimeDraft">
 				<Button variant="outline">
-					{{ dueTimeDraft ? dueTimeDraft : t('pick_time') }}
+					{{ dueTimeDraft ? formattedTime(dueTimeDraft) : t('pick_time') }}
 					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 				</Button>
 			</TimePicker>
@@ -125,7 +129,7 @@ const resetDrafts = () => {
 		>
 			{{
 				form.values?.date
-					? dayjs(form.values?.date).format('MMMM DD, YYYY')
+					? formattedDateTime(form.values?.date)
 					: t('add_due_date')
 			}}
 		</Badge>
