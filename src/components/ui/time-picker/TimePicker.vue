@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+
+import { useAuthStore } from '@/stores/auth.ts';
 
 import {
 	Popover,
@@ -17,25 +20,20 @@ const emit = defineEmits<{
 	(event: 'update:modelValue', value: string | null): void;
 }>();
 
+const { user } = storeToRefs(useAuthStore());
+
 const isPopoverOpen = ref(false);
 const selectedHour = ref(0);
 const selectedMinute = ref(0);
+const selectedPeriod = ref('AM');
 
-watch(
-	() => props.modelValue,
-	(val) => {
-		if (val) {
-			const [hour, minute] = val.split(':');
+const is12HourFormat = computed(() => {
+	return user.value?.user_metadata.timeFormat === '12h';
+});
 
-			selectedHour.value = parseInt(hour, 10);
-			selectedMinute.value = parseInt(minute, 10);
-		} else {
-			selectedHour.value = 0;
-			selectedMinute.value = 0;
-		}
-	},
-	{ immediate: true }
-);
+const hoursToDisplay = computed(() => {
+	return is12HourFormat.value ? 12 : 24;
+});
 
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
 	if (!nextOpen) {
@@ -59,6 +57,28 @@ const handleTimeChange = (type: 'hour' | 'minute', value: number) => {
 		`${selectedHour.value.toString().padStart(2, '0')}:${selectedMinute.value.toString().padStart(2, '0')}`
 	);
 };
+
+const handlePeriodChange = (value: 'AM' | 'PM') => {
+	selectedPeriod.value = value;
+};
+
+watch(
+	() => props.modelValue,
+	(val) => {
+		if (val) {
+			const [hour, minute] = val.split(':');
+
+			selectedHour.value = parseInt(hour, 10);
+			selectedMinute.value = parseInt(minute, 10);
+
+			selectedPeriod.value = selectedHour.value >= 12 ? 'PM' : 'AM';
+		} else {
+			selectedHour.value = 0;
+			selectedMinute.value = 0;
+		}
+	},
+	{ immediate: true }
+);
 </script>
 
 <template>
@@ -82,14 +102,14 @@ const handleTimeChange = (type: 'hour' | 'minute', value: number) => {
 				<ScrollArea class="w-64 sm:w-auto">
 					<div class="flex flex-col gap-2 p-2">
 						<Button
-							v-for="hour in Array.from({ length: 24 })
+							v-for="hour in Array.from({ length: hoursToDisplay })
 								.map((_, i) => i)
 								.reverse()"
 							:key="hour"
 							:variant="hour === selectedHour ? 'default' : 'ghost'"
 							size="icon"
 							class="sm:w-full shrink-0 aspect-square"
-							@click="() => handleTimeChange('hour', hour)"
+							@click="handleTimeChange('hour', hour)"
 						>
 							{{ hour.toString().padStart(2, '0') }}
 						</Button>
@@ -104,9 +124,25 @@ const handleTimeChange = (type: 'hour' | 'minute', value: number) => {
 							:variant="minute === selectedMinute ? 'default' : 'ghost'"
 							size="icon"
 							class="sm:w-full shrink-0 aspect-square"
-							@click="() => handleTimeChange('minute', minute)"
+							@click="handleTimeChange('minute', minute)"
 						>
 							{{ minute.toString().padStart(2, '0') }}
+						</Button>
+					</div>
+					<ScrollBar orientation="horizontal" class="sm:hidden" />
+				</ScrollArea>
+
+				<ScrollArea v-if="is12HourFormat" class="w-64 sm:w-auto">
+					<div class="flex sm:flex-col p-2">
+						<Button
+							v-for="period in ['AM', 'PM']"
+							:key="period"
+							:variant="period === selectedPeriod ? 'default' : 'ghost'"
+							size="icon"
+							class="sm:w-full shrink-0 aspect-square"
+							@click="handlePeriodChange(period)"
+						>
+							{{ period }}
 						</Button>
 					</div>
 					<ScrollBar orientation="horizontal" class="sm:hidden" />
