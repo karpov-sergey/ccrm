@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import {
 	Popover,
@@ -9,9 +9,33 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
+const props = defineProps<{
+	modelValue?: string | null;
+}>();
+
+const emit = defineEmits<{
+	(event: 'update:modelValue', value: string | null): void;
+}>();
+
 const isPopoverOpen = ref(false);
 const selectedHour = ref(0);
 const selectedMinute = ref(0);
+
+watch(
+	() => props.modelValue,
+	(val) => {
+		if (val) {
+			const [hour, minute] = val.split(':');
+
+			selectedHour.value = parseInt(hour, 10);
+			selectedMinute.value = parseInt(minute, 10);
+		} else {
+			selectedHour.value = 0;
+			selectedMinute.value = 0;
+		}
+	},
+	{ immediate: true }
+);
 
 const onPopoverOpenUpdate = (nextOpen: boolean) => {
 	if (!nextOpen) {
@@ -30,7 +54,10 @@ const handleTimeChange = (type: 'hour' | 'minute', value: number) => {
 		selectedMinute.value = value;
 	}
 
-	console.log(type, value);
+	emit(
+		'update:modelValue',
+		`${selectedHour.value.toString().padStart(2, '0')}:${selectedMinute.value.toString().padStart(2, '0')}`
+	);
 };
 </script>
 

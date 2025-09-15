@@ -4,10 +4,8 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useScreenWidth } from '@/composables/common';
 
-import dayjs from 'dayjs';
-
 import type { DateValue } from '@internationalized/date';
-import { parseDate } from '@internationalized/date';
+import { parseDate, today, getLocalTimeZone } from '@internationalized/date';
 
 import { Calendar } from '@/components/ui/calendar';
 import {

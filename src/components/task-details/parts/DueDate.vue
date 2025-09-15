@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import dayjs from 'dayjs';
 
 import { useI18n } from 'vue-i18n';
@@ -21,25 +21,25 @@ import {
 
 const form = useFormContext();
 
-const { dueDateBadgeVariant, dueDateText } = useDueDateVariant();
+const { dueDateBadgeVariant } = useDueDateVariant();
 const { t } = useI18n();
 
 const isDueDateEditMode = ref(false);
 
-// Draft/original buffers for due date editing (stored as ISO 8601 timestamp string)
+// Draft/original buffers for due date editing
 const dueDateDraft = ref<string | null>(null);
 const dueDateOriginal = ref<string | null>(null);
 const dueTimeDraft = ref<string | null>(null);
 const dueTimeOriginal = ref<string | null>(null);
 
 const onDueDateEditSave = () => {
-	if (!dueTimeDraft) {
-		console.error('dueTimeDraft is null');
+	let nextDate: string | null = null;
 
-		return;
+	if (dueDateDraft.value && dueTimeDraft.value) {
+		// Combine without timezone to preserve exactly what the user entered (ignore time zones)
+		nextDate = `${dueDateDraft.value}T${dueTimeDraft.value}`;
 	}
-
-	form.setFieldValue('date', dueDateDraft.value ?? null);
+	form.setFieldValue('date', nextDate);
 	isDueDateEditMode.value = false;
 	resetDrafts();
 };
@@ -78,7 +78,7 @@ const resetDrafts = () => {
 <template>
 	<TimerReset class="h-4 w-4" />
 	<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-		<div class="flex gap-2">
+		<div class="flex gap-2 pt-0.5">
 			<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
 				<Button variant="outline">
 					{{
@@ -90,7 +90,7 @@ const resetDrafts = () => {
 				</Button>
 			</DatePicker>
 
-			<TimePicker>
+			<TimePicker v-model="dueTimeDraft">
 				<Button variant="outline">
 					{{ dueTimeDraft ? dueTimeDraft : t('pick_time') }}
 					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
@@ -114,7 +114,7 @@ const resetDrafts = () => {
 	</div>
 	<div
 		v-else
-		class="flex gap-2 cursor-pointer py-1.5"
+		class="flex gap-2 items-center cursor-pointer py-1.5"
 		:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
 		@click="dueDateEditModeToggle"
 	>
@@ -123,13 +123,11 @@ const resetDrafts = () => {
 			:variant="dueDateBadgeVariant(form.values?.date)"
 			class="flex gap-2 text-sm"
 		>
-			{{ dueDateText(form.values?.date) }}
+			{{
+				form.values?.date
+					? dayjs(form.values?.date).format('MMMM DD, YYYY')
+					: t('add_due_date')
+			}}
 		</Badge>
-
-		{{
-			form.values?.date
-				? dayjs(form.values?.date).format('MMMM DD, YYYY')
-				: t('add_due_date')
-		}}
 	</div>
 </template>
