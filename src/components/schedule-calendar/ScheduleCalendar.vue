@@ -180,6 +180,55 @@ watch(
 	display: none;
 }
 
+:deep(.sx__today-button) {
+	/* Match primary Button (variant: default, size: default) */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem; /* gap-2 */
+	white-space: nowrap;
+	height: 2.25rem; /* h-9 */
+	padding: 0.5rem 1rem; /* py-2 px-4 */
+	border-radius: calc(var(--radius) - 2px); /* rounded-md */
+	font-size: 0.875rem; /* text-sm */
+	line-height: 1.25rem;
+	font-weight: 500; /* font-medium */
+	cursor: pointer;
+
+	color: var(--primary-foreground);
+	background-color: var(--primary);
+	border: 1px solid transparent; /* parity with outline variant baseline */
+
+	transition:
+		background-color 0.2s ease-in-out,
+		color 0.2s ease-in-out,
+		box-shadow 0.2s ease-in-out,
+		border-color 0.2s ease-in-out,
+		opacity 0.2s ease-in-out;
+}
+
+:deep(.sx__chevron-wrapper) {
+	border-radius: 0.65rem;
+
+	&:hover {
+		background-color: var(--accent);
+	}
+}
+
+:deep(.sx__is-calendar-small .sx__chevron-wrapper) {
+	min-height: 24px;
+	min-width: 24px;
+}
+
+:deep(.sx__is-calendar-small .sx__forward-backward-navigation),
+:deep(.is-list-view .sx__forward-backward-navigation) {
+	display: flex;
+}
+
+:deep(.sx__ripple::before) {
+	background: transparent;
+}
+
 /* Schedule X theme overrides to match app primary colors */
 /*noinspection CssUnusedSymbol*/
 :deep(.sx__calendar-wrapper) {
