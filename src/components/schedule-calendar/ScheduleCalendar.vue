@@ -11,7 +11,8 @@ import {
 } from '@schedule-x/calendar';
 import '@schedule-x/theme-default/dist/index.css';
 import 'temporal-polyfill/global';
-import { createEventModalPlugin } from '@schedule-x/event-modal';
+
+import { Clock } from 'lucide-vue-next';
 
 import type { Task } from '@/types/Tasks.ts';
 
@@ -19,11 +20,8 @@ const props = defineProps<{
 	tasks: Task[];
 }>();
 
-const eventModal = createEventModalPlugin();
-
 const calendarApp = createCalendar({
 	selectedDate: Temporal.Now.plainDateISO(),
-	plugins: [eventModal],
 	views: [createViewMonthGrid(), createViewMonthAgenda()],
 	events: [],
 	timezone: 'UTC',
@@ -32,8 +30,8 @@ const calendarApp = createCalendar({
 		nEventsPerDay: 20,
 	},
 	callbacks: {
-		onClickPlusEvents(date: Temporal.PlainDate, e?: UIEvent) {
-			console.log('onClickPlusEvents', date, e); // e.g. 2024-01-01
+		onEventClick(calendarEvent) {
+			console.log('onEventClick', calendarEvent);
 		},
 	},
 });
@@ -122,14 +120,25 @@ watch(
 			</div>
 		</template>
 
-		<template #eventModal="{ calendarEvent }">
-			<div
-				class="shadow-lg rounded-lg p-4 bg-background border overflow-hidden"
-			>
-				{{ calendarEvent.id }}
-				{{ calendarEvent.title }}
+		<template #monthAgendaEvent="{ calendarEvent }">
+			<div class="w-full p-2 bg-primary text-background rounded-md">
+				<div class="truncate mb-2">
+					{{ calendarEvent.title }}
+				</div>
+				<div class="flex gap-2">
+					<Clock class="h-4 w-4" />
+					{{
+						calendarEvent.start
+							.toPlainTime()
+							.toString({ smallestUnit: 'minute' })
+					}}
 
-				<button>btn</button>
+					{{
+						calendarEvent.start
+							.toPlainDate()
+							.toString({ smallestUnit: 'minute' })
+					}}
+				</div>
 			</div>
 		</template>
 	</ScheduleXCalendar>
@@ -141,11 +150,13 @@ watch(
 	width: 100%;
 	max-width: 100vw;
 	height: 800px;
-	max-height: 90vh;
+	max-height: 85vh;
 }
 
 /*noinspection CssUnusedSymbol*/
 :deep(.sx__event-modal) {
+	width: 300px;
+	max-width: 92vw;
 	border-radius: 0.65rem;
 }
 

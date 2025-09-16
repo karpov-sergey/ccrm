@@ -7,6 +7,7 @@ import Spinner from '@/components/ui/spinner/Spinner.vue';
 import ScheduleCalendar from '@/components/schedule-calendar/ScheduleCalendar.vue';
 
 import type { Task } from '@/types/Tasks.ts';
+import TaskModal from '@/components/modals/Task.vue';
 
 const isLoading = ref(true);
 const tasks = ref<Task[]>([]);
@@ -16,6 +17,8 @@ onBeforeMount(async () => {
 });
 
 const fetchTasks = async () => {
+	isLoading.value = true;
+
 	try {
 		tasks.value = await getAllTasks();
 	} catch (error) {
@@ -32,6 +35,7 @@ const fetchTasks = async () => {
 	>
 		<Spinner v-if="isLoading" />
 		<template v-else>
+			<TaskModal @update-board="fetchTasks" />
 			<ScheduleCalendar :tasks="tasks" />
 		</template>
 	</section>

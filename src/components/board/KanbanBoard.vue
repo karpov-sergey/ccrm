@@ -4,8 +4,12 @@ import { ref } from 'vue';
 import draggable from 'vuedraggable';
 import TaskModal from '@/components/modals/Task.vue';
 import Badge from '@/components/ui/badge/Badge.vue';
+import { Button } from '@/components/ui/button';
+import TaskCard from '@/components/board/TaskCard.vue';
 
 import { updateTask } from '@/api/tasks';
+
+import { Plus } from 'lucide-vue-next';
 
 import type { BoardColumn, Task, TaskStatus } from '@/types/Tasks.ts';
 
@@ -18,6 +22,9 @@ const emit = defineEmits(['updateBoard']);
 // Track dragging state and current drop (hover) column index
 const isDragging = ref(false);
 const hoverColumnIndex = ref<number | null>(null);
+
+const addNewTaskRef = ref<any>(null);
+const editTaskRef = ref<any>(null);
 
 const handleStart = () => {
 	isDragging.value = true;
@@ -123,6 +130,14 @@ const onListChange = async (column: BoardColumn, event: any) => {
 		}
 	}
 };
+
+const onTaskOpenClick = async () => {
+	editTaskRef.value?.open?.();
+};
+
+const onNewTaskOpenClick = async () => {
+	addNewTaskRef.value?.open?.();
+};
 </script>
 
 <template>
@@ -148,10 +163,18 @@ const onListChange = async (column: BoardColumn, event: any) => {
 					</div>
 
 					<TaskModal
-						:disabled="isDragging"
-						@update-board="onBoardUpdate"
 						:originalStatus="column.status"
-					/>
+						@update-board="onBoardUpdate"
+					>
+						<Button
+							type="button"
+							size="sm"
+							ref="addNewTaskRef"
+							@click="onNewTaskOpenClick"
+						>
+							<Plus class="h-4 w-4" />
+						</Button>
+					</TaskModal>
 				</div>
 				<draggable
 					:list="column.tasks"
@@ -179,8 +202,17 @@ const onListChange = async (column: BoardColumn, event: any) => {
 							<TaskModal
 								:task="element"
 								:disabled="isDragging"
+								:is-task-card-visible="true"
 								@update-board="onBoardUpdate"
-							/>
+							>
+								<TaskCard
+									ref="editTaskRef"
+									:class="{ 'cursor-pointer': !isDragging }"
+									:task="element"
+									:disabled="isDragging"
+									@click="onTaskOpenClick"
+								/>
+							</TaskModal>
 						</div>
 					</template>
 				</draggable>
