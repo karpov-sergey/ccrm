@@ -23,8 +23,8 @@ const emit = defineEmits(['updateBoard']);
 const isDragging = ref(false);
 const hoverColumnIndex = ref<number | null>(null);
 
-const addNewTaskRef = ref<any>(null);
-const editTaskRef = ref<any>(null);
+const addNewTaskRef = ref<InstanceType<typeof TaskModal> | null>(null);
+const editTaskRef = ref<InstanceType<typeof TaskModal> | null>(null);
 
 const handleStart = () => {
 	isDragging.value = true;
@@ -163,15 +163,11 @@ const onNewTaskOpenClick = async () => {
 					</div>
 
 					<TaskModal
+						ref="addNewTaskRef"
 						:originalStatus="column.status"
 						@update-board="onBoardUpdate"
 					>
-						<Button
-							type="button"
-							size="sm"
-							ref="addNewTaskRef"
-							@click="onNewTaskOpenClick"
-						>
+						<Button type="button" size="sm" @click="onNewTaskOpenClick">
 							<Plus class="h-4 w-4" />
 						</Button>
 					</TaskModal>
@@ -200,13 +196,13 @@ const onNewTaskOpenClick = async () => {
 					<template #item="{ element }">
 						<div :key="element.id" class="mt-3">
 							<TaskModal
+								ref="editTaskRef"
 								:task="element"
 								:disabled="isDragging"
 								:is-task-card-visible="true"
 								@update-board="onBoardUpdate"
 							>
 								<TaskCard
-									ref="editTaskRef"
 									:class="{ 'cursor-pointer': !isDragging }"
 									:task="element"
 									:disabled="isDragging"

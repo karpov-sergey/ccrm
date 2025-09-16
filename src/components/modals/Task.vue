@@ -28,8 +28,11 @@ const onBoardUpdate = () => {
 };
 
 const open = () => {
+	console.log('open');
 	isOpen.value = true;
 };
+
+defineExpose({ open });
 
 const onDialogClose = () => {
 	isOpen.value = false;

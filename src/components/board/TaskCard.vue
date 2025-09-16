@@ -83,7 +83,7 @@ const isLeftToBePaid = computed(() => {
 			>
 				<TriangleAlert v-if="isLeftToBePaid" class="w-4 h-4 mr-1" />
 				<Check v-else class="w-4 h-4 mr-1" />
-				{{ user.user_metadata.currency }} {{ task.price }}
+				{{ user?.user_metadata.currency }} {{ task.price }}
 			</Badge>
 
 			<Badge

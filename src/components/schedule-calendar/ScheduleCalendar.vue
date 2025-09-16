@@ -146,6 +146,10 @@ watch(
 
 <style scoped>
 /*noinspection CssUnusedSymbol*/
+:deep(.sx__calendar) {
+	border-color: var(--border);
+}
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__calendar-wrapper) {
 	width: 100%;
 	max-width: 100vw;
