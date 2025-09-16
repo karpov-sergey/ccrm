@@ -104,6 +104,7 @@ const removeItem = (id: string) => {
 					class="flex-1 border-0 h-auto focus-visible:ring-0 shadow-none border-b-1 rounded-none"
 					:placeholder="placeholder || t('please_enter_item_name')"
 					:disabled="disabled"
+					@keydown.enter.stop.prevent
 				/>
 				<Button
 					type="button"
