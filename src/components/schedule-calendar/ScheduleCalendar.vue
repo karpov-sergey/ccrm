@@ -180,24 +180,25 @@ watch(
 	display: none;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__today-button) {
 	/* Match primary Button (variant: default, size: default) */
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem; /* gap-2 */
+	gap: 0.5rem;
 	white-space: nowrap;
-	height: 2.25rem; /* h-9 */
-	padding: 0.5rem 1rem; /* py-2 px-4 */
-	border-radius: calc(var(--radius) - 2px); /* rounded-md */
-	font-size: 0.875rem; /* text-sm */
+	height: 2.25rem;
+	padding: 0.5rem 1rem;
+	border-radius: calc(var(--radius) - 2px);
+	font-size: 0.875rem;
 	line-height: 1.25rem;
-	font-weight: 500; /* font-medium */
+	font-weight: 500;
 	cursor: pointer;
 
 	color: var(--primary-foreground);
 	background-color: var(--primary);
-	border: 1px solid transparent; /* parity with outline variant baseline */
+	border: 1px solid transparent;
 
 	transition:
 		background-color 0.2s ease-in-out,
@@ -207,6 +208,7 @@ watch(
 		opacity 0.2s ease-in-out;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__chevron-wrapper) {
 	border-radius: 0.65rem;
 
@@ -215,16 +217,19 @@ watch(
 	}
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__is-calendar-small .sx__chevron-wrapper) {
 	min-height: 24px;
 	min-width: 24px;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__is-calendar-small .sx__forward-backward-navigation),
 :deep(.is-list-view .sx__forward-backward-navigation) {
 	display: flex;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__ripple::before) {
 	background: transparent;
 }
