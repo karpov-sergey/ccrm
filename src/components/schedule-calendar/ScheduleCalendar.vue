@@ -6,7 +6,6 @@ import {
 	createCalendar,
 	createViewMonthGrid,
 	createViewMonthAgenda,
-	createViewList,
 	type CalendarEvent,
 	viewMonthGrid,
 } from '@schedule-x/calendar';
@@ -25,13 +24,16 @@ const eventModal = createEventModalPlugin();
 const calendarApp = createCalendar({
 	selectedDate: Temporal.Now.plainDateISO(),
 	plugins: [eventModal],
-	views: [createViewMonthGrid(), createViewMonthAgenda(), createViewList()],
+	views: [createViewMonthGrid(), createViewMonthAgenda()],
 	events: [],
 	timezone: 'UTC',
 	defaultView: viewMonthGrid.name,
+	monthGridOptions: {
+		nEventsPerDay: 20,
+	},
 	callbacks: {
 		onClickPlusEvents(date: Temporal.PlainDate, e?: UIEvent) {
-			console.log('onClickPlusEvents', date); // e.g. 2024-01-01
+			console.log('onClickPlusEvents', date, e); // e.g. 2024-01-01
 		},
 	},
 });
@@ -110,11 +112,12 @@ watch(
 
 		<template #monthGridEvent="{ calendarEvent }">
 			<div
-				class="w-full p-2 bg-primary text-background rounded-md cursor-pointer"
+				class="w-full p-2 bg-primary text-background rounded-md cursor-pointer truncate"
 			>
 				{{
 					calendarEvent.start.toPlainTime().toString({ smallestUnit: 'minute' })
 				}}
+				|
 				{{ calendarEvent.title }}
 			</div>
 		</template>
@@ -123,6 +126,7 @@ watch(
 			<div
 				class="shadow-lg rounded-lg p-4 bg-background border overflow-hidden"
 			>
+				{{ calendarEvent.id }}
 				{{ calendarEvent.title }}
 
 				<button>btn</button>
@@ -132,6 +136,7 @@ watch(
 </template>
 
 <style scoped>
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__calendar-wrapper) {
 	width: 100%;
 	max-width: 100vw;
@@ -139,19 +144,25 @@ watch(
 	max-height: 90vh;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__event-modal) {
 	border-radius: 0.65rem;
 }
 
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__month-grid-event) {
 	width: 100% !important;
 }
 
-:deep(.sx__date-picker-wrapper) {
+/*noinspection CssUnusedSymbol*/
+:deep(.sx__date-picker-wrapper),
+	/*noinspection CssUnusedSymbol*/
+:deep(.sx__view-selection) {
 	display: none;
 }
 
 /* Schedule X theme overrides to match app primary colors */
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__calendar-wrapper) {
 	/* Core palette */
 	--sx-color-primary: var(--primary);
@@ -187,6 +198,7 @@ watch(
 }
 
 /* Dark mode overrides (scoped to .dark root) */
+/*noinspection CssUnusedSymbol*/
 :deep(.dark .sx__calendar-wrapper) {
 	--sx-color-primary: var(--primary);
 	--sx-color-on-primary: var(--primary-foreground);
@@ -219,6 +231,7 @@ watch(
 }
 
 /* Date picker and popups themed to app colors */
+/*noinspection CssUnusedSymbol*/
 :deep(.sx__date-picker-popup) {
 	--sx-color-primary: var(--primary);
 	--sx-color-on-primary: var(--primary-foreground);
