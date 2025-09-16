@@ -69,26 +69,26 @@ const mapTasksToEvents = (tasks: Task[]): CalendarEvent[] => {
 };
 
 // Generate mock events for today when there are no tasks
-const generateMockEventsForToday = (count = 10): CalendarEvent[] => {
-	const today = Temporal.Now.plainDateISO();
-	const baseTime = Temporal.PlainTime.from('09:00');
-	const events: CalendarEvent[] = [];
-
-	for (let i = 0; i < count; i++) {
-		const startPlain = today.toPlainDateTime(baseTime).add({ hours: i });
-		const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
-		const end = start.add({ minutes: 15 });
-
-		events.push({
-			id: `mock-${i + 1}`,
-			title: `Test ${i + 1}`,
-			start,
-			end,
-		});
-	}
-
-	return events;
-};
+// const generateMockEventsForToday = (count = 10): CalendarEvent[] => {
+// 	const today = Temporal.Now.plainDateISO();
+// 	const baseTime = Temporal.PlainTime.from('09:00');
+// 	const events: CalendarEvent[] = [];
+//
+// 	for (let i = 0; i < count; i++) {
+// 		const startPlain = today.toPlainDateTime(baseTime).add({ hours: i });
+// 		const start = startPlain.toZonedDateTime(FIXED_TIMEZONE_ID);
+// 		const end = start.add({ minutes: 15 });
+//
+// 		events.push({
+// 			id: `mock-${i + 1}`,
+// 			title: `Test ${i + 1}`,
+// 			start,
+// 			end,
+// 		});
+// 	}
+//
+// 	return events;
+// };
 
 watch(
 	() => tasksRef.value,
@@ -97,8 +97,8 @@ watch(
 
 		// Always include 10 mock events for today to make testing visible
 		// (kept simple per request; remove or guard with a prop/flag when no longer needed)
-		const mockToday = generateMockEventsForToday(10);
-		events = [...mockToday, ...events];
+		// const mockToday = generateMockEventsForToday(10);
+		// events = [...mockToday, ...events];
 
 		calendarApp.events.set(events);
 	},
