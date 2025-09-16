@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 
 import draggable from 'vuedraggable';
 import TaskModal from '@/components/modals/Task.vue';
@@ -23,8 +23,9 @@ const emit = defineEmits(['updateBoard']);
 const isDragging = ref(false);
 const hoverColumnIndex = ref<number | null>(null);
 
-const addNewTaskRef = ref<InstanceType<typeof TaskModal> | null>(null);
-const editTaskRef = ref<InstanceType<typeof TaskModal> | null>(null);
+const taskModalRef = ref<InstanceType<typeof TaskModal> | null>(null);
+const selectedTask = ref<Task | undefined>(undefined);
+const selectedOriginalStatus = ref<string | undefined>(undefined);
 
 const handleStart = () => {
 	isDragging.value = true;
@@ -131,12 +132,22 @@ const onListChange = async (column: BoardColumn, event: any) => {
 	}
 };
 
-const onTaskOpenClick = async () => {
-	editTaskRef.value?.open?.();
+const onTaskOpenClick = async (task: Task) => {
+	selectedOriginalStatus.value = undefined;
+	selectedTask.value = task;
+
+	await nextTick();
+
+	taskModalRef.value?.open?.();
 };
 
-const onNewTaskOpenClick = async () => {
-	addNewTaskRef.value?.open?.();
+const onNewTaskOpenClick = async (column: BoardColumn) => {
+	selectedTask.value = undefined;
+	selectedOriginalStatus.value = column.status as string;
+
+	await nextTick();
+
+	taskModalRef.value?.open?.();
 };
 </script>
 
@@ -162,15 +173,9 @@ const onNewTaskOpenClick = async () => {
 						<Badge variant="outline">{{ column.tasks.length }}</Badge>
 					</div>
 
-					<TaskModal
-						ref="addNewTaskRef"
-						:originalStatus="column.status"
-						@update-board="onBoardUpdate"
-					>
-						<Button type="button" size="sm" @click="onNewTaskOpenClick">
-							<Plus class="h-4 w-4" />
-						</Button>
-					</TaskModal>
+					<Button type="button" size="sm" @click="onNewTaskOpenClick(column)">
+						<Plus class="h-4 w-4" />
+					</Button>
 				</div>
 				<draggable
 					:list="column.tasks"
@@ -195,25 +200,23 @@ const onNewTaskOpenClick = async () => {
 				>
 					<template #item="{ element }">
 						<div :key="element.id" class="mt-3">
-							<TaskModal
-								ref="editTaskRef"
+							<TaskCard
+								:class="{ 'cursor-pointer': !isDragging }"
 								:task="element"
 								:disabled="isDragging"
-								:is-task-card-visible="true"
-								@update-board="onBoardUpdate"
-							>
-								<TaskCard
-									:class="{ 'cursor-pointer': !isDragging }"
-									:task="element"
-									:disabled="isDragging"
-									@click="onTaskOpenClick"
-								/>
-							</TaskModal>
+								@click="onTaskOpenClick(element)"
+							/>
 						</div>
 					</template>
 				</draggable>
 			</div>
 		</div>
+		<TaskModal
+			ref="taskModalRef"
+			:task="selectedTask"
+			:originalStatus="selectedOriginalStatus"
+			@update-board="onBoardUpdate"
+		/>
 	</div>
 </template>
 
