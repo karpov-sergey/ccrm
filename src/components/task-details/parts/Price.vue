@@ -10,16 +10,10 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-import {
-	NumberField,
-	NumberFieldContent,
-	NumberFieldDecrement,
-	NumberFieldIncrement,
-	NumberFieldInput,
-} from '@/components/ui/number-field';
 
 import { Coins } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
+import { Input } from '@/components/ui/input';
 
 const { t } = useI18n();
 const { user } = storeToRefs(useAuthStore());
@@ -34,85 +28,65 @@ const props = defineProps<{
 	<div class="w-full flex gap-2 items-center">
 		<Coins class="h-4 w-4" />
 
-		<FormField v-slot="{ value, handleChange }" name="price">
-			<FormItem>
-				<FormLabel>
-					{{ t('price') }}
-				</FormLabel>
-				<FormControl>
-					<NumberField
-						class="gap-2"
-						:min="0"
-						:step="1"
-						:step-snapping="false"
-						:format-options="{
-							style: 'currency',
-							currency: user?.user_metadata.currency,
-							currencyDisplay: 'code',
-							currencySign: 'accounting',
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						}"
-						:model-value="value"
-						@update:model-value="(v) => handleChange(v ?? null)"
-					>
-						<NumberFieldContent>
-							<NumberFieldDecrement />
-							<FormControl>
-								<NumberFieldInput />
-							</FormControl>
-							<NumberFieldIncrement />
-						</NumberFieldContent>
-					</NumberField>
-				</FormControl>
-				<FormMessage />
-			</FormItem>
-		</FormField>
+		<div class="w-full grid md:grid-cols-3 gap-4">
+			<FormField v-slot="{ componentField }" name="price">
+				<FormItem>
+					<FormLabel>
+						{{ t('price') }}
+					</FormLabel>
+					<FormControl>
+						<div class="relative">
+							<Input
+								class="pl-12 pt-1.5"
+								type="number"
+								step="any"
+								v-bind="componentField"
+							/>
+							<span
+								class="absolute start-1 inset-y-0 flex items-center justify-center px-2 text-sm"
+							>
+								{{ user?.user_metadata.currency }}
+							</span>
+						</div>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
 
-		<FormField v-slot="{ value, handleChange }" name="paid">
-			<FormItem>
-				<FormLabel>
-					{{ t('paid') }}
-				</FormLabel>
-				<FormControl>
-					<NumberField
-						class="gap-2"
-						:min="0"
-						:step="1"
-						:step-snapping="false"
-						:format-options="{
-							style: 'currency',
-							currency: user?.user_metadata.currency,
-							currencyDisplay: 'code',
-							currencySign: 'accounting',
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						}"
-						:model-value="value"
-						@update:model-value="(v) => handleChange(v ?? null)"
-					>
-						<NumberFieldContent>
-							<NumberFieldDecrement />
-							<FormControl>
-								<NumberFieldInput />
-							</FormControl>
-							<NumberFieldIncrement />
-						</NumberFieldContent>
-					</NumberField>
-				</FormControl>
-				<FormMessage />
-			</FormItem>
-		</FormField>
-		<div class="flex flex-col gap-2">
-			<div class="text-sm font-medium leading-none">
-				{{ t('to_be_paid') }}
+			<FormField v-slot="{ componentField }" name="paid">
+				<FormItem>
+					<FormLabel>
+						{{ t('paid') }}
+					</FormLabel>
+					<FormControl>
+						<div class="relative">
+							<Input
+								class="pl-12 pt-1.5"
+								type="number"
+								step="any"
+								v-bind="componentField"
+							/>
+							<span
+								class="absolute start-1 inset-y-0 flex items-center justify-center px-2 text-sm"
+							>
+								{{ user?.user_metadata.currency }}
+							</span>
+						</div>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+			<div class="flex flex-col gap-2">
+				<div class="text-sm font-medium leading-none">
+					{{ t('to_be_paid') }}
+				</div>
+				<Badge
+					class="text-sm py-1.5"
+					:variant="props.amountToBePaid > 0 ? 'warning' : 'success'"
+				>
+					{{ props.formattedToBePaid }}
+				</Badge>
 			</div>
-			<Badge
-				class="text-sm py-1.5"
-				:variant="props.amountToBePaid > 0 ? 'warning' : 'success'"
-			>
-				{{ props.formattedToBePaid }}
-			</Badge>
 		</div>
 	</div>
 </template>
