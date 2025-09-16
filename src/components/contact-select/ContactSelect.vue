@@ -2,6 +2,7 @@
 import { ref, onBeforeMount, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { useI18n } from 'vue-i18n';
 import { useContactsStore } from '@/stores/contacts.ts';
 
 import {
@@ -12,7 +13,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/spinner/Spinner.vue';
+import EditContact from '@/components/modals/edit-contact/EditContact.vue';
+
 import type { Contact } from '@/types/Contacts.ts';
 
 const props = defineProps<{ modelValue?: Contact | null }>();
@@ -21,9 +25,12 @@ const emit = defineEmits<{
 }>();
 
 const contactsStore = useContactsStore();
+const { t } = useI18n();
 
-const isLoading = ref(true);
 const { contactsList } = storeToRefs(contactsStore);
+const editModalRef = ref<any>(null);
+const isLoading = ref(true);
+const isOpen = ref(false);
 
 const selectedId = ref<string | null>(props.modelValue?.id ?? null);
 
@@ -61,10 +68,17 @@ const fetchContactsList = async () => {
 		isLoading.value = false;
 	}
 };
+
+const onAddNewContactClick = () => {
+	isOpen.value = false;
+
+	editModalRef.value?.open?.();
+};
 </script>
 
 <template>
 	<Select
+		v-model:open="isOpen"
 		:model-value="selectedId ?? undefined"
 		@update:model-value="
 			(v) => {
@@ -83,6 +97,10 @@ const fetchContactsList = async () => {
 		</SelectTrigger>
 		<SelectContent v-if="!isLoading" class="max-h-[300px] overflow-auto">
 			<SelectGroup>
+				<Button class="w-full" variant="outline" @click="onAddNewContactClick">
+					{{ t('add_new_contact') }}
+				</Button>
+
 				<SelectItem
 					v-for="contact in contactsList"
 					:key="contact.id"
@@ -93,4 +111,10 @@ const fetchContactsList = async () => {
 			</SelectGroup>
 		</SelectContent>
 	</Select>
+
+	<EditContact
+		ref="editModalRef"
+		:is-creation="true"
+		@contact-updated="fetchContactsList"
+	/>
 </template>
