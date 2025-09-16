@@ -26,12 +26,13 @@ const taskStatusOptions: Option[] = [
 <template>
 	<Flag class="h-4 w-4" />
 	<FormField v-slot="{ componentField }" name="status">
-		<FormItem>
+		<FormItem class="w-full md:w-auto">
 			<FormControl>
 				<SelectCustom
 					v-bind="componentField"
 					:placeholder="t('status')"
 					:options="taskStatusOptions"
+					:trigger-class="'w-full md:w-auto'"
 				/>
 			</FormControl>
 			<FormMessage />

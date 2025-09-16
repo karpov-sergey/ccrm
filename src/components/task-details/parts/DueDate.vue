@@ -87,9 +87,12 @@ const resetDrafts = () => {
 <template>
 	<TimerReset class="h-4 w-4" />
 	<div v-if="isDueDateEditMode" class="w-full flex gap-2 justify-between">
-		<div class="flex gap-2 pt-0.5">
+		<div class="w-full md:w-auto grid md:grid-cols-2 gap-4 pt-0.5">
 			<DatePicker :is-preselect-visible="true" v-model="dueDateDraft">
-				<Button variant="outline">
+				<Button
+					class="w-full md:w-auto justify-between items-center min-w-32"
+					variant="outline"
+				>
 					{{ dueDateDraft ? formattedDate(dueDateDraft) : t('pick_date') }}
 					<CalendarIcon class="h-4 w-4 text-muted-foreground" />
 				</Button>
@@ -122,14 +125,14 @@ const resetDrafts = () => {
 	</div>
 	<div
 		v-else
-		class="flex gap-2 items-center cursor-pointer py-1.5"
+		class="w-full md:w-auto cursor-pointer py-1.5"
 		:class="{ 'text-sm text-muted-foreground py-2': !form.values?.date }"
 		@click="dueDateEditModeToggle"
 	>
 		<Badge
 			v-if="form.values?.date"
 			:variant="dueDateBadgeVariant(form.values?.date)"
-			class="flex gap-2 text-sm"
+			class="w-full md:w-auto flex gap-2 text-sm"
 		>
 			{{
 				form.values?.date

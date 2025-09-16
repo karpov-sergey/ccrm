@@ -75,7 +75,7 @@ const fetchContactsList = async () => {
 			}
 		"
 	>
-		<SelectTrigger class="w-[280px]" :disabled="isLoading">
+		<SelectTrigger class="w-full md:w-[280px]" :disabled="isLoading">
 			<Spinner v-if="isLoading" />
 			<SelectValue placeholder="Select a contact">
 				{{ selectedContactLabel || 'Select a contact' }}

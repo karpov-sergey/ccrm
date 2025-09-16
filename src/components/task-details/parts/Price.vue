@@ -37,7 +37,7 @@ const props = defineProps<{
 					<FormControl>
 						<div class="relative">
 							<Input
-								class="pl-12 pt-1.5"
+								class="pl-12 pt-1"
 								type="number"
 								step="any"
 								v-bind="componentField"
@@ -61,7 +61,7 @@ const props = defineProps<{
 					<FormControl>
 						<div class="relative">
 							<Input
-								class="pl-12 pt-1.5"
+								class="pl-12 pt-1"
 								type="number"
 								step="any"
 								v-bind="componentField"
@@ -81,7 +81,7 @@ const props = defineProps<{
 					{{ t('to_be_paid') }}
 				</div>
 				<Badge
-					class="text-sm py-1.5"
+					class="w-full md:w-auto text-sm py-1.5"
 					:variant="props.amountToBePaid > 0 ? 'warning' : 'success'"
 				>
 					{{ props.formattedToBePaid }}
