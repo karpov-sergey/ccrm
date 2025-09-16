@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, nextTick } from 'vue';
 
 import { getAllTasks } from '@/api/tasks';
 
@@ -11,6 +11,9 @@ import TaskModal from '@/components/modals/Task.vue';
 
 const isLoading = ref(true);
 const tasks = ref<Task[]>([]);
+
+const taskModalRef = ref<InstanceType<typeof TaskModal> | null>(null);
+const selectedTask = ref<Task | undefined>(undefined);
 
 onBeforeMount(async () => {
 	await fetchTasks();
@@ -26,6 +29,19 @@ const fetchTasks = async () => {
 		isLoading.value = false;
 	}
 };
+
+const onEventClick = async (taskId: string) => {
+	const task = tasks.value.find((task) => task.id === taskId);
+	if (!task) {
+		return;
+	}
+
+	selectedTask.value = task;
+
+	await nextTick();
+
+	taskModalRef.value?.open?.();
+};
 </script>
 
 <template>
@@ -35,8 +51,12 @@ const fetchTasks = async () => {
 	>
 		<Spinner v-if="isLoading" />
 		<template v-else>
-			<TaskModal @update-board="fetchTasks" />
-			<ScheduleCalendar :tasks="tasks" />
+			<TaskModal
+				ref="taskModalRef"
+				:task="selectedTask"
+				@update-board="fetchTasks"
+			/>
+			<ScheduleCalendar :tasks="tasks" @on-event-click="onEventClick" />
 		</template>
 	</section>
 </template>

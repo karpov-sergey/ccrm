@@ -20,6 +20,10 @@ const props = defineProps<{
 	tasks: Task[];
 }>();
 
+const emit = defineEmits<{
+	(event: 'on-event-click', value: string): void;
+}>();
+
 const calendarApp = createCalendar({
 	selectedDate: Temporal.Now.plainDateISO(),
 	views: [createViewMonthGrid(), createViewMonthAgenda()],
@@ -31,7 +35,7 @@ const calendarApp = createCalendar({
 	},
 	callbacks: {
 		onEventClick(calendarEvent) {
-			console.log('onEventClick', calendarEvent);
+			emit('on-event-click', calendarEvent.id.toString());
 		},
 	},
 });
