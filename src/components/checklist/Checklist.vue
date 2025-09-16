@@ -102,7 +102,6 @@ const removeItem = (id: string) => {
 				<Input
 					v-model="item.title"
 					class="flex-1 border-0 h-auto focus-visible:ring-0 shadow-none border-b-1 rounded-none"
-					:class="{ 'line-through': item.completed && !!item.title.length }"
 					:placeholder="placeholder || t('please_enter_item_name')"
 					:disabled="disabled"
 				/>
