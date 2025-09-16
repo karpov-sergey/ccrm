@@ -22,7 +22,7 @@ const descriptionOriginal = ref<string | null>(null);
 
 const toolbarOptions = [
 	['bold', 'italic', 'underline'], // toggled buttons
-	['image'],
+	// ['image'],
 	[{ color: [] }, { background: [] }], // dropdown with defaults from theme
 
 	[{ list: 'ordered' }, { list: 'bullet' }],

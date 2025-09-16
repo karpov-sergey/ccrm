@@ -55,9 +55,9 @@ const isLeftToBePaid = computed(() => {
 
 <template>
 	<div class="p-2 text-sm rounded-lg border border-transparent bg-white shadow">
-		<div class="flex items-center justify-between mb-2">
+		<div class="flex items-center justify-between gap-2 mb-2">
 			<div
-				class="mb-2 font-semibold font-sans tracking-wide text-sm last-of-type:mb-0"
+				class="mb-2 font-medium md:font-semibold font-sans tracking-wide text-sm last-of-type:mb-0"
 			>
 				{{ task.title }}
 			</div>
