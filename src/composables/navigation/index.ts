@@ -1,7 +1,13 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { Home, SquareKanban, Contact, CalendarDays } from 'lucide-vue-next';
+import {
+	Home,
+	SquareKanban,
+	Contact,
+	CalendarDays,
+	Boxes,
+} from 'lucide-vue-next';
 
 import { UserNavItems } from '@/enums/navigation/NavItems.ts';
 
@@ -42,6 +48,13 @@ export const useNavigation = () => {
 			to: '/calendar',
 			icon: CalendarDays,
 			id: UserNavItems.CALENDAR,
+		},
+
+		{
+			label: t(UserNavItems.ITEMS),
+			to: '/items',
+			icon: Boxes,
+			id: UserNavItems.ITEMS,
 		},
 	]);
 

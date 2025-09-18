@@ -51,6 +51,15 @@ const routes: RouteRecordRaw[] = [
 	},
 
 	{
+		path: '/items',
+		name: UserNavItems.ITEMS,
+		component: () => import('../views/Items.vue'),
+		beforeEnter: async () => {
+			await loggedInHook();
+		},
+	},
+
+	{
 		path: '/login',
 		name: ExternalNavItems.LOGIN,
 		component: () => import('../views/auth/Login.vue'),
