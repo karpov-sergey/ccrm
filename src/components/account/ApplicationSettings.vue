@@ -27,12 +27,14 @@ import type { UserPayload } from '@/types/User.ts';
 
 const authStore = useAuthStore();
 const { user } = storeToRefs(useAuthStore());
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const formSchema = toTypedSchema(
 	z.object({
 		currency: z.enum(currencies.map((c) => c.code) as [string, ...string[]]),
-		language: z.enum(Object.keys(locales) as [string, ...string[]]),
+		language: z.enum(
+			locales.map((locale) => locale.code) as [string, ...string[]]
+		),
 		timeFormat: z.enum(['12h', '24h']),
 	})
 );
@@ -41,7 +43,7 @@ const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
 		currency: user.value?.user_metadata?.currency ?? 'USD',
-		language: user.value?.user_metadata?.language ?? 'en',
+		language: user.value?.user_metadata?.language ?? 'en-US',
 		timeFormat: user.value?.user_metadata?.timeFormat ?? '24h',
 	},
 });
@@ -71,7 +73,7 @@ const currencyOptions = computed(() => {
 });
 
 const languageOptions = computed(() =>
-	Object.entries(locales).map(([code, name]) => ({ value: code, label: name }))
+	locales.map((locale) => ({ value: locale.code, label: locale.title }))
 );
 
 const timeFormatOptions = computed(() => [
@@ -83,6 +85,11 @@ const onSubmit = form.handleSubmit(async (values: UserPayload) => {
 	isSaving.value = true;
 	try {
 		await authStore.updateUser(values);
+
+		if (!!values.language) {
+			localStorage.setItem('language', values.language);
+			locale.value = values.language;
+		}
 	} catch (error) {
 	} finally {
 		isSaving.value = false;

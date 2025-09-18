@@ -4,6 +4,8 @@ import { useMediaQuery, useBreakpoints } from '@vueuse/core';
 
 import { useAuthStore } from '@/stores/auth.ts';
 
+import { locales } from '@/localization/languages.ts';
+
 export const useScreenWidth = () => {
 	// Up queries (>=)
 	const isSmUp = useMediaQuery('(min-width: 640px)');
@@ -122,4 +124,28 @@ export const useFormattedDateTime = () => {
 	};
 
 	return { formattedDateTime };
+};
+
+export const useLanguage = () => {
+	const navigatorLanguageCode = () => {
+		const lang = navigator.language;
+		const parts = lang.split('-');
+
+		const language = parts[0].toLowerCase();
+		const region = parts[1] ? parts[1].toUpperCase() : language.toUpperCase();
+
+		return `${language}-${region}`;
+	};
+
+	const defaultLanguage = () => {
+		const navigatorSelectedLanguage =
+			locales.find((locale) => locale.code === navigatorLanguageCode())?.code ||
+			'en-US';
+
+		const storedLanguage = localStorage.getItem('language');
+
+		return storedLanguage || navigatorSelectedLanguage;
+	};
+
+	return { navigatorLanguageCode, defaultLanguage };
 };

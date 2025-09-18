@@ -35,7 +35,6 @@ export interface UserMetadata {
 
 export interface User extends SupabaseUser {
 	currency?: string;
-	language?: string;
 	timeFormat?: '12h' | '24h';
 	user_metadata: UserMetadata;
 }

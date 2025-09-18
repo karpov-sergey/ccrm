@@ -17,19 +17,20 @@ import './style.css';
 import App from './App.vue';
 import router from './router';
 
-import en from './locales/en.json';
-import pl from './locales/pl.json';
+import enUS from './locales/en-US.json';
+import plPL from './locales/pl-PL.json';
+
 import { setupValidation } from './plugins/validation';
 
 import { setupZodI18n } from './plugins/zod-i18n';
 
 const i18n: I18n = createI18n({
 	legacy: false,
-	locale: 'en',
-	fallbackLocale: 'pl',
+	locale: 'en-US',
+	fallbackLocale: 'pl-PL',
 	messages: {
-		en,
-		pl,
+		'en-US': enUS,
+		'pl-PL': plPL,
 	},
 });
 

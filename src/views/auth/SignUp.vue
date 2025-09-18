@@ -7,6 +7,7 @@ import * as z from 'zod';
 
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useLanguage } from '@/composables/common.ts';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +34,7 @@ import { Eye, EyeClosed } from 'lucide-vue-next';
 const authStore = useAuthStore();
 const router = useRouter();
 const { t } = useI18n();
+const { defaultLanguage } = useLanguage();
 
 const isLoading = ref(false);
 const isPasswordVisible = ref(false);
@@ -73,6 +75,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					lastName: values.lastName,
 					currency: 'USD',
 					timeFormat: '12h',
+					language: defaultLanguage(),
 				},
 			},
 		});

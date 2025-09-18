@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from 'vue';
+import { ref, computed, onBeforeMount, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '@/stores/auth.ts';
+import { useLanguage } from '@/composables/common.ts';
 
 import AppSidebar from '@/components/app-sidebar/AppSidebar.vue';
 import {
@@ -17,19 +20,33 @@ import Spinner from '@/components/ui/spinner/Spinner.vue';
 import { UserNavItems } from '@/enums/navigation/NavItems.ts';
 
 const route = useRoute();
-const { t } = useI18n();
 const authStore = useAuthStore();
+const { t, locale } = useI18n();
+const { defaultLanguage } = useLanguage();
+const { user } = storeToRefs(useAuthStore());
 
 const isLoading = ref(true);
 
 onBeforeMount(async () => {
 	try {
 		await authStore.getCurrentUser();
+
+		setLanguage();
 	} catch (error) {
 	} finally {
 		isLoading.value = false;
 	}
 });
+
+const setLanguage = () => {
+	if (user.value) {
+		locale.value = user.value?.user_metadata.language!;
+
+		return;
+	}
+
+	locale.value = defaultLanguage();
+};
 
 const isUserPage = computed(() => {
 	return Object.values(UserNavItems).includes(route.name as UserNavItems);
@@ -37,6 +54,10 @@ const isUserPage = computed(() => {
 
 const currentPageName = computed(() => {
 	return t(route.name as string);
+});
+
+watch(user, () => {
+	locale.value = user.value?.user_metadata.language!;
 });
 </script>
 

@@ -13,12 +13,14 @@ import { locales } from '@/localization/languages.ts';
 
 import { Languages } from 'lucide-vue-next';
 
-import type { Languages as LanguagesTypes } from '@/types/Languages.ts';
-
 const { locale } = useI18n();
 
 function changeLanguage(language: string) {
-	locale.value = Object.keys(locales).find((k) => locales[k] === language)!;
+	const code = locales.find((locale) => locale.code === language)?.code!;
+
+	locale.value = code;
+
+	localStorage.setItem('language', code);
 }
 </script>
 
@@ -35,10 +37,11 @@ function changeLanguage(language: string) {
 			<DropdownMenuItem
 				v-for="(locale, index) in locales"
 				class="cursor-pointer"
-				:key="`${locale}_${index}`"
-				:text-value="locale"
-				@select="changeLanguage(locale as LanguagesTypes)"
-				>{{ locale }}
+				:key="`${index}`"
+				:text-value="locale.title"
+				@select="changeLanguage(locale.code)"
+			>
+				{{ locale.title }}
 			</DropdownMenuItem>
 		</DropdownMenuContent>
 	</DropdownMenu>
