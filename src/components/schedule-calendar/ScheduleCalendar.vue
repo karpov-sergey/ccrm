@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { watch, toRef } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/auth.ts';
 
 import { ScheduleXCalendar } from '@schedule-x/vue';
 import {
@@ -24,6 +26,8 @@ const emit = defineEmits<{
 	(event: 'on-event-click', value: string): void;
 }>();
 
+const { user } = storeToRefs(useAuthStore());
+
 const calendarApp = createCalendar({
 	selectedDate: Temporal.Now.plainDateISO(),
 	views: [createViewMonthGrid(), createViewMonthAgenda()],
@@ -38,6 +42,7 @@ const calendarApp = createCalendar({
 			emit('on-event-click', calendarEvent.id.toString());
 		},
 	},
+	locale: user?.value?.user_metadata.language || 'en-US',
 });
 
 const FIXED_TIMEZONE_ID = 'UTC';
