@@ -21,7 +21,6 @@ const contactsStore = useContactsStore();
 const { contactsList } = storeToRefs(contactsStore);
 
 const isLoading = ref(true);
-
 const isCreation = ref(false);
 
 const editingContact = ref<Contact | undefined>(undefined);

@@ -319,7 +319,7 @@ const onRemoveSubmit = async () => {
 						</div>
 					</DialogTitle>
 					<DialogDescription v-show="isEditMode">
-						Make changes to this contact here. Click save when you're done.
+						{{ t('make_changes_to_this_contact_here') }}
 					</DialogDescription>
 				</div>
 				<Button
